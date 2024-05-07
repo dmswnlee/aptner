@@ -2,3 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+.border-color-nav {
+  border-color: #174d50;
+}
+
+.link-text {
+  color: #4c5d71;
+}
+
