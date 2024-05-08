@@ -1,5 +1,5 @@
-import Searchbar from "@/components/Searchbar"
-import Navbar from "@/components/Navbar"
+import Searchbar from "@/components/header/Searchbar"
+import Navbar from "@/components/header/Navbar"
 
 const Header = () => {
   return (
