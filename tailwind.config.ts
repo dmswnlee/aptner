@@ -15,8 +15,17 @@ const config: Config = {
       },
       colors: {
         theme: "#174d50",
-        charcoal: "#4c5d71"
-
+        charcoal: "#4c5d71",
+        border : "#eaeaea",
+        placeholder : "#fcfcfc",
+        blue_05 : "#00A8FF",
+        blue_300 : "#05A8FF",
+        blue_500 : "#0086CC",
+        gray_200 : "#cccccc",
+        gray_300 : "#C8C8C8",
+        gray_400 : "#858E96",
+        gray_600 : "#777777",
+        gray_800 : "#333333"
       },
     },
   },
