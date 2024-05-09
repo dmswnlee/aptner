@@ -15,7 +15,8 @@ const config: Config = {
       },
       colors: {
         theme: "#174d50",
-        charcoal: "#4c5d71"
+        charcoal: "#4c5d71",
+        primary:"#05A8FF"
 
       },
     },
