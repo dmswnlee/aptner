@@ -1,7 +1,7 @@
 "use client";
 import ColorButton from "@/components/buttons/ColorButton";
 import LargeBorderButton from "@/components/buttons/LargeBorderButton";
-import Input from "@/components/input/Input";
+import InputForm from "@/components/input/InputForm";
 import Link from "next/link";
 import { useState } from "react";
 import { AiTwotoneNotification } from "react-icons/ai";
@@ -24,8 +24,8 @@ const login = () => {
 					<h2 className="text-4xl font-semibold pb-[16px]">로그인</h2>
 				</div>
 				<div className="w-[430px] h-full flex flex-col justify-center items-center gap-[10px]">
-					<Input type="email" placeholder="아이디 입력" onChange={handleChange} />
-					<Input type="email" placeholder="비밀번호 입력" onChange={handleChange} />
+					<InputForm type="email" placeholder="아이디 입력" onChange={handleChange} />
+					<InputForm type="email" placeholder="비밀번호 입력" onChange={handleChange} />
 					<div className="mt-[56px]">
 						<ColorButton text="로그인" size="lg" />
 					</div>
