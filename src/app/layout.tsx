@@ -1,3 +1,4 @@
+import { MSWComponent } from "./_component/MSWComponent";
 import "./globals.css";
 import Header from "@/components/header/Header";
 import Footer from "@/components/Footer";
@@ -14,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
+        <MSWComponent />
         <Header />
         <main>{children}</main>
         <Footer />
