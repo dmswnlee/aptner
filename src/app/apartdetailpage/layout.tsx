@@ -8,10 +8,7 @@ export default function ApartDetailPageLayout({
 }) {
   return (
     <div className="w-[1040px] mx-auto">
-      <div className="mt-[239px]">
-        <p className="text-[42px] font-semibold ml-1">아파트 소개</p>
-        <main>{children}</main>
-      </div>
+      <main>{children}</main>
     </div>
   );
 }
