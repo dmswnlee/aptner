@@ -44,7 +44,7 @@ export default function MyPage() {
           <Input id="id" label="아파트 호" type="text" placeholder="103호" />
           <Button
             text="탈퇴하기"
-            className="absolute right-0 underline border-none text-gray-500 font-normal mt-[19px]"
+            className="absolute right-0 underline underline-offset-2 border-none text-gray-500 font-normal mt-[19px]"
           />
         </div>
       </div>
