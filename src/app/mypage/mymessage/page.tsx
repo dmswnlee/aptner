@@ -2,7 +2,7 @@ import React from "react";
 
 export default function MyMessagePage() {
   return (
-    <div className="w-[680px] mt-[107px] mx-auto">
+    <div className="w-[680px] mx-auto">
       <div className="border-b-2 pt-2 h-12 bg-[#FBFBFB] flex items-center pl-4">
         24.4.30 (화)
       </div>
