@@ -1,4 +1,4 @@
-import UserTab from "@/components/mypage/UserTab";
+import UserTab from "@/app/mypage/_component/UserTab";
 
 export default function MyPostsPage() {
   const myPosts = [
