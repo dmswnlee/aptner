@@ -2,9 +2,8 @@ import Image from "next/image";
 
 export default function ApartOverViewPage() {
   return (
-    <div className="mt-[154px]">
-      <p className="text-[42px] font-semibold ml-1">아파트 소개</p>
-      <div className="ml-[84px] mb-[108px] w-[864px]">
+    <div className="w-[864px] mx-auto">
+      <div className="mb-[108px] w-[864px]">
         <div className="text-center mb-9">
           <Image
             src="/"

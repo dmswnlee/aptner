@@ -2,7 +2,7 @@ import Image from "next/image";
 export default function ApartDetailPage() {
   return (
     <>
-      <div className="mt-5 flex flex-col items-center">
+      <div className="flex flex-col items-center">
         <Image
           src="/"
           alt="아파트소개"

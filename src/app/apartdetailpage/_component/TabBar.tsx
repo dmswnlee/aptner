@@ -14,52 +14,52 @@ export default function TabBar() {
   };
 
   return (
-    <div className="mx-auto border-b-2 text-gray_07 h-[60px] text-xl font-semibold my-10 flex gap-10 items-center">
+    <div className="w-[1155px] mx-auto border-b-2 text-gray_07 h-[60px] text-xl font-semibold mt-[80px] mb-[60px] flex items-center justify-between">
       <Link
         href="/apartdetailpage"
-        className={`h-full flex items-center ${isActive("/mypage")}`}
+        className={`h-full w-[90px] justify-center flex items-center ${isActive("/apartdetailpage")}`}
       >
         인사말
       </Link>
       <Link
         href="/apartdetailpage/apartmap"
-        className={`h-full flex items-center ${isActive("/mypage/myposts")}`}
+        className={`h-full w-[90px] justify-center flex items-center ${isActive("/apartdetailpage/apartmap")}`}
       >
         위치 정보
       </Link>
       <Link
         href="/apartdetailpage/apartlayout"
-        className={`h-full flex items-center ${isActive("/mypage/mycomments")}`}
+        className={`h-full w-[90px] justify-center flex items-center ${isActive("/apartdetailpage/apartlayout")}`}
       >
         단지 전경
       </Link>
       <Link
         href="/apartdetailpage/apartunit"
-        className={`h-full flex items-center justify-center w-[90px] ${isActive("/mypage/mymessage")}`}
+        className={`h-full w-[90px] justify-center flex items-center ${isActive("/apartdetailpage/apartunit")}`}
       >
         평형 정보
       </Link>
       <Link
         href="/apartdetailpage/apartnumber"
-        className={`h-full flex items-center justify-center w-[90px] ${isActive("/mypage/myblocked")}`}
+        className={`h-full w-[92px] justify-center flex items-center ${isActive("/apartdetailpage/apartnumber")}`}
       >
         연락처 정보
       </Link>
       <Link
         href="/apartdetailpage/apartunitdetail"
-        className={`h-full flex items-center justify-center ${isActive("/mypage/myapartedit")}`}
+        className={`h-full w-[90px] justify-center flex items-center ${isActive("/apartdetailpage/apartunitdetail")}`}
       >
         내부 시설
       </Link>
       <Link
         href="/apartdetailpage/apartoverview"
-        className={`h-full flex items-center ${isActive("/mypage")}`}
+        className={`h-full w-[109px] justify-center flex items-center ${isActive("/apartdetailpage/apartoverview")}`}
       >
         커뮤니티 시설
       </Link>
       <Link
         href="/apartdetailpage/apartinfo"
-        className={`h-full flex items-center ${isActive("/mypage")}`}
+        className={`h-full w-[90px] justify-center flex items-center ${isActive("/apartdetailpage/apartinfo")}`}
       >
         주변입지
       </Link>

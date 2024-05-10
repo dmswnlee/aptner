@@ -2,8 +2,7 @@ import Image from "next/image";
 
 export default function ApartUnitDetailPage() {
   return (
-    <div className="mt-[154px]">
-      <p className="text-[42px] font-semibold ml-1">아파트 소개</p>
+    <div className="w-[764px] mx-auto">
       <div className="mt-[40px] ml-[89px] flex gap-4">
         <Image
           src="/"

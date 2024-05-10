@@ -2,13 +2,9 @@ import Image from "next/image";
 
 export default function ApartUnitPage() {
   return (
-    <>
-      <div className="mt-[154px]">
-        <p className="text-[42px] font-semibold ml-1">아파트 소개</p>
-      </div>
-
-      <div className="mt-[40px] ml-[85px] pb-[67px]">
-        <div className="mb-[66px] w-[568px] flex items-center">
+    <div className="w-[1040px] mx-auto">
+      <div className="pb-[67px]">
+        <div className="mb-[56px] w-[568px] flex items-center">
           <div>
             <p className="text-base mb-2 font-medium">109Am²</p>
             <Image
@@ -136,6 +132,6 @@ export default function ApartUnitPage() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
