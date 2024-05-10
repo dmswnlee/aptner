@@ -1,14 +1,14 @@
 import ColorButton from "@/components/buttons/ColorButton";
-import FormInput from "./FormInput";
+import TitleInput from "@/components/input/TitleInput";
 import SmallBorderButton from "@/components/buttons/SmallBorderButton";
 
 const PasswordForm = () => {
 	return (
 		<form className="flex flex-col gap-[10px] mt-[80px]">
-			<FormInput title="아이디" size="lg" />
-			<FormInput title="이름" size="lg" />
+			<TitleInput title="아이디" size="lg" />
+			<TitleInput title="이름" size="lg" />
 			<div className="flex">
-				<FormInput title="휴대폰 번호" placeholder="-없이 입력" size="md" />
+				<TitleInput title="휴대폰 번호" placeholder="-없이 입력" size="md" />
 				<SmallBorderButton text="인증번호 요청" />
 			</div>
 			<div className="flex justify-end">
