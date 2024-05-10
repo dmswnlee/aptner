@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "../buttons/Button";
+import Button from "../../../components/buttons/Button";
 
 interface TabContent {
   title: string;
@@ -27,7 +27,7 @@ const UserTab: React.FC<UserTabProps> = ({ tabType, content }) => {
   const createdAtWidth = hasComments || hasViews ? "w-[98px]" : "flex-1";
 
   return (
-    <div className="w-[849px] mt-[137px]">
+    <div className="w-[849px]">
       <div className="border-b-2 h-12 pb-[6px] bg-[#FBFBFB] flex items-center">
         <div className="w-12 flex items-center mt-5 ml-2">
           <input type="checkbox" id="subscribe" className="pt-5 pl-2 w-4 h-4" />
@@ -56,7 +56,7 @@ const UserTab: React.FC<UserTabProps> = ({ tabType, content }) => {
       ))}
       <Button
         text="삭제하기"
-        className="py-1 px-2 px text-[12px] ml-2 text-gray-400 border-gray-300"
+        className="my-4 py-1 px-2 text-[12px] ml-2 text-gray-400 border-gray-300"
       />
     </div>
   );

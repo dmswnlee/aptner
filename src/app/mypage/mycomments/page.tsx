@@ -1,4 +1,4 @@
-import UserTab from "@/components/mypage/UserTab";
+import UserTab from "@/app/mypage/_component/UserTab";
 
 export default function MyCommentsPage() {
   const myComments = [
@@ -18,7 +18,7 @@ export default function MyCommentsPage() {
       createdAt: "2022-05-13",
     },
     {
-      title: "식기세척기 팝니다",
+      title: "Text",
       category: "중고장터",
       createdAt: "2022-05-13",
     },

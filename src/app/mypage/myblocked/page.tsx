@@ -3,7 +3,7 @@ import Button from "@/components/buttons/Button";
 export default function MyBlockedPage() {
   return (
     <>
-      <div className="w-[613px] mt-[168px] pl-4 gap-3 h-12 pt-5 mx-auto bg-[#FBFBFB] border-b-2 flex items-center">
+      <div className="w-[613px] pl-4 gap-3 h-12 pt-5 mx-auto bg-[#FBFBFB] border-b-2 flex items-center">
         <p className="w-[244px]">차단일시</p>
         <p className="w-[337px]">닉네임</p>
       </div>
@@ -14,7 +14,7 @@ export default function MyBlockedPage() {
           <p>패캠v1</p>
           <Button
             text="차단해제"
-            className="underline text-gray-500 font-normal border-none underline-offset-2"
+            className="underline font-normal underline-offset-2 border-none text-gray_07"
           />
         </div>
       </div>
@@ -25,7 +25,7 @@ export default function MyBlockedPage() {
           <p>패캠v1</p>
           <Button
             text="차단해제"
-            className="underline text-gray-500 font-normal border-none underline-offset-2"
+            className="underline font-normal underline-offset-2 border-none text-gray_07"
           />
         </div>
       </div>

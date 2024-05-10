@@ -1,11 +1,38 @@
+"use client";
+import React, { useRef } from "react";
 import Button from "@/components/buttons/Button";
 import Input from "../../components/Input/Input";
 export default function MyPage() {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
   return (
     <>
       <div className="ml-[21px] flex flex-col items-center">
-        <div className="mt-[22px] w-[586px] h-[672px] relative">
-          <div className="flex justify-between items-center h-12">
+        <div className="w-[586px] relative ">
+          <input
+            ref={fileInputRef}
+            className="hidden"
+            id="userImage"
+            type="file"
+            accept="image/*"
+          />
+          <div className="h-[122px] w-[103px] mx-auto flex flex-col items-center">
+            <div
+              onClick={handleClick}
+              className="w-[80px] h-[80px] rounded-full border-2 cursor-pointer"
+            ></div>
+            <Button
+              text="사진 변경하기"
+              className="mt-3 w-full text-[16px] leading-[18px] py-[6px] border-blue_05 text-blue_05"
+            />
+          </div>
+
+          <div className="flex justify-between items-center h-12 mt-10">
             <p className="text-[20px]">아이디</p>
             <p className="w-[428px] ml-[10px] pl-[30px]">fastcampus</p>
           </div>
@@ -40,19 +67,18 @@ export default function MyPage() {
             type="text"
             placeholder="패스트캠퍼스"
           />
-          <Input id="id" label="아파트 동" type="text" placeholder="101동" />
-          <Input id="id" label="아파트 호" type="text" placeholder="103호" />
+
           <Button
             text="탈퇴하기"
-            className="absolute right-0 underline underline-offset-2 border-none text-gray-500 font-normal mt-[19px]"
+            className="absolute right-0 underline underline-offset-2 border-none text-gray_07 font-normal mt-[19px]"
           />
         </div>
       </div>
 
-      <div className="flex justify-center pt-4 mt-[66px]">
+      <div className="flex justify-center pt-4 mt-[88px] mb-[76px]">
         <Button
           text="수정하기"
-          className="py-3 px-4 border-primary text-primary"
+          className="py-3 px-4 border-blue_05 text-blue_05"
         />
       </div>
     </>
