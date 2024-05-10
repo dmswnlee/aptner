@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { AiTwotoneNotification } from "react-icons/ai";
 
-const login = () => {
+const Login = () => {
 	const handleChange = () => {};
 
 	const onClick = () => {};
@@ -42,7 +42,7 @@ const login = () => {
 							</label>
 						</div>
 						<div className="flex gap-[10px]">
-							<Link href="/login/find-id-password">아이디 찾기</Link>
+							<Link href="/find-id-password">아이디 찾기</Link>
 							<div className="w-[1px] bg-[#ccc]"></div>
 							<button>비밀번호 찾기</button>
 						</div>
@@ -66,7 +66,9 @@ const login = () => {
 					<div className="mt-[50px]">
 						<p className="text-gray_400">회원이 아니시라면?</p>
 						<div className="mt-[10px]">
-							<LargeBorderButton text="회원가입" />
+							<Link href="/signup">
+								<LargeBorderButton text="회원가입" />
+							</Link>
 						</div>
 					</div>
 				</div>
@@ -75,4 +77,4 @@ const login = () => {
 	);
 };
 
-export default login;
+export default Login;
