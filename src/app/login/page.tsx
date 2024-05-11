@@ -1,7 +1,7 @@
 "use client";
 import ColorButton from "@/components/buttons/ColorButton";
 import LargeBorderButton from "@/components/buttons/LargeBorderButton";
-import InputForm from "@/components/Input/InputForm";
+import InputForm from "@/components/input/InputForm";
 import Link from "next/link";
 import { useState } from "react";
 import { AiTwotoneNotification } from "react-icons/ai";
