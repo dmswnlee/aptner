@@ -2,10 +2,7 @@ import Image from "next/image";
 export default function ApartDetailPage() {
   return (
     <>
-      <div className="mt-[239px]">
-        <p className="text-[42px] font-semibold ml-1">아파트 소개</p>
-      </div>
-      <div className="mt-5 flex flex-col items-center">
+      <div className="flex flex-col items-center">
         <Image
           src="/"
           alt="아파트소개"
@@ -14,7 +11,7 @@ export default function ApartDetailPage() {
           className="border-2"
         />
 
-        <div className="mt-[82px] mb-[43px] flex flex-col items-center gap-9">
+        <div className="mt-[60px] mb-[43px] flex flex-col items-center gap-9">
           <p className="font-semibold mb-auto text-[36px] leading-[18px]">
             매일 만나는 경이로운 한강의 풍경
           </p>
@@ -37,7 +34,7 @@ export default function ApartDetailPage() {
           className="border-2"
         />
 
-        <div className="w-[1040px] h-[635px] mt-[129px] mb-[273px] flex">
+        <div className="w-[1040px] h-[635px] mt-[60px] mb-[273px] flex">
           <div className="ml-[35px]">
             <Image
               src="/"
