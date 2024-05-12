@@ -1,9 +1,9 @@
-import ApartmentForm from './_component/ApartmentForm';
-import CheckAgreement from './_component/CheckAgreement';
-import IdentityVerification from './_component/IdentityVerification';
-import NoAuthSignUp from './_component/NoAuthSignUp';
-import SignUpForm from './_component/SignUpForm';
-import SignUpSuccess from './_component/SignUpSuccess';
+import ApartmentForm from "./_component/ApartmentForm";
+import CheckAgreement from "./_component/CheckAgreement";
+import IdentityVerification from "./_component/IdentityVerification";
+import NoAuthSignUp from "./_component/NoAuthSignUp";
+import SignUpForm from "./_component/SignUpForm";
+import SignUpSuccess from "./_component/SignUpSuccess";
 
 const SignUp = () => {
 	return (
