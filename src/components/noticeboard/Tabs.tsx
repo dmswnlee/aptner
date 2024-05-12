@@ -18,7 +18,7 @@ const Tabs = ({ tabs }: TabsProps) => {
 	};
 
 	return (
-		<div className="w-full h-[60px] mb-[50px] text-center flex items-center text-[#8B8B8B] gap-[50px]">
+		<div className="w-full h-[60px] text-center flex items-center text-[#8B8B8B] gap-[50px]">
 			{tabs.map(tab => (
 				<div
 					key={tab.name}
