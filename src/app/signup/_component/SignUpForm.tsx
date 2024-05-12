@@ -17,7 +17,9 @@ const SignUpForm = () => {
 					</div>
 					<div className="flex">
 						<TitleInput title="아이디" size="lg" message="6글자 이상의 영문, 숫자, _만 입력할 수 있습니다." />
-						<SmallBorderButton text="중복확인" />
+						<div className="ml-4">
+							<SmallBorderButton text="중복확인" size="sm" />
+						</div>
 					</div>
 					<TitleInput title="비밀번호" size="lg" />
 					<TitleInput
