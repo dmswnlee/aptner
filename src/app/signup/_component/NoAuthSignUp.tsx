@@ -1,5 +1,5 @@
 import ColorButton from "@/components/buttons/ColorButton";
-import SmallBorderButton from '@/components/buttons/SmallBorderButton';
+import SmallBorderButton from "@/components/buttons/SmallBorderButton";
 import TitleInput from "@/components/input/TitleInput";
 
 const NoAuthSignUp = () => {
@@ -15,7 +15,7 @@ const NoAuthSignUp = () => {
 					<TitleInput title="이름" size="lg" />
 					<div className="flex gap-4">
 						<TitleInput title="휴대폰 번호" size="lg" placeholder="-없이 입력" />
-						<SmallBorderButton text="인증번호 요청" />
+						<SmallBorderButton text="인증번호 요청" size="sm" />
 					</div>
 				</div>
 				<div className="flex justify-center">
