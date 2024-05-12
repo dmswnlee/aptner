@@ -1,6 +1,6 @@
 const Posts = () => {
   return (
-    <div className="w-full max-h-[960px] border border-solid mb-[60px] border-t-[#778AA5]">
+    <div className="w-full max-h-[960px] border border-solid border-t-[#778AA5]">
       <div className="grid grid-cols-[112px,629px,96px,120px,123px] border border-solid">
         {/* Header */}
         <div className="border border-solid p-[16px] text-center">분류</div>
