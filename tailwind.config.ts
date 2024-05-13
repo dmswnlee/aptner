@@ -30,6 +30,7 @@ const config: Config = {
 				gray_400: "#858E96",
 				gray_600: "#777777",
 				gray_800: "#333333",
+				boardtab:"#778AA5"
 			},
 		},
 	},

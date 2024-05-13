@@ -5,6 +5,7 @@ interface ButtonProps {
   width?: string;
   onSubmit?: () => void;
   className?: string;
+  onClick?: () => void;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -12,13 +13,15 @@ const Button: React.FC<ButtonProps> = ({
   text = "",
   width = "",
   onSubmit,
+  onClick,
   ...props
 }) => {
   return (
     <button
       className={`rounded-md border-[1px] ${className}`}
       style={{ width }}
-      onClick={onSubmit}
+      onSubmit={onSubmit}
+      onClick={onClick}
       {...props}
     >
       {text}
