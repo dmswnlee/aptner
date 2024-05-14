@@ -18,7 +18,7 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   return (
     <button
-      className={`rounded-md border-[1px] ${className}`}
+      className={`rounded-[5px] border-[1px] ${className}`}
       style={{ width }}
       onSubmit={onSubmit}
       onClick={onClick}

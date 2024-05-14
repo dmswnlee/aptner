@@ -29,8 +29,8 @@ export default function Board({ options }: BoardProps) {
   };
 
   return (
-    <div className="flex flex-col">
-      <div className="relative ml-[42.5px]">
+    <div className="flex flex-col relative">
+      <div className=" ml-[42.5px]">
         <button
           className="py-[15px] px-4 text-left flex items-center gap-[10px]"
           onClick={toggleDropdown}
@@ -39,7 +39,10 @@ export default function Board({ options }: BoardProps) {
           <IoIosArrowDown />
         </button>
         {isOpen && (
-          <ul className="absolute w-[76px] bg-white border border-gray-300 mt-1 rounded-md">
+          <ul
+            className="absolute w-[154px] px-5 py-2 left-0 ml-[11px] mt-[-10px] bg-white border rounded-sm"
+            style={{ boxShadow: "0px 3px 8px 0px rgba(0, 0, 0, 0.24)" }}
+          >
             {options.map((option, index) => (
               <li
                 key={index}
