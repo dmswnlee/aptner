@@ -14,7 +14,7 @@ const Searchbar = () => {
         </div>
         <Link href="/login" className="text-xs text-white mr-2">로그인</Link>
         <span className="text-white mx-2">|</span>
-        <Link href="/join" className="text-xs text-white ml-2">회원가입</Link>
+        <Link href="/signup" className="text-xs text-white ml-2">회원가입</Link>
       </div>
     </div>
   );
