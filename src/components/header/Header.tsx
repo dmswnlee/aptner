@@ -11,18 +11,20 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   
   return (
-    <div className="flex-column">
+    <div className="flex-column w-full">
       <div className="flex justify-center items-center h-[80px] bg-theme">
-        <div className="flex justify-center items-center ml-[500px]">
-          <Link href="/">
-            <Image src={logo} alt="Logo" className="w-[167px] h-[27px]" /> 
-          </Link>
+        <div className="flex w-[1080px] items-center h-full">
+          <div className="flex justify-center items-center ml-[456px]">
+            <Link href="/">
+              <Image src={logo} alt="Logo" className="w-[168px] h-[27px]" /> 
+            </Link>
+          </div>
+          {isLoggedIn && (<div className="ml-[337px] w-[119px]">
+            <Link href="/login" className=" text-white">로그인</Link>
+            <span className="text-white mx-2">|</span>
+            <Link href="/join" className=" text-white">회원가입</Link>
+          </div>)}
         </div>
-        {isLoggedIn && (<div className="ml-[400px]">
-          <Link href="/login" className="text-xs text-white mr-2">로그인</Link>
-          <span className="text-white mx-2">|</span>
-          <Link href="/join" className="text-xs text-white ml-2">회원가입</Link>
-        </div>)}
       </div>
       <Navbar />
     </div>
