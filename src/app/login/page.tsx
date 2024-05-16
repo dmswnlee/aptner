@@ -18,10 +18,10 @@ const Login = () => {
 	};
 
 	return (
-		<div className="mt-[178px] flex justify-center">
+		<div className="mt-12 flex justify-center">
 			<div className="w-[1080px] flex flex-col items-center">
-				<div className="w-full px-[24px] mb-[100px] border-solid border-b-2 border-[#222222]">
-					<h2 className="text-4xl font-semibold pb-[16px]">로그인</h2>
+				<div className="w-full px-[24px] mb-[100px]">
+					<h2 className="text-2xl font-semibold pb-[16px]">로그인</h2>
 				</div>
 				<div className="w-[430px] h-full flex flex-col justify-center items-center gap-[10px]">
 					<InputForm type="email" placeholder="아이디 입력" onChange={handleChange} />
