@@ -1,61 +1,48 @@
+// 네이버 지도 API를 위한 타입 정의
 declare global {
-    namespace naver.maps {
-      class LatLng {
-        constructor(lat: number, lng: number);
-        lat(): number;
-        lng(): number;
-      }
+    interface Window {
+      naver: any;
+    }
+    
+    namespace naver {
+      namespace maps {
+        class Map {
+          constructor(element: HTMLElement, options: MapOptions);
+          setCenter(center: LatLng): void;
+        }
   
-      class Map {
-        constructor(element: HTMLElement | string, options: MapOptions);
-      }
+        class LatLng {
+          constructor(lat: number, lng: number);
+        }
   
-      interface MapOptions {
-        center: LatLng;
-        zoom: number;
-      }
+        class Marker {
+          constructor(options: MarkerOptions);
+          setMap(map: Map | null): void;
+        }
   
-      class Marker {
-        constructor(options: MarkerOptions);
-      }
+        interface MapOptions {
+          center: LatLng;
+          zoom: number;
+        }
   
-      interface MarkerOptions {
-        position: LatLng;
-        map: Map;
-      }
+        interface MarkerOptions {
+          position: LatLng;
+          map?: Map;
+        }
   
-      namespace Service {
-        function geocode(
-          options: GeocodeOptions,
-          callback: (status: Service.Status, response: GeocodeResponse) => void
-        ): void;
+        namespace services {
+          class Geocoder {
+            addressSearch(address: string, callback: (result: GeocodeResult[], status: string) => void): void;
+          }
   
-        enum Status {
-          OK = 'OK',
-          ERROR = 'ERROR',
+          interface GeocodeResult {
+            x: number;
+            y: number;
+          }
         }
       }
-  
-      interface GeocodeOptions {
-        query: string;
-      }
-  
-      interface GeocodeResponse {
-        v2: {
-          addresses: GeocodeAddress[];
-        };
-      }
-  
-      interface GeocodeAddress {
-        y: string;
-        x: string;
-      }
-    }
-  
-    interface Window {
-      naver: typeof naver;
     }
   }
   
-  export {};
+  export {}; // 필요한 경우
   

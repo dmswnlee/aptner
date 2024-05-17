@@ -1,102 +1,50 @@
 "use client";
 import { useEffect } from "react";
 
-declare global {
-  interface Window {
-    naver: typeof naver;
-  }
-}
-
 export default function ApartMapPage() {
   useEffect(() => {
-    const scriptId = "naver-maps-script";
+    const script = document.createElement("script");
+    script.src =
+      "https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=m07lxsg40e&submodules=geocoder";
+    script.onload = () => {
+      if (window.naver && window.naver.maps) {
+        // 지도 생성 시 기본 설정 (초기 중심 좌표는 임시로 설정, 나중에 변경)
+        const mapContainer = document.getElementById("map") as HTMLElement;
+        const map = new naver.maps.Map(mapContainer, {
+          center: new naver.maps.LatLng(37.3595704, 127.105399),
+          zoom: 10,
+        });
 
-    const loadNavermapsScript = () => {
-      if (document.getElementById(scriptId)) {
-        // 스크립트가 이미 로드되어 있으면 추가 로드 방지
-        if (window.naver && window.naver.maps && window.naver.maps.Service) {
-          geocodeAddress();
-        } else {
-          console.error(
-            "Naver Maps API is loaded but the map service is not available."
-          );
-        }
-        return;
-      }
+        // 주소를 위도, 경도로 변환
+        const geocoder = new naver.maps.services.Geocoder();
+        geocoder.addressSearch("서울 서초구 잠원로 117", (results, status) => {
+          if (status === "OK" && results[0]) {
+            const result = results[0];
+            const coords = new naver.maps.LatLng(result.y, result.x);
 
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.src =
-        "https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=m07lxsg40e&submodules=geocoder";
-      script.async = true;
-      script.onerror = () => console.error("Script load error.");
-      script.onload = () => {
-        if (window.naver && window.naver.maps && window.naver.maps.Service) {
-          geocodeAddress();
-        } else {
-          console.error("Naver Maps Service failed to initialize.");
-        }
-      };
-      document.head.appendChild(script);
-    };
+            // 마커 생성 및 지도에 추가
+            new naver.maps.Marker({
+              map: map,
+              position: coords,
+            });
 
-    const geocodeAddress = () => {
-      if (window.naver && window.naver.maps && window.naver.maps.Service) {
-        window.naver.maps.Service.geocode(
-          {
-            query: "서울 서초구 잠원로 117",
-          },
-          (
-            status: naver.maps.Service.Status,
-            response: naver.maps.GeocodeResponse
-          ) => {
-            if (
-              status === naver.maps.Service.Status.OK &&
-              response.v2.addresses.length > 0
-            ) {
-              const item = response.v2.addresses[0];
-              const center = new window.naver.maps.LatLng(
-                parseFloat(item.y),
-                parseFloat(item.x)
-              );
-              initializeNaverMap(center);
-            } else {
-              console.error("Geocode Error:", status, response);
-            }
+            // 지도의 중심을 마커 위치로 이동
+            map.setCenter(coords);
+            map.setZoom(15); // 마커를 중심으로 상세하게 확대
+          } else {
+            console.error("Geocode Error:", status);
           }
-        );
-      } else {
-        console.error("Naver Maps API is not available.");
+        });
       }
     };
-
-    const initializeNaverMap = (center: naver.maps.LatLng) => {
-      const map = new window.naver.maps.Map("map", {
-        center,
-        zoom: 15,
-      });
-
-      new window.naver.maps.Marker({
-        position: center,
-        map,
-      });
-    };
-
-    loadNavermapsScript();
-
-    return () => {
-      const script = document.getElementById(scriptId);
-      if (script) {
-        document.head.removeChild(script);
-      }
-    };
+    document.head.appendChild(script);
   }, []);
 
   return (
     <>
       <div className="mt-[15px] w-[1040px] mx-auto">
         <div id="map" className="border-2 h-[548px]">
-          아파트지도
+          네이버 지도 로딩 중...
         </div>
         <ul className="mt-10 gap-3 flex flex-col">
           <li>주소</li>
