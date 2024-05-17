@@ -36,6 +36,10 @@ const List = ({ ListTitle, data, detailPath }: ListProps) => {
 										<Link href={`${detailPath}/${item.id}`} className="hover:underline">
 											{item[list.key]}
 										</Link>
+									) : list.key === "category" ? (
+										<span className={item.isPin ? "text-red-500" : ""}>
+											{item.isPin ? "중요글" : item.category}
+										</span>
 									) : (
 										item[list.key]
 									)}
