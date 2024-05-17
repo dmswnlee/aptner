@@ -18,7 +18,6 @@ export default function RootLayout({
         <MSWComponent />
         <Header />
         <main>{children}</main>
-        <Footer />
       </body>
     </html>
   );

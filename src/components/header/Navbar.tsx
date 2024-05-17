@@ -31,7 +31,7 @@ const Navbar = () => {
         <Search />
       </div>
       {isModalOpen && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-10">
           <div className="bg-white w-[900px] h-[449px] p-8 rounded-lg relative flex flex-col items-center justify-center">
             <button className="absolute top-[15px] right-[15px] text-black" onClick={toggleModal}>
               <FaTimes className="text-4xl"/>
