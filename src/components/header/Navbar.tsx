@@ -25,7 +25,7 @@ const Navbar = () => {
             <Link href="/notice" className="text-charcoal">공지사항</Link>
             <Link href="/disclosure" className="text-charcoal">의무공개</Link>
             <Link href="/communication" className="text-charcoal">소통공간</Link>
-            <Link href="/complaints" className="text-charcoal">민원게시판</Link>
+            <Link href="/complaint" className="text-charcoal">민원게시판</Link>
           </div>
         </div>
         <Search />

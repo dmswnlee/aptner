@@ -17,6 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 				<ReduxProvider>
 					<main>{children}</main>
 				</ReduxProvider>
+        <Footer />
 			</body>
 		</html>
 	);
