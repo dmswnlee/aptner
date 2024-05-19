@@ -61,7 +61,7 @@ const DisclosureDetail = () => {
 					목록
 				</button>
 			</div>
-			<Comment />
+			<Comment initialComments={[]} author="관리사무소" />
 		</div>
 	);
 };

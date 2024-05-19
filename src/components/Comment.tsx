@@ -2,6 +2,7 @@ import React, { ChangeEvent, useState } from 'react';
 import { FaRegCommentDots } from "react-icons/fa6";
 import { AiOutlinePicture } from "react-icons/ai";
 import SmallBorderButton from "@/components/buttons/SmallBorderButton";
+import Modal from './modal/Modal';
 
 interface ButtonGroupProps {
   onEdit: () => void;
@@ -28,28 +29,31 @@ interface CommentType {
   replies: any[];
 }
 
-const Comment = () => {
-  const [comments, setComments] = useState<CommentType[]>([
-    {
-      id: 1,
-      author: '관리사무소',
-      date: '2024.05.06 12:24:50',
-      content: '감사합니다!',
-      replies: []
-    }
-  ]);
+interface CommentProps {
+  initialComments: CommentType[];
+  author: string;
+}
+
+const Comment = ({ initialComments, author }: CommentProps) => {
+  const [comments, setComments] = useState<CommentType[]>(initialComments);
   const [newComment, setNewComment] = useState<string>('');
   const [charCount, setCharCount] = useState<number>(0);
   const [image, setImage] = useState<File | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingContent, setEditingContent] = useState<string>('');
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
+
+  const getCurrentDateTime = () => {
+    return new Date().toLocaleString('ko-KR', { hour12: false });
+  };
 
   const handleAddComment = () => {
     if (newComment.trim()) {
       const newCommentObj: CommentType = {
         id: comments.length + 1,
-        author: '관리사무소',
-        date: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        author: author,
+        date:getCurrentDateTime(),
         content: newComment,
         replies: []
       };
@@ -61,8 +65,17 @@ const Comment = () => {
   };
 
   const handleDeleteComment = (id: number) => {
-    const updatedComments = comments.filter(comment => comment.id !== id);
-    setComments(updatedComments);
+    setShowModal(true);
+    setCommentToDelete(id);
+  };
+
+  const confirmDeleteComment = () => {
+    if (commentToDelete !== null) {
+      const updatedComments = comments.filter(comment => comment.id !== commentToDelete);
+      setComments(updatedComments);
+      setShowModal(false);
+      setCommentToDelete(null);
+    }
   };
 
   const handleEditComment = (id: number) => {
@@ -101,6 +114,13 @@ const Comment = () => {
 
   return (
     <div className='mb-5'>
+      {showModal && (
+        <Modal 
+          text="정말로 삭제하시겠습니까?"
+          onConfirm={confirmDeleteComment}
+          onCancel={() => setShowModal(false)}
+        />
+      )}
       <div className="pb-8 border-b border-solid border-gray-[#dddddd]">
         <div className="flex items-center gap-3 text-xl">
           <FaRegCommentDots />
@@ -116,7 +136,7 @@ const Comment = () => {
                   <p className="w-10 h-10 flex justify-center items-center rounded-[5px] bg-[#D9F2FE]">UI</p>
                   <div className="flex flex-col gap-2">
                     <div className="flex gap-1">
-                      <p>관리사무소</p>
+                      <p>{author}</p>
                     </div>
                   </div>
                 </div>
@@ -164,11 +184,11 @@ const Comment = () => {
         ))}
       </div>
       <div>
-        <div className="flex items-center gap-3 p-2 rounded-[5px]">
+        <div className="flex items-center gap-3 p-2 rounded-[5px] mt-5">
           <p className="w-10 h-10 flex justify-center items-center rounded-[5px] bg-[#D9F2FE]">UI</p>
           <div className="flex flex-col gap-2">
             <div className="flex gap-1">
-              <p>관리사무소</p>
+              <p>{author}</p>
             </div>
           </div>
         </div>
