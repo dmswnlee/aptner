@@ -2,8 +2,8 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#f7f7f7] py-4 fixed bottom-0 w-full">
-      <div className="w-[800px] container mx-auto">
+    <footer className="bg-[#f7f7f7] h-[90px] py-4 w-full">
+      <div className="w-[1080px] container mx-auto">
         <div className="flex mb-2 text-[9px] items-center">
           <Link href="/terms" className="text-[9px] text-gray-400">이용약관</Link>
           <span className="text-gray-300 mx-2">|</span>
@@ -18,10 +18,10 @@ const Footer = () => {
           <Link href="/apartner" className="text-[9px] text-gray-400">APTNER</Link>
         </div>
         <div className="">
-          <p className="text-[9px] text-gray-300">
+          <p className="text-[11px] text-gray-300">
             문의 1600-3123 <span className="mx-2">|</span> 팩스 02-6008-6879 <span className="mx-2">|</span> 서비스문의{" "}
             <a href="mailto:help@aptner.com" className="text-gray-300">help@aptner.com</a> 
-            <span className="ml-5">Copyright Aptner Inc. All right reserved</span>
+            <span className="ml-5 ">Copyright Aptner Inc. All right reserved</span>
           </p>
         </div>
       </div>
