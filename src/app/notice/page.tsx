@@ -2,8 +2,14 @@
 import List from "@/components/List";
 import NoticeDetail from "./_component/NoticeDetail";
 import NoticeMain from "./_component/NoticeMain";
-import { noticeData } from "@/mocks/data/notice";
-import Tabs from '@/components/noticeboard/Tabs';
+import { notices } from "@/mocks/data/notice";
+import Tabs from "@/components/noticeboard/Tabs";
+import type { PaginationProps } from "antd";
+import { Pagination } from "antd";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/stores/store';
+import { fetchNotices } from '@/stores/slice/noticesSlice';
 
 const Notice = () => {
 	const tabs = [
@@ -24,12 +30,27 @@ const Notice = () => {
 		{ key: "date", header: "등록일", width: "w-[123px]" },
 	];
 
+	const [current, setCurrent] = useState(1);
+	const handleChange: PaginationProps["onChange"] = page => {
+		console.log(page);
+	};
+	
+	const dispatch = useDispatch();
+  const notices = useSelector((state: RootState) => state.notices.notices);
+
+  useEffect(() => {
+    dispatch(fetchNotices());
+  }, [dispatch]);
+
 	return (
 		<div className="mt-12 flex justify-center">
 			<div className="w-[1080px] flex flex-col gap-10">
 				<h2 className="text-2xl">공지사항</h2>
 				<Tabs tabs={tabs} />
-				<List ListTitle={ListTitle} data={noticeData} detailPath="/detail" />
+				<List ListTitle={ListTitle} data={notices} detailPath="/detail" />
+				<div className="flex justify-center p-5">
+					<Pagination current={current} onChange={handleChange} total={50} />
+				</div>
 			</div>
 		</div>
 	);

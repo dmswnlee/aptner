@@ -1,9 +1,8 @@
-import { http, HttpResponse } from 'msw'
-import ResponseUser from './data/ResponseUser';
+import { http, HttpResponse } from "msw";
+import { notices } from "./data/notice";
 
 export const handlers = [
-  http.get("/api/user", () => {
-		return HttpResponse.json(ResponseUser);
-	}),
-]
-
+	http.get("/api/notices", () => {
+		return HttpResponse.json(notices);
+	})
+];
