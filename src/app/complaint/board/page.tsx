@@ -1,4 +1,4 @@
-import Board from "@/components/noticeboard/Board";
+import Board from "@/components/board/Board";
 
 export default function BoardPage() {
   const options = [{ label: "일반글" }, { label: "비밀글" }];

@@ -1,4 +1,3 @@
-import UserPost from "./_component/UserPost";
 import Posts from "./_component/posts";
 
 export default function ComplaintPage() {

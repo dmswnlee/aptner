@@ -14,7 +14,7 @@ export default function TabBar() {
   };
 
   return (
-    <div className="w-[1155px] mx-auto border-b-2 text-gray_07 h-[60px] text-xl font-semibold mt-[80px] mb-[60px] flex items-center justify-between">
+    <div className="mx-auto border-b-2 text-gray_07 h-[60px] text-xl font-semibold mt-6 mb-[60px] flex items-center justify-between">
       <Link
         href="/apartdetailpage"
         className={`h-full w-[90px] justify-center flex items-center ${isActive("/apartdetailpage")}`}
