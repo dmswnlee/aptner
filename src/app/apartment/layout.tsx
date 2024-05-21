@@ -10,6 +10,7 @@ export default function ApartDetailPageLayout({
   children: React.ReactNode;
 }) {
   return (
+<<<<<<< HEAD:src/app/apartdetailpage/layout.tsx
     <div className="w-[1080px] flex mx-auto">
       <div>
         <div className="mt-12 mb-[80px] w-[1080px] mx-auto">
@@ -17,6 +18,11 @@ export default function ApartDetailPageLayout({
           <TabBar />
         </div>
         <main>{children}</main>
+=======
+    <div>
+      <div className="mt-12 w-[1080px] mx-auto">
+        <p className="text-[24px] font-bold leading-[18px]">아파트 소개</p>
+>>>>>>> develop:src/app/apartment/layout.tsx
       </div>
       <Menu />
     </div>
