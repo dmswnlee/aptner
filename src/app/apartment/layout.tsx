@@ -10,7 +10,7 @@ export default function ApartDetailPageLayout({
 }) {
   return (
     <div>
-      <div className="mt-[220px] mb-[80px] w-[1080px] mx-auto">
+      <div className="mt-12 w-[1080px] mx-auto">
         <p className="text-[24px] font-bold leading-[18px]">아파트 소개</p>
       </div>
       <TabBar />
