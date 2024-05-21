@@ -1,7 +1,14 @@
 import LargeBorderButton from "@/components/buttons/LargeBorderButton";
 import InputForm from "@/components/input/InputForm";
+import { nextStep } from "@/stores/slice/registrationSlice";
+import { useDispatch } from "react-redux";
 
 const ApartmentForm = () => {
+	const dispatch = useDispatch();
+
+	const handleNext = () => {
+		dispatch(nextStep());
+	};
 
 	return (
 		<div className="flex justify-center">
@@ -14,11 +21,11 @@ const ApartmentForm = () => {
 						<p>아파트너 서비스를 이용할 수 있습니다.</p>
 					</div>
 					<InputForm type="text" placeholder="닉네임 입력" />
-          <InputForm type="text" placeholder="아파트 동 입력" />
-          <InputForm type="text" placeholder="아파트 호 입력" />
+					<InputForm type="text" placeholder="아파트 동 입력" />
+					<InputForm type="text" placeholder="아파트 호 입력" />
 				</div>
 				<div className="flex justify-center">
-					<LargeBorderButton text="다음" />
+					<LargeBorderButton text="다음" onClick={handleNext} />
 				</div>
 			</div>
 		</div>
