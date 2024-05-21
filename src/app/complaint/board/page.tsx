@@ -1,7 +1,12 @@
 import Board from "@/components/board/Board";
 
 export default function BoardPage() {
-  const options = [{ label: "일반글" }, { label: "비밀글" }];
+  const options = [
+    { label: "하자/보수" },
+    { label: "관리업체 및 사업자선정" },
+    { label: "시설 관리" },
+    { label: "입대위" },
+  ];
 
   return (
     <div className="mt-[70px] w-[1080px] mx-auto">

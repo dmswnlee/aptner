@@ -2,4 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+#toolbar {
+    border-color: #eaeaea;
+}
+#toolbar .ql-font {
+    width: 130px;
+}
+#toolbar .ql-size {
+    width: 50px;
+}
+
+.ql-container {
+    border-radius: 5px !important;
+    border-color: #eaeaea !important;
+}
+
 

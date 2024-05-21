@@ -4,6 +4,7 @@ import Button from "@/components/buttons/Button";
 import { useRouter } from "next/navigation";
 import { GoFileDirectory } from "react-icons/go";
 import { IoIosArrowDown } from "react-icons/io";
+import QuillEditor from "./QuillEditor";
 
 interface Option {
   label: string;
@@ -29,52 +30,59 @@ export default function Board({ options }: BoardProps) {
   };
 
   return (
-    <div className="flex flex-col relative">
-      <div className=" ml-[42.5px]">
-        <button
-          className="py-[15px] px-4 text-left flex items-center gap-[10px]"
-          onClick={toggleDropdown}
-        >
-          {selectedOption}
-          <IoIosArrowDown />
-        </button>
-        {isOpen && (
-          <ul
-            className="absolute w-[154px] px-5 py-2 left-0 ml-[11px] mt-[-10px] bg-white border rounded-sm"
-            style={{ boxShadow: "0px 3px 8px 0px rgba(0, 0, 0, 0.24)" }}
+    <>
+      <div className="flex flex-col relative border rounded-[5px] p-5 border-gray_05">
+        <div>
+          <button
+            className="pb-[15px] text-left flex items-center gap-[10px]"
+            onClick={toggleDropdown}
           >
-            {options.map((option, index) => (
-              <li
-                key={index}
-                className="py-1 px-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => selectOption(option.label)}
-              >
-                {option.label}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <input
-        className="mx-[22px] px-[30px] py-[15px] rounded-[5px] bg-gray_00 border text-[20px] placeholder:text-[16px] focus:border-blue_05 focus:text-blue_05 outline-blue_05 leading-[18px]"
-        type="text"
-        placeholder="제목을 입력하세요"
-      />
-      <label className="w-[100px]">
-        <span className="sr-only">파일 첨부하기</span>
-        <input type="file" className="hidden" />
-        <div className="flex items-center cursor-pointer mx-5 mt-4 p-[11px] w-[145px] border rounded-[5px] shadow-sm leading-normal font-normal text-gray_07">
-          <GoFileDirectory className="mr-2" />
-          파일 첨부하기
+            {selectedOption}
+            <IoIosArrowDown />
+          </button>
+          {isOpen && (
+            <ul
+              className="absolute px-5 py-2 left-0 ml-[11px] mt-[-10px] bg-white border rounded-sm"
+              style={{ boxShadow: "0px 3px 8px 0px rgba(0, 0, 0, 0.24)" }}
+            >
+              {options.map((option, index) => (
+                <li
+                  key={index}
+                  className="py-1 px-2 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => selectOption(option.label)}
+                >
+                  {option.label}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-      </label>
 
-      <div className="border w-full my-6"></div>
-      <textarea
-        className="border mx-[22px] h-[278px] resize-none px-6 py-4 bg-gray_00 border-gray-300 rounded-[5px] focus:border-blue_05 focus:text-blue_05 outline-blue_05 focus:ring-opacity-50"
-        placeholder="내용을 입력하세요."
-      ></textarea>
+        <input
+          className="px-[30px] py-[15px] rounded-[5px] bg-gray_00 border text-[16px] placeholder:text-[16px] focus:border-gray_05 outline-gray_05 leading-[18px]"
+          type="text"
+          placeholder="제목을 입력하세요"
+        />
+        <label className="w-[100px]">
+          <span className="sr-only">파일 첨부하기</span>
+          <input type="file" className="hidden" />
+          <div className="flex items-center font-[16px] cursor-pointer mt-4 p-[11px] w-[145px] border rounded-[5px] shadow-sm leading-normal text-[#222]">
+            <GoFileDirectory className="mr-2" />
+            파일 첨부하기
+          </div>
+        </label>
+
+        <div className="border-t mt-4 text-center font-[16px] leading-[18px] text-[#222]">
+          <p className="mt-4 mb-[18px]">
+            게시글 작성시 욕설, 비방, 허위사실 유포 등의 내용이 포함되어 있을
+            경우 명예훼손으로 법적 처벌이 이루어질 수 있습니다.
+            <br />
+            서로의 의견을 경청하고 존중해주시기 바랍니다.
+          </p>
+        </div>
+
+        <QuillEditor />
+      </div>
       <div className="flex justify-center mt-[39px] gap-4">
         <Button
           text="저장"
@@ -86,6 +94,6 @@ export default function Board({ options }: BoardProps) {
           onClick={handleCancel}
         />
       </div>
-    </div>
+    </>
   );
 }
