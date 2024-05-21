@@ -1,8 +1,16 @@
 import ColorButton from "@/components/buttons/ColorButton";
 import SmallBorderButton from "@/components/buttons/SmallBorderButton";
 import TitleInput from "@/components/input/TitleInput";
+import { nextStep } from '@/stores/slice/registrationSlice';
+import { useDispatch } from 'react-redux';
 
 const SignUpForm = () => {
+	const dispatch = useDispatch();
+
+	const handleNext = () => {
+    dispatch(nextStep());
+  };
+
 	return (
 		<div className="flex justify-center">
 			<div className="w-[720px] flex flex-col gap-10">
@@ -29,7 +37,7 @@ const SignUpForm = () => {
 					/>
 				</div>
 				<div className="flex justify-center">
-					<ColorButton text="다음" size="lg" />
+					<ColorButton text="다음" size="lg" onClick={handleNext} />
 				</div>
 			</div>
 		</div>
