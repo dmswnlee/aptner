@@ -1,10 +1,11 @@
 'use client'
 import { FaRegCommentDots } from "react-icons/fa6";
 import { GoFileDirectory } from "react-icons/go";
-import Comment from "@/components/Comment";
+import Comment from "@/components/comment/Comment";
 import { AiOutlinePicture } from "react-icons/ai";
 import ButtonGroup from "./ButtonGroup";
 import SmallBorderButton from "@/components/buttons/SmallBorderButton";
+import TestComment from "@/components/comment/TestComment";
 
 const DisclosureDetail = () => {
 	return (
