@@ -1,8 +1,10 @@
 import { combineReducers } from "redux";
-import termsReducer from "./slice/termsSlice";
+import noticesReducer from "./slice/noticesSlice";
+import registrationReducer from "./slice/registrationSlice";
 
 const rootReducer = combineReducers({
-	terms: termsReducer,
+	notices: noticesReducer,
+	registration: registrationReducer,
 });
 
 export default rootReducer;

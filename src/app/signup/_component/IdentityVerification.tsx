@@ -3,12 +3,20 @@ import TitleInput from "@/components/input/TitleInput";
 import RadioForm from "./RadioForm";
 import SmallBorderButton from "@/components/buttons/SmallBorderButton";
 import { FaArrowRight } from "react-icons/fa6";
+import { useDispatch } from 'react-redux';
+import { nextStep } from '@/stores/slice/registrationSlice';
 
 const buttonStyle = "w-[82px] h-[48px] text-gray_06 border border-solid border-gray_06 bg-gray_00";
 const inputStyle =
 	"outline-none border border-solid border-gray_06 px-[30px] py-[15px] rounded-[5px] focus:border-blue_05 focus:text-blue_05 bg-gray_00";
 
 const IdentityVerification = () => {
+	const dispatch = useDispatch();
+
+	const handleNext = () => {
+    dispatch(nextStep());
+  };
+
 	return (
 		<div className="flex justify-center">
 			<div className="w-[720px] flex flex-col gap-10">
@@ -56,7 +64,7 @@ const IdentityVerification = () => {
 					</div>
 				</div>
 				<div className="flex justify-center">
-					<ColorButton text="다음" size="lg" />
+					<ColorButton text="다음" size="lg" onClick={handleNext}/>
 				</div>
 			</div>
 		</div>
