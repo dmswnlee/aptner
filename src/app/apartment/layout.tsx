@@ -1,3 +1,4 @@
+import Menu from "@/components/menu/Menu";
 import TabBar from "./_component/TabBar";
 
 export const metadata = {
@@ -9,12 +10,15 @@ export default function ApartDetailPageLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
-      <div className="mt-12 w-[1080px] mx-auto">
-        <p className="text-[24px] font-bold leading-[18px]">아파트 소개</p>
+    <div className="w-[1080px] flex mx-auto">
+      <div>
+        <div className="mt-12 mb-[40px] w-[1080px] mx-auto">
+          <p className="text-[24px] font-bold leading-[18px]">아파트 소개</p>
+          <TabBar />
+        </div>
+        <main>{children}</main>
       </div>
-      <TabBar />
-      <main>{children}</main>
+      <Menu />
     </div>
   );
 }
