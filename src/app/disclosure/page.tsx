@@ -1,9 +1,15 @@
 "use client";
 import List from "@/components/List";
-import { noticeData } from "@/mocks/data/notice";
 import Tabs from '@/components/noticeboard/Tabs';
+import type { PaginationProps } from "antd";
+import { Pagination } from "antd";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/stores/store';
+import { fetchNotices } from '@/stores/slice/noticesSlice';
+import { fetchDisclosures } from "@/stores/slice/disclosuresSlice";
 
-const DisclosurePage = () => {
+const DisclosurePage = () => { 
 	const tabs = [
 		{ name: "all", label: "전체" },
 		{ name: "sharing", label: "관리비부과내역서" },
@@ -22,12 +28,27 @@ const DisclosurePage = () => {
 		{ key: "date", header: "등록일", width: "w-[123px]" },
 	];
 
+	const [current, setCurrent] = useState(1);
+	const handleChange: PaginationProps["onChange"] = page => {
+		console.log(page);
+	};
+	
+	const dispatch = useDispatch();
+  const disclosures = useSelector((state: RootState) => state.disclosures.disclosures);
+
+  useEffect(() => {
+    dispatch(fetchDisclosures());
+  }, [dispatch]); 
+
 	return (
-		<div className="mt-12 flex justify-center">
+		<div className="mt-12 flex justify-center"> 
 			<div className="w-[1080px] flex flex-col gap-10">
-				<h2 className="text-2xl">공지사항</h2>
+				<h2 className="text-2xl">의무공개</h2>
 				<Tabs tabs={tabs} />
-				<List ListTitle={ListTitle} data={noticeData} detailPath="/disclosure/detail" />
+				<List ListTitle={ListTitle} data={disclosures} detailPath="/detail" />
+				<div className="flex justify-center p-5">
+					<Pagination current={current} onChange={handleChange} total={50} />
+				</div>
 			</div>
 		</div>
 	);
