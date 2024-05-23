@@ -13,6 +13,12 @@ const Agreement = () => {
 	);
 	const { control, handleSubmit, setValue, watch } = useForm({
 		mode: "onChange",
+		defaultValues: {
+			service: false,
+			personalInfo: false,
+			marketing: false,
+			allChecked: false,
+		},
 	});
 
 	useEffect(() => {
