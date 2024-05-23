@@ -10,10 +10,6 @@ interface Term {
 
 interface TermsState {
 	termsInfoList: Term[];
-	service: boolean;
-	personalInfo: boolean;
-	marketing: boolean;
-	allChecked: boolean;
 	error: string | null;
 	loading: boolean;
 }
@@ -43,10 +39,6 @@ export interface RegistrationState {
 
 const initialTermsState: TermsState = {
 	termsInfoList: [],
-	service: false,
-	personalInfo: false,
-	marketing: false,
-	allChecked: false,
 	error: null,
 	loading: false,
 };
@@ -112,31 +104,6 @@ const registrationSlice = createSlice({
 			state.termsState.loading = false;
 			state.termsState.error = action.payload;
 		},
-		toggleService(state) {
-			state.termsState.service = !state.termsState.service;
-			state.termsState.allChecked =
-				state.termsState.service && state.termsState.personalInfo && state.termsState.marketing;
-			//updateErrorState(state.termsState);
-		},
-		togglePersonalInfo(state) {
-			state.termsState.personalInfo = !state.termsState.personalInfo;
-			state.termsState.allChecked =
-				state.termsState.service && state.termsState.personalInfo && state.termsState.marketing;
-			//updateErrorState(state.termsState);
-		},
-		toggleMarketing(state) {
-			state.termsState.marketing = !state.termsState.marketing;
-			state.termsState.allChecked =
-				state.termsState.service && state.termsState.personalInfo && state.termsState.marketing;
-		},
-		toggleAllChecked(state) {
-			const newValue = !state.termsState.allChecked;
-			state.termsState.allChecked = newValue;
-			state.termsState.service = newValue;
-			state.termsState.personalInfo = newValue;
-			state.termsState.marketing = newValue;
-			// updateErrorState(state.termsState);
-		},
 		reset(state) {
 			return initialState;
 		},
@@ -165,10 +132,6 @@ export const {
 	fetchTermsStart,
 	fetchTermsSuccess,
 	fetchTermsFailure,
-	toggleService,
-	togglePersonalInfo,
-	toggleMarketing,
-	toggleAllChecked,
 	reset,
 	submitRegistration,
 } = registrationSlice.actions;
