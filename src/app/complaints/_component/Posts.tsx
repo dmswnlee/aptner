@@ -47,7 +47,7 @@ const Posts = () => {
         <div className="border border-solid py-4 text-center">2024.05.07</div>
         <div className="border border-solid py-4 text-center">처리상태</div>
       </div>
-      <Link href="/complaint/board">
+      <Link href="/complaints/board">
         <Button
           text="글 작성"
           className="absolute right-0 mt-[30px] border-[#000] w-[108px] h-[40px] text-[14px]"

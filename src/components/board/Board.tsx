@@ -4,7 +4,7 @@ import Button from "@/components/buttons/Button";
 import { useRouter } from "next/navigation";
 import { GoFileDirectory } from "react-icons/go";
 import { IoIosArrowDown } from "react-icons/io";
-import QuillEditor from "./QuillEditor";
+import ToastEditor from "./ToastEditor";
 
 interface Option {
   label: string;
@@ -81,7 +81,7 @@ export default function Board({ options }: BoardProps) {
           </p>
         </div>
 
-        <QuillEditor />
+        <ToastEditor />
       </div>
       <div className="flex justify-center mt-[39px] gap-4">
         <Button
