@@ -49,7 +49,7 @@ const Agreement = () => {
 	return (
 		<div className="flex justify-center">
 			<div className="w-[720px] flex flex-col gap-10">
-				<div className="w-full border-solid border-b-2 border-[#222222]">
+				<div className="w-full border-solid border-b-2 border-[#000000]">
 					<h3 className="text-xl font-semibold py-[10px]">약관동의</h3>
 				</div>
 				<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
