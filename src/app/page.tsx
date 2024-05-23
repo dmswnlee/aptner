@@ -25,7 +25,7 @@ const Home = () => {
               차원이 다른 프리미엄으로 이야기합니다.
             </p>
           </div>
-          <div className="absolute top-[384px] flex gap-8 mt-8">
+          <div className="absolute top-[536px] flex gap-8 mt-8">
             <Link href="/visitReservation">
               <Image
                 src={visitReservation}
@@ -71,7 +71,6 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };
