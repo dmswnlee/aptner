@@ -6,6 +6,7 @@ import IdentityVerification from "./_component/IdentityVerification";
 import SignUpForm from "./_component/SignUpForm";
 import SignUpSuccess from "./_component/SignUpSuccess";
 import { RootState } from "@/stores/store";
+import NoAuthSignUp from './_component/NoAuthSignUp';
 
 const SignUp = () => {
 	const step = useSelector((state: RootState) => state.registration.step);

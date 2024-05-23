@@ -1,26 +1,136 @@
 import ColorButton from "@/components/buttons/ColorButton";
 import SmallBorderButton from "@/components/buttons/SmallBorderButton";
 import TitleInput from "@/components/input/TitleInput";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import {
+	inputErrorStyle,
+	inputStyle,
+	nameRegex,
+	phoneNumberRegex,
+	verificationCodeRegex,
+} from "./IdentityVerification";
+import { useDispatch } from 'react-redux';
+import { nextStep } from '@/stores/slice/registrationSlice';
 
 const NoAuthSignUp = () => {
+	const {
+		register,
+		handleSubmit,
+		formState: { errors, isValid },
+		setError,
+		clearErrors,
+		watch,
+	} = useForm({
+		mode: "onChange",
+	});
+
+	const [showVerificationInput, setShowVerificationInput] = useState(false);
+	const phoneNumberValue = watch("phoneNumber");
+	const dispatch = useDispatch();
+
+	const onSubmit = (data: any) => {
+		console.log(data);
+		dispatch(nextStep());
+	};
+
+	const getErrorMessage = (error: any) => {
+		if (error) {
+			if (error.message) {
+				return error.message;
+			}
+			if (typeof error === "string") {
+				return error;
+			}
+		}
+		return undefined;
+	};
+
+	const handleClickRequest = () => {
+		setShowVerificationInput(!showVerificationInput);
+		console.log("click!");
+	};
+
 	return (
 		<div className="flex justify-center">
-			<div className="w-[720px] flex flex-col gap-10">
-				<h3 className="text-2xl font-semibold">본인인증 없이 회원가입</h3>
+			<div className="w-[648px] flex flex-col gap-10">
+				<div className="border-b-2 border-solid border-[#000000] py-1">
+					<h3 className="text-2xl font-semibold">본인인증 없이 회원가입</h3>
+				</div>
 				<div className="text-sm text-[#777777]">
 					<p>휴대폰 본인인증이 불가능한 경우, 휴대폰 소유여부만 확인하고 회원가입을 할 수 있습니다.</p>
 					<p>단, 투표 시 모바일 전자투표 참여가 어려울 수 있습니다.</p>
 				</div>
-				<div className="flex flex-col gap-5">
-					<TitleInput title="이름" size="lg" />
-					<div className="flex gap-4">
-						<TitleInput title="휴대폰 번호" size="lg" placeholder="-없이 입력" />
-						<SmallBorderButton text="인증번호 요청" size="sm" />
+				<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+					<div className="flex gap-[10px]">
+						<p className="w-[120px] p-[10px]">이름</p>
+						<div className="flex flex-col gap-2">
+							<input
+								type="text"
+								placeholder="이름을 입력하세요"
+								className={`${inputStyle} ${errors.name ? inputErrorStyle : ""} w-[518px] h-[48px] px-[30px]`}
+								{...register("name", {
+									required: "이름은 필수 입력 항목입니다.",
+									pattern: {
+										value: nameRegex,
+										message: "이름은 한글만 입력 가능 하며, 2~6자 이내로 입력해 주세요.",
+									},
+								})}
+							/>
+							{errors.name && <p className="text-sm text-red-500">{getErrorMessage(errors.name)}</p>}
+						</div>
 					</div>
-				</div>
-				<div className="flex justify-center">
-					<ColorButton text="다음" size="lg" />
-				</div>
+					<div className="flex gap-[10px]">
+						<p className="w-[120px] p-[10px]">휴대폰 번호</p>
+						<div className="flex flex-col gap-2">
+							<input
+								type="text"
+								placeholder="-없이 입력"
+								className={`${inputStyle} ${
+									errors.phoneNumber ? inputErrorStyle : ""
+								} w-[386px] h-[48px] px-[30px]`}
+								{...register("phoneNumber", {
+									required: "휴대폰 번호는 필수 입력 항목입니다.",
+									pattern: {
+										value: phoneNumberRegex,
+										message: "휴대폰 번호를 형식에 맞게 입력해 주세요.",
+									},
+								})}
+							/>
+							{errors.phoneNumber && (
+								<p className="text-sm text-red-500">{getErrorMessage(errors.phoneNumber)}</p>
+							)}
+						</div>
+						<SmallBorderButton text="인증번호 요청" size="sm" onClick={handleClickRequest} />
+					</div>
+					{showVerificationInput && (
+						<div className="flex gap-[10px] mt-[16px] ml-[130px]">
+							<div className="flex flex-col gap-2">
+								<input
+									type="text"
+									placeholder="인증번호를 입력하세요"
+									className={`${inputStyle} ${
+										errors.verificationCode ? inputErrorStyle : ""
+									} w-[447px] h-[48px] px-[30px]`}
+									{...register("verificationCode", {
+										required: "인증번호는 필수 입력 항목입니다.",
+										pattern: {
+											value: verificationCodeRegex,
+											message: "인증번호를 형식에 맞게 입력해주세요.",
+										},
+									})}
+								/>
+								{errors.verificationCode && (
+									<p className="text-sm text-red-500">{getErrorMessage(errors.verificationCode)}</p>
+								)}
+							</div>
+							<SmallBorderButton text="확인" size="sm" />
+						</div>
+					)}
+					<div className="flex justify-center">
+						<ColorButton text="다음" size="lg" disabled={!isValid} />
+					</div>
+				</form>
 			</div>
 		</div>
 	);
