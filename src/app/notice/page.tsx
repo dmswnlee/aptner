@@ -18,7 +18,7 @@ const Notice = () => {
 		{ name: "construction", label: "공사안내" },
 		{ name: "management", label: "관리사무소" },
 		{ name: "representative", label: "입대위" },
-		{ name: "election-commission", label: "선관위" },
+		{ name: "election-commission", label: "선관위" }, 
 		{ name: "result", label: "회의 결과" },
 	];
 
@@ -40,7 +40,7 @@ const Notice = () => {
 
   useEffect(() => {
     dispatch(fetchNotices());
-  }, [dispatch]);
+  }, [dispatch]); 
 
 	return (
 		<div className="mt-12 flex justify-center">
