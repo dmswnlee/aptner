@@ -113,7 +113,7 @@ const Comment = ({ initialComments, author }: CommentProps) => {
         <Modal
           text="정말로 삭제하시겠습니까?"
           onConfirm={confirmDeleteComment}
-          onCancel={() => setShowModal(false)}
+          onClose={() => setShowModal(false)}
         />
       )}
       <div className="pb-8 border-b border-solid border-gray-[#dddddd]">
