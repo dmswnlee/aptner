@@ -22,7 +22,7 @@ const Tabs = ({ tabs }: TabsProps) => {
 			{tabs.map(tab => (
 				<div
 					key={tab.name}
-					className={`tab cursor-pointer w-[90px] h-[60px] flex items-center justify-center ${
+					className={`tab cursor-pointer min-w-[90px] h-[60px] flex items-center justify-center ${
 						activeTab === tab.name && "text-blue_05 border-b-2 border-solid border-blue_05"
 					}`}
 					onClick={() => handleTabClick(tab.name)}>
