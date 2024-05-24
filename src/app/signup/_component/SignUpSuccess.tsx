@@ -1,6 +1,13 @@
 import LargeBorderButton from "@/components/buttons/LargeBorderButton";
+import { useRouter } from 'next/navigation';
 
 const SignUpSuccess = () => {
+	const router = useRouter();
+
+	const handleLoginRedirect = () => {
+		router.push("/login");
+	};
+
 	return (
 		<div className="flex justify-center mt-[80px]">
 			<div className="w-[720px] flex flex-col gap-10">
@@ -14,7 +21,7 @@ const SignUpSuccess = () => {
 					</p>
 				</div>
 				<div className="flex justify-center">
-					<LargeBorderButton text="로그인하기" />
+					<LargeBorderButton text="로그인하러 가기" onClick={handleLoginRedirect} />
 				</div>
 			</div>
 		</div>
