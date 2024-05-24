@@ -18,7 +18,7 @@ const GalleryTab = ({ tabs, onTabChange }: TabsProps) => {
     setActiveTab(tabName);
     if (onTabChange) {
       onTabChange(tabName);
-    }
+    } 
   };
 
   return (
