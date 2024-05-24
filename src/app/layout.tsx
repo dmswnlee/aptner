@@ -7,12 +7,12 @@ import Footer from "@/components/Footer";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="ko">
-			<body>
+		<html lang="ko" className="h-full">
+			<body className="flex flex-col min-h-screen">
 				<MSWComponent />
 				<Header />
 				<ReduxProvider>
-					<main>{children}</main>
+					<main className="flex-1">{children}</main>
 				</ReduxProvider>
         <Footer />
 			</body>
