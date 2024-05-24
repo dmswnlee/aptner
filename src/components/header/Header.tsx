@@ -4,7 +4,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import logo from '@/assets/images/logo.png';
 import { useState } from "react";
-import Search from "@/components/Search";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -22,7 +21,7 @@ const Header = () => {
             <div className="ml-[337px] w-[119px]">
               <Link href="/login" className="text-white">로그인</Link>
               <span className="text-white mx-2">|</span>
-              <Link href="/join" className="text-white">회원가입</Link>
+              <Link href="/signup" className="text-white">회원가입</Link>
             </div>
           )}
         </div>
