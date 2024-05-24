@@ -1,1 +1,3 @@
-export const registration = [];
+import { RegistrationData } from '@/interfaces/RegistrationData';
+
+export let registrations: RegistrationData[]  = [];
