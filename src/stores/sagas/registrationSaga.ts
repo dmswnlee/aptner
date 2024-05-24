@@ -6,18 +6,11 @@ import {
 	fetchTermsSuccess,
 	submitRegistration,
 	nextStep,
-	RegistrationState,
 } from "@/stores/slice/registrationSlice";
 import { RootState } from "@/stores/store";
 import { SagaIterator } from "redux-saga";
-
-interface Term {
-	id: number;
-	title: string;
-	content: string;
-	type: string;
-	isRequired: boolean;
-}
+import { Term } from '@/interfaces/Term';
+import { RegistrationState } from '@/interfaces/RegistrationState';
 
 function* fetchTermsSaga(): SagaIterator {
 	try {
@@ -29,31 +22,30 @@ function* fetchTermsSaga(): SagaIterator {
 	}
 }
 
-function* handleRegistration(): SagaIterator {
+function* submitRegistrationSaga(): SagaIterator {
 	try {
-		const registrationData: RegistrationState = yield select((state: RootState) => state.registration);
-		const response = yield call(axios.post, "http://localhost:9090/api/submit", {
-			email: registrationData.accountInfo.email,
-			name: registrationData.personalInfo.name,
-			nickname: registrationData.accountInfo.nickname,
-			password: registrationData.accountInfo.password,
-			phone: registrationData.personalInfo.phoneNumber,
-			gender: registrationData.personalInfo.gender,
-			apartment: {
-				code: registrationData.addressInfo.code,
-				apartDetailInfo: {
-					dong: registrationData.addressInfo.dong,
-					ho: registrationData.addressInfo.ho,
-				},
-			},
-			termsAgreements: registrationData.termsAgreements,
-		});
-		if (response.status === 200) {
+			const registrationData: RegistrationState = yield select((state: RootState) => state.registration);
+			const requestData = {
+					email: registrationData.accountInfo.email,
+					name: registrationData.personalInfo.name,
+					nickname: registrationData.addressInfo.nickname,
+					password: registrationData.accountInfo.password,
+					phone: registrationData.personalInfo.phoneNumber,
+					gender: registrationData.personalInfo.gender.toUpperCase(),
+					apartment: {
+							code: registrationData.addressInfo.code,
+							apartDetailInfo: {
+									dong: registrationData.addressInfo.apartDetailInfo.dong,
+									ho: registrationData.addressInfo.apartDetailInfo.ho,
+							},
+					},
+					termsAgreements: registrationData.termsAgreements,
+			};
+			const response = yield call(axios.post, "http://localhost:9090/api/members/sign-up", requestData);
 			yield put(nextStep());
-			console.log("회원가입이 완료되었습니다.");
-		}
-	} catch (e) {
-		console.log("회원가입에 실패했습니다.");
+			console.log("회원가입에 성공하셨습니다.", response.data);
+	} catch (error: any) {
+			console.error("회원가입에 실패하셨습니다.", error.message);
 	}
 }
 
@@ -62,7 +54,7 @@ function* watchFetchTerms() {
 }
 
 function* watchSubmitRegistration() {
-	yield takeEvery(submitRegistration.type, handleRegistration);
+	yield takeEvery(submitRegistration.type, submitRegistrationSaga);
 }
 
 export default function* registrationSaga() {
