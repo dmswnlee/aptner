@@ -1,41 +1,6 @@
+import { RegistrationState } from '@/interfaces/RegistrationState';
+import { Term, TermsState } from '@/interfaces/Term';
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-interface Term {
-	id: number;
-	title: string;
-	content: string;
-	type: string;
-	isRequired: boolean;
-}
-
-interface TermsState {
-	termsInfoList: Term[];
-	error: string | null;
-	loading: boolean;
-}
-
-export interface RegistrationState {
-	step: number;
-	personalInfo: {
-		name: string;
-		idNumber: string;
-		phoneNumber: string;
-		gender: string;
-		carrier: string;
-	};
-	accountInfo: {
-		email: string;
-		password: string;
-		nickname: string;
-	};
-	addressInfo: {
-		code: string;
-		dong: number;
-		ho: number;
-	};
-	termsAgreements: Array<{ termsId: number; isAgreed: boolean }>;
-	termsState: TermsState;
-}
 
 const initialTermsState: TermsState = {
 	termsInfoList: [],
@@ -55,12 +20,14 @@ const initialState: RegistrationState = {
 	accountInfo: {
 		email: "",
 		password: "",
-		nickname: "",
 	},
 	addressInfo: {
+		nickname: "",
 		code: "RO000",
-		dong: 0,
-		ho: 0,
+		apartDetailInfo: {
+			dong: 0,
+			ho: 0,
+		},
 	},
 	termsAgreements: [
 		{ termsId: 1, isAgreed: false },
@@ -112,15 +79,6 @@ const registrationSlice = createSlice({
 		},
 	},
 });
-
-// TODO : 경고문구 아닌 팝업으로 사용예정 
-// function updateErrorState(state: TermsState) {
-// 	if (!state.service || !state.personalInfo) {
-// 		state.error = "필수 약관에 동의하셔야 합니다.";
-// 	} else {
-// 		state.error = "";
-// 	}
-// }
 
 export const {
 	nextStep,
