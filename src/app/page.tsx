@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import home from "@/assets/images/home.png";
-import visitReservation from "@/assets/images/visitReservation.png";
-import communication from "@/assets/images/communication.png";
-import calendar from "@/assets/images/calendar.png";
-import communityCenter from "@/assets/images/communityCenter.png";
-import notice from "@/assets/images/notice.png";
-import billInquiry from "@/assets/images/billInquiry.png";
+import visitReservation from "@/assets/images/home/visitReservation.png";
+import communication from "@/assets/images/home/communication.png";
+import calendar from "@/assets/images/home/calendar.png";
+import communityCenter from "@/assets/images/home/communityCenter.png";
+import notice from "@/assets/images/home/notice.png";
+import billInquiry from "@/assets/images/home/billInquiry.png"
 import Footer from "@/components/Footer";
 
 const Home = () => {
