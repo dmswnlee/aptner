@@ -2,23 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
-div.toastui-editor-defaultUI {
-    border:none;
+#toolbar {
+    border-color: #eaeaea;
 }
-div.toastui-editor-defaultUI-toolbar {
-    border: 1px solid #eaeaea;
-    background-color: #FCFCFC;
-    border-radius: 5px;
-    display: flex;
-    justify-content: center;
+#toolbar .ql-font {
+    width: 130px;
 }
-div.toastui-editor-defaultUI .ProseMirror {
-    border: 1px solid #eaeaea;
-    background-color: #FCFCFC;
-    border-radius: 5px;
-    height: 346px;
-    margin-top: 8px;
+#toolbar .ql-size {
+    width: 60px;
 }
+#tollbar .ql-align {
+    border:1px solid black;
+}
+
+.ql-container {
+    border-radius: 5px !important;
+    border-color: #eaeaea !important;
+}
+.ql-snow.ql-toolbar button {
+    height:  100% !important;
+}
+
 /* 스와이퍼 */
 .swiper .swiper-button-next, .swiper .swiper-button-prev {
     color: white;

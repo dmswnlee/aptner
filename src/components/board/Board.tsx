@@ -4,8 +4,7 @@ import Button from "@/components/buttons/Button";
 import { useRouter } from "next/navigation";
 import { GoFileDirectory } from "react-icons/go";
 import { IoIosArrowDown } from "react-icons/io";
-import ToastEditor from "./ToastEditor";
-
+import QuillEditor from "./QuillEditor";
 interface Option {
   label: string;
 }
@@ -80,8 +79,7 @@ export default function Board({ options }: BoardProps) {
             서로의 의견을 경청하고 존중해주시기 바랍니다.
           </p>
         </div>
-
-        <ToastEditor />
+        <QuillEditor />
       </div>
       <div className="flex justify-center mt-[39px] gap-4">
         <Button
