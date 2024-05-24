@@ -1,9 +1,9 @@
 import ColorButton from "@/components/buttons/ColorButton";
 import SmallBorderButton from "@/components/buttons/SmallBorderButton";
-import TitleInput from "@/components/input/TitleInput";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
+	getErrorMessage,
 	inputErrorStyle,
 	inputStyle,
 	nameRegex,
@@ -11,44 +11,36 @@ import {
 	verificationCodeRegex,
 } from "./IdentityVerification";
 import { useDispatch } from 'react-redux';
-import { nextStep } from '@/stores/slice/registrationSlice';
+import { nextStep, setPersonalInfo } from '@/stores/slice/registrationSlice';
 
 const NoAuthSignUp = () => {
 	const {
 		register,
 		handleSubmit,
 		formState: { errors, isValid },
-		setError,
-		clearErrors,
-		watch,
 	} = useForm({
 		mode: "onChange",
 	});
 
 	const [showVerificationInput, setShowVerificationInput] = useState(false);
-	const phoneNumberValue = watch("phoneNumber");
 	const dispatch = useDispatch();
 
 	const onSubmit = (data: any) => {
-		console.log(data);
+		dispatch(
+			setPersonalInfo({
+				name: data.name,
+				idNumber: "",
+				phoneNumber: data.phoneNumber,
+				gender: "",
+				carrier: "",
+			}),
+		);
 		dispatch(nextStep());
-	};
-
-	const getErrorMessage = (error: any) => {
-		if (error) {
-			if (error.message) {
-				return error.message;
-			}
-			if (typeof error === "string") {
-				return error;
-			}
-		}
-		return undefined;
+		console.log(data);
 	};
 
 	const handleClickRequest = () => {
 		setShowVerificationInput(!showVerificationInput);
-		console.log("click!");
 	};
 
 	return (

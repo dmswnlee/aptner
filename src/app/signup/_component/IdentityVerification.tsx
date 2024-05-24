@@ -67,21 +67,8 @@ const IdentityVerification = () => {
 		console.log(data);
 	};
 
-	const getErrorMessage = (error: any) => {
-		if (error) {
-			if (error.message) {
-				return error.message;
-			}
-			if (typeof error === "string") {
-				return error;
-			}
-		}
-		return undefined;
-	};
-
   const handleClickRequest = () => {
     setShowVerificationInput(!showVerificationInput)
-    console.log("click!");
   }
 
 	if (isNoAuthSignUp) {
@@ -89,7 +76,7 @@ const IdentityVerification = () => {
 	}
 
 	const handleClickMove = () => {
-		setIsNoAuthSignUp(true)
+		setIsNoAuthSignUp(!isNoAuthSignUp)
 	}
 
 	return (
@@ -301,3 +288,15 @@ const IdentityVerification = () => {
 };
 
 export default IdentityVerification;
+
+export const getErrorMessage = (error: any) => {
+	if (error) {
+		if (error.message) {
+			return error.message;
+		}
+		if (typeof error === "string") {
+			return error;
+		}
+	}
+	return undefined;
+};
