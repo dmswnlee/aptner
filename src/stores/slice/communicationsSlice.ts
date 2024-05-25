@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-// 공개 정보(Disclosure)에 대한 인터페이스를 정의합니다.
 interface Communications {
   id: number;
   isPin: boolean;
@@ -11,32 +10,41 @@ interface Communications {
   date: string;
 }
 
-// 상태를 관리하기 위한 인터페이스를 정의합니다.
+// State interface
 interface CommunicationsState {
-  communications: Communications[]; // 공개 정보 배열
+  communications: Communications[];
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  error: string | null;
 }
 
-// 초기 상태를 정의합니다.
+// Initial state
 const initialState: CommunicationsState = {
-  communications: [], // 초기에는 공개 정보가 없는 상태로 설정됩니다.
+  communications: [],
+  status: 'idle',
+  error: null,
 };
 
-// createSlice 함수를 사용하여 slice를 생성합니다.
+// Create the slice
 const communicationsSlice = createSlice({
-  name: 'communications', // slice의 이름을 지정합니다.
-  initialState, // 초기 상태를 지정합니다.
+  name: 'communications',
+  initialState,
   reducers: {
-    // 공개 정보를 설정하는 액션입니다.
     setCommunications(state, action: PayloadAction<Communications[]>) {
-      state.communications = action.payload; // 새로운 공개 정보로 상태를 업데이트합니다.
+      state.communications = action.payload;
+      state.status = 'succeeded';
     },
-    // 공개 정보를 가져오는 액션입니다. (비동기 작업이므로 별도의 미들웨어가 필요합니다.)
-    fetchCommunications() {},
+    fetchCommunications(state) {
+      state.status = 'loading';
+    },
+    fetchCommunicationsFailed(state, action: PayloadAction<string>) {
+      state.status = 'failed';
+      state.error = action.payload;
+    },
   },
 });
 
-// 액션 생성자들을 내보냅니다.
-export const { setCommunications, fetchCommunications } = communicationsSlice.actions;
+// Export the actions
+export const { setCommunications, fetchCommunications, fetchCommunicationsFailed } = communicationsSlice.actions;
 
-// 리듀서를 내보냅니다.
+// Export the reducer
 export default communicationsSlice.reducer;

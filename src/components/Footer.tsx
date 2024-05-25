@@ -2,8 +2,8 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#f7f7f7] h-[90px] py-4 w-full">
-      <div className="w-[1080px] container mx-auto">
+    <footer className="bg-[#f7f7f7] py-4">
+      <div className="w-[1080px] container mx-auto flex flex-col justify-between h-full">
         <div className="flex mb-2 text-[9px] items-center">
           <Link href="/terms" className="text-[9px] text-gray-400">이용약관</Link>
           <span className="text-gray-300 mx-2">|</span>
