@@ -6,7 +6,6 @@ import { Pagination } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/stores/store';
-import { fetchNotices } from '@/stores/slice/noticesSlice';
 import { fetchDisclosures } from "@/stores/slice/disclosuresSlice";
 
 const DisclosurePage = () => { 

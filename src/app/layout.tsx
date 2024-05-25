@@ -4,6 +4,10 @@ import Header from "@/components/header/Header";
 import ReduxProvider from "@/stores/provider";
 import Footer from "@/components/Footer";
 
+export const metadata = {
+  title: "아파트너",
+};
+
 export default function RootLayout({
   children,
 }: {
