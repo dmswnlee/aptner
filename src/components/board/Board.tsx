@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import Button from "@/components/buttons/Button";
+import Button from "../buttons/Button";
 import { useRouter } from "next/navigation";
 import { GoFileDirectory } from "react-icons/go";
 import { IoIosArrowDown } from "react-icons/io";

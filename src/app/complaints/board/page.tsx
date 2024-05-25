@@ -1,5 +1,4 @@
-import Board from "@/components/board/Board";
-
+import Board from "../../../components/board/Board";
 export default function BoardPage() {
   const options = [
     { label: "하자/보수" },

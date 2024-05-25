@@ -2,17 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Arial:ital,wght@0,400;0,700;1,400;1,700&family=Arial+Black&family=Comic+Sans+MS&family=Courier+New&family=Helvetica+Neue&family=Helvetica&family=Impact&family=Lucida+Grande&family=Tahoma&family=Times+New+Roman&family=Verdana&display=swap");
+
 #toolbar {
     border-color: #eaeaea;
 }
 #toolbar .ql-font {
-    width: 130px;
+    width: 130px;    
 }
+.ql-toolbar .ql-font option[value=nanumgothic] { font-family: 'Nanum Gothic'; }
+.ql-toolbar .ql-font option[value=arial] { font-family: 'Arial'; }
+.ql-toolbar .ql-font option[value=arialblack] { font-family: 'Arial Black'; }
+.ql-toolbar .ql-font option[value=comic-sans-ms] { font-family: 'Comic Sans MS'; }
+.ql-toolbar .ql-font option[value=courier-new] { font-family: 'Courier New'; }
+.ql-toolbar .ql-font option[value=helvetica-neue] { font-family: 'Helvetica Neue'; }
+.ql-toolbar .ql-font option[value=helvetica] { font-family: 'Helvetica'; }
+.ql-toolbar .ql-font option[value=impact] { font-family: 'Impact'; }
+.ql-toolbar .ql-font option[value=lucida-grande] { font-family: 'Lucida Grande'; }
+.ql-toolbar .ql-font option[value=tahoma] { font-family: 'Tahoma'; }
+.ql-toolbar .ql-font option[value=times-new-roman] { font-family: 'Times New Roman'; }
+.ql-toolbar .ql-font option[value=verdana] { font-family: 'Verdana'; }
+
 #toolbar .ql-size {
     width: 60px;
 }
-#tollbar .ql-align {
-    border:1px solid black;
+#toolbar .ql-header {
+    width: 50px;
 }
 
 .ql-container {
