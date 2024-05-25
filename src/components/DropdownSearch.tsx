@@ -8,16 +8,19 @@ interface Option {
 
 interface DropdownSearchProps {
   onSelect: (selectedOption: Option) => void;
+  selectedOption: Option;
 }
 
-const DropdownSearch = ({ onSelect }: DropdownSearchProps) => {
+const DropdownSearch = ({ onSelect, selectedOption }: DropdownSearchProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [currentOptionLabel, setCurrentOptionLabel] = useState("검색 조건");
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
   const handleOptionSelect = (option: Option) => {
+    setCurrentOptionLabel(option.label);
     onSelect(option);
     setIsDropdownOpen(false);
   };
@@ -35,8 +38,8 @@ const DropdownSearch = ({ onSelect }: DropdownSearchProps) => {
         className={`flex items-center text-[15px] h-[38px] w-[128px] pl-3 pr-3 rounded-md border ${isDropdownOpen ? 'border-gray-400' : 'border-gray-400'} border-solid text-gray-700 focus:outline-none focus:bg-gray-100`}
         onClick={toggleDropdown}
       >
-        <span className="flex-1 text-left ml-2">검색조건</span>
-        <FaAngleDown className="mr-2" />
+        <span className="flex-1 text-left ml-2">{currentOptionLabel}</span>
+        <FaAngleDown className="ml-auto" />
       </button>
       <div
         className={`absolute top-full left-0 w-full bg-white border-gray-400 border border-solid border-t-0 rounded-b-md shadow-md transition-all duration-300 overflow-hidden ${

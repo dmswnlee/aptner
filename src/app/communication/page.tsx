@@ -14,6 +14,7 @@ import type { PaginationProps } from "antd";
 import Tabs from "@/components/noticeboard/Tabs";
 import Search from "@/components/Search";
 import DropdownSearch from "@/components/DropdownSearch";
+import SearchBoard from "@/components/SearchBoard";
 
 interface Tab {
   name: string;
@@ -56,15 +57,16 @@ const CommunicationPage = () => {
   // 페이지네이션 관련 상태
   const [current, setCurrent] = useState<number>(1);
   const [view, setView] = useState<string>("list"); // 뷰 타입 상태
+  const [selectedOption, setSelectedOption] = useState<Option>({ value: "title_content", label: "제목 + 내용" }); // 선택된 검색 옵션
+  const [query, setQuery] = useState<string>(""); // 검색 쿼리
+
   const handleChange: PaginationProps["onChange"] = (page: number) => {
     console.log(page);
     setCurrent(page);
   };
 
-
   const dispatch = useDispatch();
   const { communications, status } = useSelector((state: RootState) => state.communications);
-
 
   useEffect(() => {
     dispatch(fetchCommunications());
@@ -77,8 +79,14 @@ const CommunicationPage = () => {
 
   // 검색 옵션 선택 핸들러
   const handleSearchOptionSelect = (selectedOption: Option) => {
-    // 선택한 검색 옵션을 처리합니다.
-    console.log("Selected search option:", selectedOption);
+    setSelectedOption(selectedOption);
+  };
+
+  // 검색 핸들러
+  const handleSearch = (query: string) => {
+    setQuery(query);
+    // 여기서 검색 기능을 구현합니다. 예: API 호출 또는 상태 필터링
+    console.log(`Searching ${selectedOption.value} for query: ${query}`);
   };
 
   // 통신 상태가 로딩 중인지 확인
@@ -98,9 +106,9 @@ const CommunicationPage = () => {
         <div className="flex justify-center p-5">
           <Pagination current={current} onChange={handleChange} total={50} />
         </div>
-        <div className="flex justify-center p-5 mb-[100px] gap-5">
-          <DropdownSearch onSelect={handleSearchOptionSelect} />
-          <Search />
+        <div className="flex justify-center p-5 mb-[100px] gap-3">
+          <DropdownSearch onSelect={handleSearchOptionSelect} selectedOption={selectedOption} />
+          <SearchBoard selectedOption={selectedOption} onSearch={handleSearch} />
         </div>
       </div>
     </div>
@@ -108,4 +116,3 @@ const CommunicationPage = () => {
 };
 
 export default CommunicationPage;
- 
