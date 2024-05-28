@@ -59,7 +59,7 @@ const CommunicationPage = () => {
   const [query, setQueryState] = useState<string>("");
 
   const dispatch = useDispatch<AppDispatch>();
-  const { communications, status } = useSelector((state: RootState) => state.communications);
+  const { communications, status, query: reduxQuery} = useSelector((state: RootState) => state.communications);
 
   useEffect(() => {
     dispatch(fetchCommunications());
@@ -98,7 +98,7 @@ const CommunicationPage = () => {
         <Tabs tabs={categoryTabs} />
         <GalleryTab tabs={viewTabs} onTabChange={handleViewTabChange} />
         {view === "list" ? (
-          <List ListTitle={ListTitle} data={communications} detailPath="/detail" />
+          <List ListTitle={ListTitle} data={communications} detailPath="/detail" highlightQuery={reduxQuery} />
         ) : (
           <Gallery data={communications} detailPath="/detail" loading={loading} />
         )}
