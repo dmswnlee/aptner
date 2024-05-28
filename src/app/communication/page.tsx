@@ -65,9 +65,25 @@ const CommunicationPage = () => {
     dispatch(fetchCommunications());
   }, [dispatch]);
 
+  const resetSearch = () => {
+    setQueryState("");
+    setSelectedOption({ value: "", label: "" });
+    dispatch(setQuery(""));
+    dispatch(setOption(""));
+    dispatch(fetchCommunications());
+  };
+
   // 뷰 탭 변경 핸들러
   const handleViewTabChange = (tabName: string) => {
     setView(tabName);
+  };
+
+  // 카테고리 탭 변경 핸들러
+  const handleCategoryTabChange = (tabName: string) => {
+    if (tabName === "all") {
+      resetSearch();
+    }
+    // handle other category tab changes if needed
   };
 
   // 검색 옵션 선택 핸들러
@@ -95,7 +111,7 @@ const CommunicationPage = () => {
     <div className="mt-12 flex justify-center">
       <div className="w-[1080px] flex flex-col">
         <h2 className="text-2xl mb-10">소통공간</h2>
-        <Tabs tabs={categoryTabs} />
+        <Tabs tabs={categoryTabs} onTabChange={handleCategoryTabChange}/>
         <GalleryTab tabs={viewTabs} onTabChange={handleViewTabChange} />
         {view === "list" ? (
           <List ListTitle={ListTitle} data={communications} detailPath="/detail" highlightQuery={reduxQuery} />

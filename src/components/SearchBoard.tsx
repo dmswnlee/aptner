@@ -19,7 +19,7 @@ const SearchBoard = ({ selectedOption, onSearch }: SearchProps) => {
   const [query, setQueryState] = useState(""); // 로컬 상태로 검색 쿼리를 관리
   const dispatch = useDispatch(); // Redux 디스패치를 사용
 
-  // 검색 버튼 클릭 시 실행되는 함수
+  // 검색 버튼 클릭 시 실행되는 함수, 유효성 검사 알림
   const handleSearch = () => {
     const trimmedQuery = query.trim();
     if (trimmedQuery.length < 2) {
@@ -54,7 +54,7 @@ const SearchBoard = ({ selectedOption, onSearch }: SearchProps) => {
         <input
           type="text"
           value={query}
-          onChange={(e) => setQueryState(e.target.value)} // 입력 필드 변경 시 로컬 상태 업데이트
+          onChange={(e) => setQueryState(e.target.value)} 
           onKeyDown={handleEnter}
           placeholder={selectedOption.value ? `${selectedOption.label}(으)로 검색하기` : '검색어를 입려하세요.'}
           className="text-sm h-[40px] w-[280px] pl-5 pr-8 rounded-[10px] border border-solid border-[#BBBBBB] focus:outline-none focus:bg-gray-100"
