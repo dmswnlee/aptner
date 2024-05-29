@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/stores/store';
-import { fetchCommunications } from "@/stores/slice/communicationsSlice";
+import { RootState, AppDispatch } from '@/stores/store';
+import { fetchCommunications, searchCommunications, setOption, setQuery } from "@/stores/slice/communicationsSlice";
 import { FaListUl } from "react-icons/fa";
 import { RiGalleryView2 } from "react-icons/ri";
 import GalleryTab from "./_component/GalleryTab";
@@ -12,7 +12,6 @@ import Gallery from "./_component/Gallery";
 import { Pagination } from "antd";
 import type { PaginationProps } from "antd";
 import Tabs from "@/components/noticeboard/Tabs";
-import Search from "@/components/Search";
 import DropdownSearch from "@/components/DropdownSearch";
 import SearchBoard from "@/components/SearchBoard";
 
@@ -27,11 +26,10 @@ interface Option {
   label: string;
 }
 
-
 const CommunicationPage = () => {
   // 카테고리 탭 데이터
   const categoryTabs: Tab[] = [
-    { name: "all", label: "전체", icon: <></> }, // 카테고리 탭에는 아이콘이 없음
+    { name: "all", label: "전체", icon: <></> },
     { name: "freeboard", label: "자유게시판", icon: <></> },
     { name: "market", label: "나눔장터", icon: <></> },
     { name: "hobby", label: "취미게시판", icon: <></> },
@@ -56,37 +54,54 @@ const CommunicationPage = () => {
 
   // 페이지네이션 관련 상태
   const [current, setCurrent] = useState<number>(1);
-  const [view, setView] = useState<string>("list"); // 뷰 타입 상태
-  const [selectedOption, setSelectedOption] = useState<Option>({ value: "title_content", label: "제목 + 내용" }); // 선택된 검색 옵션
-  const [query, setQuery] = useState<string>(""); // 검색 쿼리
+  const [view, setView] = useState<string>("list");
+  const [selectedOption, setSelectedOption] = useState<Option>({ value: "", label: "" });
+  const [query, setQueryState] = useState<string>("");
 
-  const handleChange: PaginationProps["onChange"] = (page: number) => {
-    console.log(page);
-    setCurrent(page);
-  };
-
-  const dispatch = useDispatch();
-  const { communications, status } = useSelector((state: RootState) => state.communications);
+  const dispatch = useDispatch<AppDispatch>();
+  const { communications, status, query: reduxQuery} = useSelector((state: RootState) => state.communications);
 
   useEffect(() => {
     dispatch(fetchCommunications());
   }, [dispatch]);
+
+  const resetSearch = () => {
+    setQueryState("");
+    setSelectedOption({ value: "", label: "" });
+    dispatch(setQuery(""));
+    dispatch(setOption(""));
+    dispatch(fetchCommunications());
+  };
 
   // 뷰 탭 변경 핸들러
   const handleViewTabChange = (tabName: string) => {
     setView(tabName);
   };
 
+  // 카테고리 탭 변경 핸들러
+  const handleCategoryTabChange = (tabName: string) => {
+    if (tabName === "all") {
+      resetSearch();
+    }
+    // handle other category tab changes if needed
+  };
+
   // 검색 옵션 선택 핸들러
   const handleSearchOptionSelect = (selectedOption: Option) => {
     setSelectedOption(selectedOption);
+    dispatch(setOption(selectedOption.value));
   };
 
   // 검색 핸들러
   const handleSearch = (query: string) => {
-    setQuery(query);
-    // 여기서 검색 기능을 구현합니다. 예: API 호출 또는 상태 필터링
-    console.log(`Searching ${selectedOption.value} for query: ${query}`);
+    setQueryState(query);
+    dispatch(setQuery(query));
+    dispatch(searchCommunications());
+  };
+
+  // 페이지 변경 핸들러
+  const handleChange: PaginationProps["onChange"] = (page: number) => {
+    setCurrent(page);
   };
 
   // 통신 상태가 로딩 중인지 확인
@@ -96,15 +111,15 @@ const CommunicationPage = () => {
     <div className="mt-12 flex justify-center">
       <div className="w-[1080px] flex flex-col">
         <h2 className="text-2xl mb-10">소통공간</h2>
-        <Tabs tabs={categoryTabs} />
+        <Tabs tabs={categoryTabs} onTabChange={handleCategoryTabChange}/>
         <GalleryTab tabs={viewTabs} onTabChange={handleViewTabChange} />
         {view === "list" ? (
-          <List ListTitle={ListTitle} data={communications} detailPath="/detail" />
+          <List ListTitle={ListTitle} data={communications} detailPath="/detail" highlightQuery={reduxQuery} />
         ) : (
           <Gallery data={communications} detailPath="/detail" loading={loading} />
         )}
         <div className="flex justify-center p-5">
-          <Pagination current={current} onChange={handleChange} total={50} />
+          <Pagination current={current} onChange={handleChange} total={communications.length} />
         </div>
         <div className="flex justify-center p-5 mb-[100px] gap-3">
           <DropdownSearch onSelect={handleSearchOptionSelect} selectedOption={selectedOption} />

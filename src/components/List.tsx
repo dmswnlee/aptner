@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { highlightText } from "@/utils/highlightText";
 
 interface ListTitle {
 	key: string;
@@ -10,9 +11,10 @@ interface ListProps {
 	ListTitle: ListTitle[];
 	data: any[];
 	detailPath: string;
+	highlightQuery?: string;
 }
 
-const List = ({ ListTitle, data, detailPath }: ListProps) => {
+const List = ({ ListTitle, data, detailPath, highlightQuery }: ListProps) => {
 	return (
 		<div>
 			<table className="border border-solid border-gray_04">
@@ -34,8 +36,10 @@ const List = ({ ListTitle, data, detailPath }: ListProps) => {
 								<td key={list.key} className="border border-solid border-gray_04 p-4 text-center">
 									{list.key === "title" ? (
 										<Link href={`${detailPath}/${item.id}`} className="hover:underline">
-											{item[list.key]}
+											{highlightQuery ? highlightText(item[list.key], highlightQuery) : item[list.key]}
 										</Link>
+									) : list.key === "author" ? (
+                    highlightQuery ? highlightText(item[list.key], highlightQuery) : item[list.key]
 									) : list.key === "category" ? (
 										<span className={item.isPin ? "text-red-500" : ""}>
 											{item.isPin ? "중요글" : item.category}

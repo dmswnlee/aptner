@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
+import { useDispatch } from 'react-redux';
+import { setQuery, searchCommunications } from "@/stores/slice/communicationsSlice";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Option {
   value: string;
@@ -12,27 +16,63 @@ interface SearchProps {
 }
 
 const SearchBoard = ({ selectedOption, onSearch }: SearchProps) => {
-  const [query, setQuery] = useState("");
+  const [query, setQueryState] = useState(""); // 로컬 상태로 검색 쿼리를 관리
+  const dispatch = useDispatch(); // Redux 디스패치를 사용
 
+  // 검색 버튼 클릭 시 실행되는 함수, 유효성 검사 알림
   const handleSearch = () => {
-    onSearch(query);
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.length < 2) {
+      toast.error(
+        <div className="whitespace-pre-line p-2">
+          글자 수가 너무 적습니다.<br />2자 이상 입력해주세요
+        </div>,
+        {className: "w-[300px]"}
+      );
+      return;
+    }
+    if (trimmedQuery.length > 50) {
+      toast.warning(
+        <div className="p-1">
+          검색어는 최대 50자까지 유효합니다. 초과하는 단어는 검색 조건에 포함되지 않습니다.
+        </div>);
+    }
+    const validQuery = trimmedQuery.slice(0, 50); // 50자까지 자른 유효 검색어
+    dispatch(setQuery(validQuery)); // Redux 상태에 검색 쿼리 설정
+    dispatch(searchCommunications()); // 검색 액션 디스패치
   };
 
+  // Enter 키가 눌렸을 때 실행되는 함수
+  const handleEnter = (event: any) => {
+    if (event.key === 'Enter') {
+      handleSearch();
+    }
+  };
   return (
     <div className="relative">
       <div className="relative">
         <input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={selectedOption.label ? `${selectedOption.label}(으)로 검색하기` : '검색하기'}
-          className="text-sm h-[40px] w-[280px] pl-5 rounded-[10px] border border-solid border-[#BBBBBB] focus:outline-none focus:bg-gray-100"
+          onChange={(e) => setQueryState(e.target.value)} 
+          onKeyDown={handleEnter}
+          placeholder={selectedOption.value ? `${selectedOption.label}(으)로 검색하기` : '검색어를 입려하세요.'}
+          className="text-sm h-[40px] w-[280px] pl-5 pr-8 rounded-[10px] border border-solid border-[#BBBBBB] focus:outline-none focus:bg-gray-100"
         />
         <FaSearch 
           onClick={handleSearch}
           className="absolute top-1/2 transform -translate-y-1/2 right-[10px] text-gray-400 cursor-pointer"
         />
       </div>
+      <ToastContainer 
+        position="top-right" 
+        autoClose={3000} 
+        hideProgressBar 
+        newestOnTop 
+        closeOnClick 
+        pauseOnFocusLoss 
+        pauseOnHover 
+      />
     </div>
   );
 };
