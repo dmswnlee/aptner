@@ -8,6 +8,7 @@ export interface RegistrationState {
 		phoneNumber: string;
 		gender: string;
 		carrier: string;
+		verificationCode: string;
 	};
 	accountInfo: {
 		email: string;
