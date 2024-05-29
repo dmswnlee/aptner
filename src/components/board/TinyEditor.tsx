@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { BeatLoader } from "react-spinners";
 
-const TinyEditor = () => {
+interface TinyEditorProps {
+  onChange: (content: string) => void; // 부모 컴포넌트에서 변경된 내용을 처리하기 위한 함수
+}
+
+const TinyEditor: React.FC<TinyEditorProps> = ({ onChange }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -33,6 +37,9 @@ const TinyEditor = () => {
           content_style: `.mce-content-body[data-mce-placeholder]:not(.mce-visualblocks)::before {
           color: #BBB;
           } `,
+        }}
+        onEditorChange={(content, editor) => {
+          onChange(content); // 에디터에서 내용이 변경될 때마다 호출됨
         }}
       />
     </div>
