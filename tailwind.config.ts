@@ -13,7 +13,7 @@ const config: Config = {
 				"gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
 			},
 			colors: {
-				black_100:"#222222",
+				black_100: "#222222",
 				theme: "#164d50",
 				charcoal: "#4c5d71",
 				border: "#eaeaea",
@@ -31,7 +31,8 @@ const config: Config = {
 				gray_400: "#858E96",
 				gray_600: "#777777",
 				gray_800: "#333333",
-				boardtab:"#778AA5",
+				boardtab: "#778AA5",
+				red: "#F7444F",
 			},
 		},
 	},
