@@ -1,41 +1,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* 에디터커스텀 */
+div .tox-tinymce {
+    border:none;
+    border-radius: 0;
+}
+.tox-editor-container .tox-editor-header {
+    width: 100%;
+    box-shadow: none !important;
+}
+.tox .tox-toolbar-overlord {
+    border:1px solid #eaeaea;
+    border-radius: 5px;
 
-@import url("https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Arial:ital,wght@0,400;0,700;1,400;1,700&family=Arial+Black&family=Comic+Sans+MS&family=Courier+New&family=Helvetica+Neue&family=Helvetica&family=Impact&family=Lucida+Grande&family=Tahoma&family=Times+New+Roman&family=Verdana&display=swap");
+}
+.tox-toolbar__primary{
+    border-radius: 5px ;
+}
+.tox .tox-toolbar__group {
+    width: 100%;
+    justify-content: center;    
+    border-radius: 5px;
+}
+.tox .tox-sidebar-wrap {
+    border:1px solid #eaeaea;
+    border-radius: 5px;
 
-#toolbar {
+}
+.tox-edit-area {
+    border-radius: 5px;
     border-color: #eaeaea;
 }
-#toolbar .ql-font {
-    width: 130px;    
+div .tox .tox-edit-area::before {
+    border:none;
 }
-.ql-toolbar .ql-font option[value=nanumgothic] { font-family: 'Nanum Gothic'; }
-.ql-toolbar .ql-font option[value=arial] { font-family: 'Arial'; }
-.ql-toolbar .ql-font option[value=arialblack] { font-family: 'Arial Black'; }
-.ql-toolbar .ql-font option[value=comic-sans-ms] { font-family: 'Comic Sans MS'; }
-.ql-toolbar .ql-font option[value=courier-new] { font-family: 'Courier New'; }
-.ql-toolbar .ql-font option[value=helvetica-neue] { font-family: 'Helvetica Neue'; }
-.ql-toolbar .ql-font option[value=helvetica] { font-family: 'Helvetica'; }
-.ql-toolbar .ql-font option[value=impact] { font-family: 'Impact'; }
-.ql-toolbar .ql-font option[value=lucida-grande] { font-family: 'Lucida Grande'; }
-.ql-toolbar .ql-font option[value=tahoma] { font-family: 'Tahoma'; }
-.ql-toolbar .ql-font option[value=times-new-roman] { font-family: 'Times New Roman'; }
-.ql-toolbar .ql-font option[value=verdana] { font-family: 'Verdana'; }
-
-#toolbar .ql-size {
-    width: 60px;
-}
-#toolbar .ql-header {
-    width: 50px;
-}
-
-.ql-container {
-    border-radius: 5px !important;
-    border-color: #eaeaea !important;
-}
-.ql-snow.ql-toolbar button {
-    height:  100% !important;
+.mce-content-body::before {
+    color:aqua !important;
 }
 
 /* 스와이퍼 */
@@ -45,7 +46,7 @@
 }
 
 .swiper .swiper-pagination {
-   bottom: -30px !important;
+    bottom: -30px !important;
 }
 
 .swiper-pagination .swiper-pagination-bullet {
@@ -55,4 +56,15 @@
 .swiper-pagination .swiper-pagination-bullet-active {
     background-color: black;
     scale: 1.3;
+}
+/* 스크롤바 커스텀 */
+/* styles.css */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 12px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 6px;
+    border: 3px solid #f1f1f1;
 }
