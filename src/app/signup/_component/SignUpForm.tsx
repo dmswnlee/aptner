@@ -6,7 +6,8 @@ import ColorButton from "@/components/buttons/ColorButton";
 import SmallBorderButton from "@/components/buttons/SmallBorderButton";
 import { inputErrorStyle, inputStyle } from "./IdentityVerification";
 
-const idRegex = /^[a-zA-Z0-9_]+$/;
+// TODO: 서버 수정 후 다시 활성화
+//const idRegex = /^[a-zA-Z0-9_]+$/;
 
 const inputDefault = "w-[518px] border border-solid border-gray_06 px-[30px] py-[15px] rounded-[5px] bg-[#F7F7F7]";
 
@@ -53,6 +54,7 @@ const SignUpForm = () => {
 		<div className="flex justify-center">
 			<div className="w-[648px] flex flex-col gap-10">
 				<div className="flex flex-col gap-[16px]">
+				<p className="text-red">*표시는 필수 입력항목입니다.</p>
 					<div className="flex items-center gap-[10px]">
 						<p className="w-[120px] p-[10px]">이름</p>
 						<p className={`${inputDefault}`}>{name}</p>
@@ -63,32 +65,31 @@ const SignUpForm = () => {
 					</div>
 					<form onSubmit={handleSubmit(handleNext)} className="flex flex-col gap-5">
 						<div className="flex gap-[10px]">
-							<label htmlFor="email" className="w-[120px] p-[10px]">
-								아이디
-							</label>
+							<p className="w-[120px] p-[10px]">
+								아이디<span className="text-red">*</span>
+							</p>
 							<div className="flex flex-col gap-2">
 								<input
-									id="email"
 									type="text"
 									placeholder="아이디를 입력하세요"
 									{...register("email", {
 										required: "아이디는 필수 입력 항목입니다.",
-										pattern: {
-											value: idRegex,
-											message: "아이디는 영어, 숫자, _만 사용하여 4~20자리여야 합니다.",
-										},
+										// pattern: {
+										// 	value: idRegex,
+										// 	message: "아이디는 영어, 숫자, _만 사용하여 4~20자리여야 합니다.",
+										// },
 									})}
 									className={`${inputStyle} ${
 										errors.email ? inputErrorStyle : ""
 									} w-[386px] h-[48px] px-[30px]`}
 								/>
-								{errors.email && <p className="text-red-500">{getErrorMerge(errors.email)}</p>}
+								{errors.email && <p className="text-red">{getErrorMerge(errors.email)}</p>}
 							</div>
 							<SmallBorderButton text="중복확인" size="sm" />
 						</div>
 						<div className="flex gap-[10px]">
 							<label htmlFor="password" className="w-[120px] p-[10px]">
-								비밀번호
+								비밀번호<span className="text-red">*</span>
 							</label>
 							<div className="flex flex-col gap-2">
 								<input
@@ -103,12 +104,12 @@ const SignUpForm = () => {
 										errors.password ? inputErrorStyle : ""
 									} w-[518px] h-[48px] px-[30px]`}
 								/>
-								{errors.password && <p className="text-red-500">{getErrorMerge(errors.password)}</p>}
+								{errors.password && <p className="text-red">{getErrorMerge(errors.password)}</p>}
 							</div>
 						</div>
 						<div className="flex gap-[10px]">
 							<label htmlFor="confirmPassword" className="w-[120px] p-[10px]">
-								비밀번호 확인
+								비밀번호 확인<span className="text-red">*</span>
 							</label>
 							<div className="flex flex-col gap-2">
 								<input
@@ -124,7 +125,7 @@ const SignUpForm = () => {
 									} w-[518px] h-[48px] px-[30px]`}
 								/>
 								{errors.confirmPassword && (
-									<p className="text-red-500">{getErrorMerge(errors.confirmPassword)}</p>
+									<p className="text-red">{getErrorMerge(errors.confirmPassword)}</p>
 								)}
 							</div>
 						</div>

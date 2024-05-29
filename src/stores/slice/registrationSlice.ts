@@ -1,5 +1,5 @@
-import { RegistrationState } from '@/interfaces/RegistrationState';
-import { Term, TermsState } from '@/interfaces/Term';
+import { RegistrationState } from "@/interfaces/RegistrationState";
+import { Term, TermsState } from "@/interfaces/Term";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialTermsState: TermsState = {
@@ -16,6 +16,7 @@ const initialState: RegistrationState = {
 		phoneNumber: "",
 		gender: "",
 		carrier: "",
+		verificationCode: "",
 	},
 	accountInfo: {
 		email: "",
