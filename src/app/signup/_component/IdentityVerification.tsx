@@ -32,6 +32,7 @@ const IdentityVerification = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [timeLeft, setTimeLeft] = useState<number | null>(179);
 	const [verificationError, setVerificationError] = useState<string | null>(null);
+	const [isDisabled, setIsDisabled] = useState(false);
 	const {
 		control,
 		handleSubmit,
@@ -107,6 +108,7 @@ const IdentityVerification = () => {
 			dispatch(sendVerificationRequest({ phoneNumber }));
 			setTimeLeft(179);
 			setShowVerificationInput(true);
+			setIsDisabled(true);
 		}
 	};
 
@@ -166,6 +168,7 @@ const IdentityVerification = () => {
 										message: "이름은 한글만 입력 가능 하며, 2~6자 이내로 입력해 주세요.",
 									},
 								})}
+								disabled={isDisabled}
 							/>
 							{errors.name && <p className="text-sm text-red">{getErrorMessage(errors.name)}</p>}
 						</div>
@@ -189,6 +192,7 @@ const IdentityVerification = () => {
 											message: "주민번호 앞자리를 형식에 맞게 입력해주세요.",
 										},
 									})}
+									disabled={isDisabled}
 								/>
 								<span className="mx-[20px] text-gray_06">-</span>
 								<input
@@ -203,6 +207,7 @@ const IdentityVerification = () => {
 											message: "주민번호 뒷자리에 숫자만 입력 가능합니다.",
 										},
 									})}
+									disabled={isDisabled}
 								/>
 								<span className="text-gray_06">******</span>
 							</div>
@@ -231,7 +236,8 @@ const IdentityVerification = () => {
 											onClick={() => {
 												field.onChange("male");
 												setGender("male");
-											}}>
+											}}
+											disabled={isDisabled}>
 											남성
 										</button>
 										<button
@@ -242,11 +248,12 @@ const IdentityVerification = () => {
 											onClick={() => {
 												field.onChange("female");
 												setGender("female");
-											}}>
+											}}
+											disabled={isDisabled}>
 											여성
 										</button>
 									</div>
-									{errors.gender && <p className="text-sm text-error">{getErrorMessage(errors.gender)}</p>}
+									{errors.gender && <p className="text-sm text-red">{getErrorMessage(errors.gender)}</p>}
 								</div>
 							)}
 						/>
@@ -263,13 +270,34 @@ const IdentityVerification = () => {
 								<div className="flex flex-col gap-2">
 									<div className="flex gap-4">
 										<label>
-											<input type="radio" {...field} value="KT" checked={field.value === "KT"} /> KT
+											<input
+												type="radio"
+												{...field}
+												value="KT"
+												checked={field.value === "KT"}
+												disabled={isDisabled}
+											/>{" "}
+											KT
 										</label>
 										<label>
-											<input type="radio" {...field} value="LG U+" checked={field.value === "LG U+"} /> LG U+
+											<input
+												type="radio"
+												{...field}
+												value="LG U+"
+												checked={field.value === "LG U+"}
+												disabled={isDisabled}
+											/>{" "}
+											LG U+
 										</label>
 										<label>
-											<input type="radio" {...field} value="SKT" checked={field.value === "SKT"} /> SKT
+											<input
+												type="radio"
+												{...field}
+												value="SKT"
+												checked={field.value === "SKT"}
+												disabled={isDisabled}
+											/>{" "}
+											SKT
 										</label>
 									</div>
 									<div className="flex gap-4">
@@ -279,6 +307,7 @@ const IdentityVerification = () => {
 												{...field}
 												value="KT 알뜰폰"
 												checked={field.value === "KT 알뜰폰"}
+												disabled={isDisabled}
 											/>{" "}
 											KT 알뜰폰
 										</label>
@@ -288,6 +317,7 @@ const IdentityVerification = () => {
 												{...field}
 												value="LG U+ 알뜰폰"
 												checked={field.value === "LG U+ 알뜰폰"}
+												disabled={isDisabled}
 											/>{" "}
 											LG U+ 알뜰폰
 										</label>
@@ -297,6 +327,7 @@ const IdentityVerification = () => {
 												{...field}
 												value="SKT 알뜰폰"
 												checked={field.value === "SKT 알뜰폰"}
+												disabled={isDisabled}
 											/>{" "}
 											SKT 알뜰폰
 										</label>
@@ -324,6 +355,7 @@ const IdentityVerification = () => {
 										message: "휴대폰 번호를 형식에 맞게 입력해 주세요.",
 									},
 								})}
+								disabled={isDisabled}
 							/>
 							{errors.phoneNumber && <p className="text-sm text-red">{getErrorMessage(errors.phoneNumber)}</p>}
 						</div>
