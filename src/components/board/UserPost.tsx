@@ -1,5 +1,6 @@
 import React from "react";
-
+import { FaRegCommentDots } from "react-icons/fa6";
+import { GoFileDirectory } from "react-icons/go";
 // Props 타입 정의
 interface UserPostProps {
   handleEdit: () => void; // 수정 버튼을 눌렀을 때 실행되는 함수
@@ -10,7 +11,35 @@ interface UserPostProps {
 const UserPost: React.FC<UserPostProps> = ({ handleEdit, handleDelete }) => {
   return (
     <div>
-      <div className="mt-10 py-10 border-t text-[14px]">
+      <h3 className="text-xl mb-10">
+        [공동생활] 우리 아파트에 도입된 [아파트너] 서비스를 소개합니다!
+      </h3>
+      <div className="flex justify-between items-center pb-4 ">
+        <div className="flex gap-3">
+          <p className="w-[56px] h-[60px] flex justify-center items-center rounded-[5px] text-2xl bg-[#D9F2FE]">
+            UI
+          </p>
+          <div className="flex flex-col gap-2">
+            <p>관리사무소</p>
+            <div className="flex gap-2">
+              <p>2024.04.23 11:56:58</p>
+              <div className="w-[1px] bg-[#A3A3A3]"></div>
+              <p>조회 48</p>
+              <div className="w-[1px] bg-[#A3A3A3]"></div>
+              <div className="flex items-center gap-1">
+                <FaRegCommentDots />
+                <p>댓글 3</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-[10px] p-[10px] bg-[#EEEEEE] rounded-[5px]">
+          <GoFileDirectory />
+          <p>첨부파일 2</p>
+        </div>
+      </div>
+
+      <div className="py-10 border-t text-[14px]">
         안녕하세요, 모든 입주민 여러분,
         <br />
         <br /> 보안 강화 안내: 최근 지역 내 소규모 범죄 사건이 증가함에 따라,
@@ -48,16 +77,18 @@ const UserPost: React.FC<UserPostProps> = ({ handleEdit, handleDelete }) => {
         <br />
         <br /> 아파트 관리 사무소 드림
       </div>
+
       <div className="flex gap-3 text-[14px] pb-10 border-b">
         <button
-          className="w-[108px] h-[40px] border border-black rounded-[5px]"
-          onClick={handleEdit}
+          className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
+
+          // onClick={handleEdit}
         >
           수정
         </button>
         <button
-          className="w-[108px] h-[40px] border border-black rounded-[5px]"
-          onClick={handleDelete}
+          className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
+          // onClick={handleDelete}
         >
           삭제
         </button>

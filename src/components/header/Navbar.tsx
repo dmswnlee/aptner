@@ -1,6 +1,6 @@
-"use client"
+"use client";
 import Link from "next/link";
-import Search from '@/components/Search';
+import Search from "@/components/Search";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useState } from "react";
 
@@ -16,17 +16,30 @@ const Navbar = () => {
       <div className="flex w-[1080px] items-center h-full ">
         <div className="flex justify-center items-center h-[18px] w-[756px] mr-[30px]">
           <div className="flex">
-            <div className="text-xl flex items-center cursor-pointer mr-[50px]" onClick={toggleModal}>
+            <div
+              className="text-xl flex items-center cursor-pointer mr-[50px]"
+              onClick={toggleModal}
+            >
               <FaBars className="text-charcoal mr-1" />
               <span className="text-charcoal">전체보기</span>
             </div>
           </div>
           <div className="text-xl space-x-[50px] flex">
-            <Link href="/apartment" className="text-charcoal">아파트 소개</Link>
-            <Link href="/notice" className="text-charcoal">공지사항</Link>
-            <Link href="/disclosure" className="text-charcoal">의무공개</Link>
-            <Link href="/communication" className="text-charcoal">소통공간</Link>
-            <Link href="/complaint" className="text-charcoal">민원게시판</Link>
+            <Link href="/apartment" className="text-charcoal">
+              아파트 소개
+            </Link>
+            <Link href="/notice" className="text-charcoal">
+              공지사항
+            </Link>
+            <Link href="/disclosure" className="text-charcoal">
+              의무공개
+            </Link>
+            <Link href="/communication" className="text-charcoal">
+              소통공간
+            </Link>
+            <Link href="/complaints" className="text-charcoal">
+              민원게시판
+            </Link>
           </div>
         </div>
         <Search />
@@ -34,13 +47,18 @@ const Navbar = () => {
       {isModalOpen && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-10">
           <div className="bg-white w-[900px] h-[449px] p-8 rounded-lg relative flex flex-col items-center justify-center">
-            <button className="absolute top-[15px] right-[15px] text-black" onClick={toggleModal}>
-              <FaTimes className="text-4xl"/>
+            <button
+              className="absolute top-[15px] right-[15px] text-black"
+              onClick={toggleModal}
+            >
+              <FaTimes className="text-4xl" />
             </button>
             <div className="w-full h-full flex items-center justify-center">
               <div className="grid grid-cols-5 gap-12 w-[778px] h-[305px]">
                 <div className="text-center">
-                  <h3 className="text-md font-semibold text-[#05A8FF] mb-6">아파트 소개</h3>
+                  <h3 className="text-md font-semibold text-[#05A8FF] mb-6">
+                    아파트 소개
+                  </h3>
                   <ul className="space-y-4 text-[14px] text-[#777777] font-inter font-normal leading-[16.94px] text-center">
                     <li>인사말</li>
                     <li>위치 정보</li>
@@ -53,7 +71,9 @@ const Navbar = () => {
                   </ul>
                 </div>
                 <div className="text-center">
-                  <h3 className="text-md font-semibold text-[#05A8FF] mb-6">공지사항</h3>
+                  <h3 className="text-md font-semibold text-[#05A8FF] mb-6">
+                    공지사항
+                  </h3>
                   <ul className="space-y-4 text-[14px] text-[#777777] font-inter font-normal leading-[16.94px] text-center">
                     <li>전체보기</li>
                     <li>공동 생활</li>
@@ -65,7 +85,9 @@ const Navbar = () => {
                   </ul>
                 </div>
                 <div className="text-center">
-                  <h3 className="text-md font-semibold text-[#05A8FF] mb-6">의무공개</h3>
+                  <h3 className="text-md font-semibold text-[#05A8FF] mb-6">
+                    의무공개
+                  </h3>
                   <ul className="space-y-4 text-[14px] text-[#777777] font-inter font-normal leading-[16.94px] text-center">
                     <li>관리비 부과 내역서</li>
                     <li>계약서</li>
@@ -76,7 +98,9 @@ const Navbar = () => {
                   </ul>
                 </div>
                 <div className="text-center">
-                  <h3 className="text-md font-semibold text-[#05A8FF] mb-6">소통공간</h3>
+                  <h3 className="text-md font-semibold text-[#05A8FF] mb-6">
+                    소통공간
+                  </h3>
                   <ul className="space-y-4 text-[14px] text-[#777777] font-inter font-normal leading-[16.94px] text-center">
                     <li>자유게시판</li>
                     <li>나눔장터</li>
@@ -86,7 +110,9 @@ const Navbar = () => {
                   </ul>
                 </div>
                 <div className="text-center">
-                  <h3 className="text-md font-semibold text-[#05A8FF] mb-6">민원게시판</h3>
+                  <h3 className="text-md font-semibold text-[#05A8FF] mb-6">
+                    민원게시판
+                  </h3>
                   <ul className="space-y-4 text-[14px] text-[#777777] font-inter font-normal leading-[16.94px] text-center">
                     <li>아파트 내 민원</li>
                   </ul>
