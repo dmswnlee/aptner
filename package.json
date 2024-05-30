@@ -16,11 +16,8 @@
 		"@types/quill": "^2.0.14",
 		"antd": "^5.17.2",
 		"axios": "^1.6.8",
-<<<<<<< HEAD
 		"http-proxy-middleware": "^3.0.0",
-=======
 		"date-fns": "^3.6.0",
->>>>>>> develop
 		"next": "14.2.3",
 		"next-auth": "^5.0.0-beta.18",
 		"quill-resize-image": "^1.0.4",

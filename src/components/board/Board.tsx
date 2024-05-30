@@ -30,21 +30,17 @@ export default function Board({ options }: BoardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options[0].label);
   const [fileNames, setFileNames] = useState<string[]>([]);
-  const [editorContent, setEditorContent] = useState<string>("");
   const router = useRouter();
   const fileInput = useRef<HTMLInputElement>(null);
-
   const handleCancel = () => {
     router.back();
   };
-
   const toggleDropdown = () => setIsOpen(!isOpen);
   const selectOption = (option: string) => {
     setSelectedOption(option);
     setValue("categoryCode", option);
     setIsOpen(false);
   };
-
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const files = event.target.files;
@@ -52,7 +48,6 @@ export default function Board({ options }: BoardProps) {
       setFileNames((prevFileNames) => [...prevFileNames, ...newFileNames]);
     }
   };
-
   const handleRemoveFile = (fileName: string) => {
     setFileNames((currentFileNames) =>
       currentFileNames.filter((name) => name !== fileName)
@@ -66,72 +61,19 @@ export default function Board({ options }: BoardProps) {
     },
   });
 
-  const extractFirstImageSrc = (htmlContent: string): string | null => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlContent, "text/html");
-    const img = doc.querySelector("img");
-    return img ? img.src : null;
-  };
-
-  const getBase64FromUrl = async (url: string) => {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        const base64data = reader.result as string;
-        resolve(base64data.split(",")[1]); // Remove data URL part
-      };
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
   const onSubmit = async (data: FormData) => {
-    const formData = new FormData();
-    const jsonString = JSON.stringify({
-      currentMember: {
-        id: 0,
-        email: "string",
-        phone: "string",
-        mainApartInfo: {
-          id: 0,
-          code: "string",
-          title: "string",
-          type: "LEADERS_ONE",
-        },
-        apartInfoList: [
-          {
-            id: 0,
-            code: "string",
-            title: "string",
-            type: "LEADERS_ONE",
-          },
-        ],
-      },
-      request: {
-        categoryCode: data.categoryCode,
-        title: data.title,
-        content: data.content,
-        isPrivate: data.isPrivate,
-      },
-    });
-    formData.append("request", jsonString);
-
-    const imageSrc = extractFirstImageSrc(editorContent);
-    if (imageSrc) {
-      const base64Image = await getBase64FromUrl(imageSrc);
-      formData.append("image", base64Image); // Base64 인코딩된 이미지를 추가
-    }
-
     try {
       const response = await axios.post(
         "https://aptner.site/v1/api/qna/RO000",
-        formData,
+        {
+          request: data,
+          image: "아무거나",
+        },
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqaW55bmdnNUBnbWFpbC5jb20iLCJpYXQiOjE3MTY5NzYxOTIsImV4cCI6MTcxNjk5Nzc5Mn0.Yu5R_hp56xoI5CPkuilrbcCbP4pe-J5BvlfxieSR41h0acTTjQ-vUcbXw3uSbQYw`,
-            "Content-Type": "multipart/form-data",
+            Authorization:
+              "Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqaW55bmdnNUBnbWFpbC5jb20iLCJpYXQiOjE3MTcwMDU2ODgsImV4cCI6MTcxNzAyNzI4OH0.B9of846vkVwisrUVb40sQUOu_izBUTdIN1X8mHD4ZsQ9_O5e5rn-I7oZpIAF143V",
+            "Content-Type": "application/json",
           },
         }
       );
@@ -142,8 +84,13 @@ export default function Board({ options }: BoardProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form
+      onSubmit={handleSubmit((data) => {
+        console.log(data);
+      })}
+    >
       <div className="flex flex-col relative border rounded-[5px] p-5 border-gray_05">
+        {/* Dropdown for category selection */}
         <div>
           <button
             className="pb-[15px] text-left flex items-center gap-[10px]"
@@ -240,12 +187,7 @@ export default function Board({ options }: BoardProps) {
           </div>
         </div>
 
-        <TinyEditor
-          onChange={(content) => {
-            setValue("content", content);
-            setEditorContent(content);
-          }}
-        />
+        <TinyEditor onChange={(content) => setValue("content", content)} />
       </div>
       <div className="flex justify-center mt-10 gap-4">
         <button
