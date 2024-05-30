@@ -72,7 +72,7 @@ export default function Board({ options }: BoardProps) {
         {
           headers: {
             Authorization:
-              "Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqaW55bmdnNUBnbWFpbC5jb20iLCJpYXQiOjE3MTcwMDU2ODgsImV4cCI6MTcxNzAyNzI4OH0.B9of846vkVwisrUVb40sQUOu_izBUTdIN1X8mHD4ZsQ9_O5e5rn-I7oZpIAF143V",
+              "Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqaW55bmdnNUBnbWFpbC5jb20iLCJpYXQiOjE3MTcwMzk2MTcsImV4cCI6MTcxNzA2MTIxN30.oR3buGoAKiht-gBu0lXy6BpUrVUhzW2ivw2t5--CdyAnF7K3TejhdA-_cPIslc7t",
             "Content-Type": "application/json",
           },
         }
@@ -84,11 +84,7 @@ export default function Board({ options }: BoardProps) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit((data) => {
-        console.log(data);
-      })}
-    >
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col relative border rounded-[5px] p-5 border-gray_05">
         {/* Dropdown for category selection */}
         <div>
