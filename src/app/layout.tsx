@@ -4,6 +4,7 @@ import Header from "@/components/header/Header";
 import ReduxProvider from "@/stores/provider";
 import Menu from "@/components/menu/Menu";
 import Footer from "@/components/Footer";
+import QuickMenu from "@/components/quickmenu/QuickMenu";
 
 export const metadata = {
   title: '아파트너',
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					<main className="flex-1">{children}</main>
 				</ReduxProvider>
         <Footer />
+				<QuickMenu />
 			</body>
 		</html>
 	);
