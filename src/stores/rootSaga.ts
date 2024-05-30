@@ -14,5 +14,5 @@ function* rootSaga() {
 		fork(watchFetchCommunications),
 		fork(watchSearchCommunications) 
 	]);
-
+}
 export default rootSaga;

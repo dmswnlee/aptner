@@ -30,7 +30,7 @@ const ComList = ({ ListTitle, data, detailPath, pinned, highlightQuery }: ListPr
         return highlightQuery ? highlightText(item.writer?.nickname || '', highlightQuery) : item.writer?.nickname;
       case "category":
         return (
-          <span className={item.isPin ? "text-red-500" : ""}>
+          <span className={item.isPin ? "text-red" : ""}>
             {item.isPin ? "중요글" : item.category?.name || "기타"}
           </span>
         );
