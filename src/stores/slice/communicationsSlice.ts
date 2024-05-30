@@ -1,75 +1,69 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Post } from '@/interfaces/Post';
 
-// Communications 인터페이스 정의
-interface Communications {
-  id: number;
-  isPin: boolean;
-  category: string;
-  title: string;
-  author: string;
-  views: number;
-  date: string;
-}
-
-// Redux 상태 인터페이스 정의
-interface CommunicationsState {
-  communications: Communications[];
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+interface CommunicationState {
+  posts: Post[];
+  pinnedPosts: Post[]; //new
+  loading: boolean;
   error: string | null;
   query: string;
   option: string;
 }
 
-// 초기 상태 정의
-const initialState: CommunicationsState = {
-  communications: [],
-  status: 'idle',
+const initialState: CommunicationState = {
+  posts: [],
+  pinnedPosts: [], //new
+  loading: false,
   error: null,
   query: '',
-  option: '',
+  option: 'title_content',
 };
 
-// Redux slice 생성
 const communicationsSlice = createSlice({
   name: 'communications',
   initialState,
   reducers: {
-    // 데이터를 설정하고 상태를 성공으로 변경
-    setCommunications(state, action: PayloadAction<Communications[]>) {
-      state.communications = action.payload;
-      state.status = 'succeeded';
+    fetchCommunicationsStart(state) {
+      state.loading = true;
     },
-    // 데이터를 로딩 중으로 설정
-    fetchCommunications(state) {
-      state.status = 'loading';
+    fetchCommunicationsSuccess(state, action: PayloadAction<{ posts: Post[], pinnedPosts: Post[] }>) {
+      state.posts = action.payload.posts;
+      state.pinnedPosts = action.payload.pinnedPosts;
+      state.loading = false;
     },
-    // 데이터 로딩 실패 시 에러 메시지를 설정
-    fetchCommunicationsFailed(state, action: PayloadAction<string>) {
-      state.status = 'failed';
+    fetchCommunicationsFailure(state, action: PayloadAction<string>) {
       state.error = action.payload;
+      state.loading = false;
     },
-    // 검색 쿼리를 설정
     setQuery(state, action: PayloadAction<string>) {
       state.query = action.payload;
     },
-    // 검색 옵션을 설정
     setOption(state, action: PayloadAction<string>) {
       state.option = action.payload;
     },
-    // 검색을 로딩 중으로 설정
     searchCommunications(state) {
-      state.status = 'loading';
+      state.loading = true;
+    },
+    searchCommunicationsSuccess(state, action: PayloadAction<Post[]>) {
+      state.posts = action.payload;
+      state.loading = false;
+    },
+    searchCommunicationsFailure(state, action: PayloadAction<string>) {
+      state.error = action.payload;
+      state.loading = false;
     },
   },
 });
 
 export const {
-  setCommunications,
-  fetchCommunications,
-  fetchCommunicationsFailed,
+  fetchCommunicationsStart,
+  fetchCommunicationsSuccess,
+  fetchCommunicationsFailure,
   setQuery,
   setOption,
   searchCommunications,
+  searchCommunicationsSuccess,
+  searchCommunicationsFailure,
 } = communicationsSlice.actions;
 
 export default communicationsSlice.reducer;

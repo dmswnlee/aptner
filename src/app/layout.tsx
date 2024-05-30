@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/header/Header";
 import ReduxProvider from "@/stores/provider";
 import Footer from "@/components/Footer";
+import QuickMenu from "@/components/quickmenu/QuickMenu";
 
 export const metadata = {
   title: "아파트너",
@@ -22,7 +23,14 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
         </ReduxProvider>
         <Footer />
+<<<<<<< HEAD
       </body>
     </html>
   );
+=======
+				<QuickMenu />
+			</body>
+		</html>
+	);
+>>>>>>> develop
 }
