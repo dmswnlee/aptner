@@ -14,7 +14,7 @@ import { RegistrationState } from "@/interfaces/RegistrationState";
 
 function* fetchTermsSaga(): SagaIterator {
 	try {
-		const response = yield call(axios.get, "https://aptner.site/v1/api/terms");
+		const response = yield call(axios.get, `${process.env.NEXT_PUBLIC_API_URL}/terms`);
 		const data: Term[] = response.data.result.termsInfoList;
 		yield put(fetchTermsSuccess(data));
 	} catch (error: any) {
@@ -46,7 +46,7 @@ function* submitRegistrationSaga(): SagaIterator {
 
 		console.log("Request Data:", requestData);
 
-		const response = yield call(axios.post, "https://aptner.site/v1/api/members/sign-up", requestData);
+		const response = yield call(axios.post, `${process.env.NEXT_PUBLIC_API_URL}/members/sign-up`, requestData);
 		yield put(nextStep());
 		console.log("회원가입에 성공하셨습니다.", response.data);
 	} catch (error: any) {
