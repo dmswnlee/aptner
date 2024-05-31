@@ -23,6 +23,11 @@ const Login = () => {
 
 	const handleChangeCheck = () => {
 		setIsChecked(!isChecked);
+		if (!isChecked) {
+			localStorage.setItem("autoLogin", "true");
+		} else {
+			localStorage.removeItem("autoLogin");
+		}
 	};
 
 	const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,6 +43,10 @@ const Login = () => {
 			setLoginError("없는 아이디거나 아이디/비밀번호가 틀렸습니다.");
 			setIsModalOpen(true);
 		} else {
+			if (isChecked) {
+				localStorage.setItem("autoLoginEmail", email);
+				localStorage.setItem("autoLoginPassword", password);
+			}
 			router.replace("/");
 		}
 	};
@@ -45,6 +54,20 @@ const Login = () => {
 	useEffect(() => {
 		setIsDisabled(!email || !password);
 	}, [email, password]);
+
+	useEffect(() => {
+		const autoLogin = localStorage.getItem("autoLogin");
+		const autoLoginEmail = localStorage.getItem("autoLoginEmail");
+		const autoLoginPassword = localStorage.getItem("autoLoginPassword");
+
+		if (autoLogin && autoLoginEmail && autoLoginPassword) {
+			signIn("credentials", {
+				email: autoLoginEmail,
+				password: autoLoginPassword,
+				redirect: false,
+			});
+		}
+	}, [router]);
 
 	const handleCloseModal = () => {
 		setIsModalOpen(false);

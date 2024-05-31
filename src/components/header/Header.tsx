@@ -5,10 +5,12 @@ import Image from "next/image";
 import logo from "@/assets/images/logo.png";
 import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
 	const { data: session, status } = useSession();
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
+	const router = useRouter();
 
 	useEffect(() => {
 		setIsLoggedIn(status === "authenticated");
@@ -16,8 +18,13 @@ const Header = () => {
 		console.log("Session data:", session);
 	}, [status, session]);
 
-	const handleLogout = () => {
-		signOut();
+	const handleLogout = async () => {
+		localStorage.removeItem("autoLogin");
+		localStorage.removeItem("autoLoginEmail");
+		localStorage.removeItem("autoLoginPassword");
+
+		await signOut({ redirect: false });
+		router.replace("/");
 	};
 
 	return (
