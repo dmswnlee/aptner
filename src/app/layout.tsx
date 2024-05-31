@@ -17,10 +17,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 				<MSWComponent />
 				<Header />
 				<ReduxProvider>
-					<main className="flex-1">{children}</main>
+					<main className="flex-1 ">{children}</main>
 				</ReduxProvider>
         <Footer />
-				<QuickMenu />
+				{/* <QuickMenu /> */}
 			</body>
 		</html>
 	);
