@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FaAngleDown } from "react-icons/fa";
 import { useDispatch, useSelector } from 'react-redux';
 import { setOption } from "@/stores/slice/communicationsSlice";
@@ -17,9 +17,8 @@ interface DropdownSearchProps {
 const DropdownSearch = ({ onSelect, selectedOption }: DropdownSearchProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dispatch = useDispatch();
-  const option = useSelector((state: RootState) => state.communications.option); // Redux 상태에서 현재 옵션을 가져옴
+  const option = useSelector((state: RootState) => state.communications.option);
 
-  // 검색 옵션 리스트
   const searchOptions: Option[] = [
     { value: "title_content", label: "제목 + 내용" },
     { value: "title", label: "제목" },
@@ -27,26 +26,16 @@ const DropdownSearch = ({ onSelect, selectedOption }: DropdownSearchProps) => {
     { value: "author", label: "작성자" },
   ];
 
-  // 컴포넌트가 마운트되거나 option 값이 변경될 때마다 실행
-  useEffect(() => {
-    const currentOption = searchOptions.find(opt => opt.value === option);
-    if (currentOption) {
-      setCurrentOptionLabel(currentOption.label);
-    }
-  }, [option]);
-
   const [currentOptionLabel, setCurrentOptionLabel] = useState("검색 조건");
 
-  // 드롭다운 토글 핸들러
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  // 옵션 선택 핸들러
   const handleOptionSelect = (option: Option) => {
     setCurrentOptionLabel(option.label);
-    onSelect(option); // 부모 컴포넌트에 선택된 옵션 전달
-    dispatch(setOption(option.value)); // Redux 상태 업데이트
+    onSelect(option);
+    dispatch(setOption(option.value));
     setIsDropdownOpen(false);
   };
 

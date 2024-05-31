@@ -1,4 +1,4 @@
-import Posts from "./_component/posts";
+import Posts from "./_component/Posts";
 
 export default function ComplaintPage() {
   return (
