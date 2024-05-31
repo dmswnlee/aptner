@@ -1,41 +1,97 @@
 "use client";
-import { useState } from "react";
-import Button from "@/components/buttons/Button";
+import React, { useRef, useState } from "react";
+import Button from "../buttons/Button";
 import { useRouter } from "next/navigation";
 import { GoFileDirectory } from "react-icons/go";
 import { IoIosArrowDown } from "react-icons/io";
-import QuillEditor from "./QuillEditor";
+import { IoMdInformationCircleOutline } from "react-icons/io";
+import { IoClose } from "react-icons/io5";
+import { HiOutlineFolderPlus } from "react-icons/hi2";
+import TinyEditor from "./TinyEditor";
+import { useForm } from "react-hook-form";
+import axios from "axios";
 
 interface Option {
   label: string;
 }
 
 interface BoardProps {
-  options: Option[]; // 옵션을 받기 위한 props
+  options: Option[];
+}
+
+interface FormData {
+  categoryCode: string;
+  title: string;
+  content: string;
+  isPrivate: boolean;
 }
 
 export default function Board({ options }: BoardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options[0].label);
+  const [fileNames, setFileNames] = useState<string[]>([]);
   const router = useRouter();
-
+  const fileInput = useRef<HTMLInputElement>(null);
   const handleCancel = () => {
-    router.back(); // 브라우저의 히스토리에서 한 단계 뒤로 이동
+    router.back();
   };
-
   const toggleDropdown = () => setIsOpen(!isOpen);
   const selectOption = (option: string) => {
     setSelectedOption(option);
+    setValue("categoryCode", option);
     setIsOpen(false);
+  };
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const files = event.target.files;
+      const newFileNames = Array.from(files).map((file) => file.name);
+      setFileNames((prevFileNames) => [...prevFileNames, ...newFileNames]);
+    }
+  };
+  const handleRemoveFile = (fileName: string) => {
+    setFileNames((currentFileNames) =>
+      currentFileNames.filter((name) => name !== fileName)
+    );
+  };
+
+  const { register, handleSubmit, setValue } = useForm<FormData>({
+    defaultValues: {
+      categoryCode: options[0].label,
+      isPrivate: false,
+    },
+  });
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      const response = await axios.post(
+        "https://aptner.site/v1/api/qna/RO000",
+        {
+          request: data,
+          image: "아무거나",
+        },
+        {
+          headers: {
+            Authorization:
+              "Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqaW55bmdnNUBnbWFpbC5jb20iLCJpYXQiOjE3MTcwMzk2MTcsImV4cCI6MTcxNzA2MTIxN30.oR3buGoAKiht-gBu0lXy6BpUrVUhzW2ivw2t5--CdyAnF7K3TejhdA-_cPIslc7t",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Server Response:", response.data);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
   };
 
   return (
-    <>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col relative border rounded-[5px] p-5 border-gray_05">
+        {/* Dropdown for category selection */}
         <div>
           <button
             className="pb-[15px] text-left flex items-center gap-[10px]"
             onClick={toggleDropdown}
+            type="button"
           >
             {selectedOption}
             <IoIosArrowDown />
@@ -59,41 +115,89 @@ export default function Board({ options }: BoardProps) {
         </div>
 
         <input
-          className="px-[30px] py-[15px] rounded-[5px] bg-gray_00 border text-[16px] placeholder:text-[16px] focus:border-gray_05 outline-gray_05 leading-[18px]"
+          className="px-[30px] py-[15px] rounded-[5px] bg-gray_00 border text-[16px] placeholder:text-[16px] placeholder:text-gray_06 focus:border-gray_05 outline-gray_05 leading-[18px]"
+          {...register("title")}
           type="text"
           placeholder="제목을 입력하세요"
         />
-        <label className="w-[100px]">
-          <span className="sr-only">파일 첨부하기</span>
-          <input type="file" className="hidden" />
-          <div className="flex items-center font-[16px] cursor-pointer mt-4 p-[11px] w-[145px] border rounded-[5px] shadow-sm leading-normal text-[#222]">
-            <GoFileDirectory className="mr-2" />
-            파일 첨부하기
-          </div>
-        </label>
 
-        <div className="border-t mt-4 text-center font-[16px] leading-[18px] text-[#222]">
-          <p className="mt-4 mb-[18px]">
-            게시글 작성시 욕설, 비방, 허위사실 유포 등의 내용이 포함되어 있을
-            경우 명예훼손으로 법적 처벌이 이루어질 수 있습니다.
-            <br />
-            서로의 의견을 경청하고 존중해주시기 바랍니다.
-          </p>
+        <div className="flex justify-between">
+          <label className="w-[100px]">
+            <span className="sr-only">파일 첨부하기</span>
+            <input
+              type="file"
+              ref={fileInput}
+              onChange={handleChange}
+              multiple
+              className="hidden"
+            />
+            <div className="flex items-center font-[16px] cursor-pointer mt-4 p-[11px] w-[145px] border rounded-[5px] shadow-sm leading-normal text-[#222]">
+              <GoFileDirectory className="mr-2" />
+              파일 첨부하기
+            </div>
+          </label>
+          <label className="flex gap-2 items-center">
+            <input
+              {...register("isPrivate")}
+              type="checkbox"
+              className="w-5 h-5"
+            />
+            비밀글
+          </label>
+        </div>
+        {/* Displaying list of files with an option to remove */}
+        {fileNames.length > 0 ? (
+          <div className="flex flex-col gap-3 py-3 text-[#666] bg-gray_00 max-h-[182px] rounded-[5px] mt-4 overflow-y-scroll custom-scrollbar">
+            {fileNames.map((name, index) => (
+              <div
+                key={index}
+                className="inline-flex w-fit items-center rounded-[5px] border p-[10px]"
+              >
+                <p className="w-[120px] truncate flex-shrink-0">{name}</p>
+                <button
+                  onClick={() => handleRemoveFile(name)}
+                  className="text-2xl"
+                  type="button"
+                >
+                  <IoClose />
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex justify-center gap-1 text-[#666] items-center h-20 border rounded-[5px] mt-4">
+            <HiOutlineFolderPlus className="text-xl" />
+            파일을 첨부해 주세요.
+          </div>
+        )}
+
+        {/* Legal warning message */}
+        <div className="border-t mt-4 text-center font-xl leading-[18px] text-[#222]">
+          <div className="mt-4 mb-[18px]">
+            <p className="flex justify-center items-center gap-1">
+              <IoMdInformationCircleOutline className="text-[20px]" />
+              게시글 작성시 욕설, 비방, 허위사실 유포 등의 내용이 포함되어 있을
+              경우 명예훼손으로 법적 처벌이 이루어질 수 있습니다.
+            </p>
+            <p>서로의 의견을 경청하고 존중해 주세요.</p>
+          </div>
         </div>
 
-        <QuillEditor />
+        <TinyEditor onChange={(content) => setValue("content", content)} />
       </div>
-      <div className="flex justify-center mt-[39px] gap-4">
-        <Button
-          text="저장"
-          className="w-[108px] p-[10px] border-blue_05 text-blue_05"
-        />
+      <div className="flex justify-center mt-10 gap-4">
+        <button
+          type="submit"
+          className="w-[108px] h-9 text-[14px] rounded-[5px] bg-gray_04 text-black_100"
+        >
+          저장
+        </button>
         <Button
           text="취소"
-          className="w-[108px] p-[10px] border-blue_05 text-blue_05"
+          className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100"
           onClick={handleCancel}
         />
       </div>
-    </>
+    </form>
   );
 }
