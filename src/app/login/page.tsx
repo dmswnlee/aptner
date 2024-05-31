@@ -8,6 +8,7 @@ import { AiTwotoneNotification } from "react-icons/ai";
 import Modal from "@/components/modal/Modal";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { Checkbox } from "antd";
 
 const Login = () => {
 	const { register, watch } = useForm();
@@ -15,6 +16,7 @@ const Login = () => {
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [loginError, setLoginError] = useState("");
+	const [loginAttempts, setLoginAttempts] = useState(10);
 
 	const router = useRouter();
 
@@ -42,6 +44,7 @@ const Login = () => {
 		if (result?.error) {
 			setLoginError("없는 아이디거나 아이디/비밀번호가 틀렸습니다.");
 			setIsModalOpen(true);
+			setLoginAttempts(prev => prev - 1);
 		} else {
 			if (isChecked) {
 				localStorage.setItem("autoLoginEmail", email);
@@ -79,7 +82,7 @@ const Login = () => {
 				<div className="w-full flex justify-center px-[24px] mb-[40px]">
 					<h2 className="text-2xl font-semibold pb-[16px]">로그인</h2>
 				</div>
-				<form onSubmit={onSubmit} className="w-[430px] h-full flex flex-col justify-center items-center gap-[10px]">
+				<form onSubmit={onSubmit} className="w-[430px] h-full flex flex-col justify-center gap-[10px]">
 					<input
 						type="email"
 						placeholder="아이디 입력"
@@ -92,18 +95,14 @@ const Login = () => {
 						{...register("password", { required: true })}
 						className="w-[430px] h-[48px] px-[30px] py-[15px] outline-none border border-solid border-border rounded-[5px] focus:border-blue_05 focus:text-blue_05 bg-gray_00"
 					/>
+					{loginError && <p className="text-red">현재 남은 로그인 시도횟수({10 - loginAttempts + 1}/10)</p>}
 					<div className="mt-[56px]">
 						<ColorButton text="로그인" size="lg" disabled={isDisabled} />
 					</div>
 					<div className="w-full mt-5  text-gray_400">
 						<div className="flex justify-between">
 							<div className="flex items-center gap-[15px]">
-								<input
-									type="checkbox"
-									checked={isChecked}
-									onChange={handleChangeCheck}
-									className={`w-[18px] h-[18px] ${isChecked ? "bg-blue_300" : "bg-gray_400"}`}
-								/>
+								<Checkbox id="check" checked={isChecked} onChange={handleChangeCheck} />
 								<label htmlFor="check" className={`${isChecked ? "text-blue_300" : "text-gray_400"}`}>
 									자동로그인
 								</label>
