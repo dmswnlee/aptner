@@ -1,4 +1,3 @@
-import Menu from "@/components/menu/Menu";
 import TabBar from "./_component/TabBar";
 
 export const metadata = {
@@ -18,7 +17,6 @@ export default function ApartDetailPageLayout({
         </div>
         <main>{children}</main>
       </div>
-      <Menu />
     </div>
   );
 }

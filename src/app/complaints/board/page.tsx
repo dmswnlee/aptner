@@ -1,4 +1,4 @@
-import Board from "../../../components/board/Board";
+import QNABoard from "../../../components/board/QNABoard";
 export default function BoardPage() {
   const options = [
     { label: "하자/보수" },
@@ -11,7 +11,7 @@ export default function BoardPage() {
       <p className="text-[24px] font-semibold leading-[27px] mb-[56px]">
         민원게시판
       </p>
-      <Board options={options} />
+      <QNABoard options={options} />
     </div>
   );
 }

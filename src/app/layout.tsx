@@ -23,14 +23,8 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
         </ReduxProvider>
         <Footer />
-<<<<<<< HEAD
+        {/* <QuickMenu /> */}
       </body>
     </html>
   );
-=======
-				<QuickMenu />
-			</body>
-		</html>
-	);
->>>>>>> develop
 }

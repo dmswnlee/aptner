@@ -30,6 +30,7 @@ export default function Board({ options }: BoardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options[0].label);
   const [fileNames, setFileNames] = useState<string[]>([]);
+  const [editorContent, setEditorContent] = useState<string>("");
   const router = useRouter();
   const fileInput = useRef<HTMLInputElement>(null);
   const handleCancel = () => {
@@ -62,22 +63,38 @@ export default function Board({ options }: BoardProps) {
   });
 
   const onSubmit = async (data: FormData) => {
+    const formData = new FormData();
+    const categoryIndex =
+      options.findIndex((option) => option.label === selectedOption) + 1;
+    const categoryCode = `QA${String(categoryIndex).padStart(3, "0")}`;
+
+    const jsonPayload = {
+      categoryCode: categoryCode,
+      title: data.title,
+      content: editorContent,
+      isPrivate: data.isPrivate,
+    };
+
+    formData.append(
+      "request",
+      new Blob([JSON.stringify(jsonPayload)], { type: "application/json" })
+    );
+
     try {
       const response = await axios.post(
         "https://aptner.site/v1/api/qna/RO000",
-        {
-          request: data,
-          image: "아무거나",
-        },
+        formData,
         {
           headers: {
             Authorization:
-              "Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqaW55bmdnNUBnbWFpbC5jb20iLCJpYXQiOjE3MTcwMzk2MTcsImV4cCI6MTcxNzA2MTIxN30.oR3buGoAKiht-gBu0lXy6BpUrVUhzW2ivw2t5--CdyAnF7K3TejhdA-_cPIslc7t",
-            "Content-Type": "application/json",
+              "Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqaW55bmdnNUBnbWFpbC5jb20iLCJpYXQiOjE3MTcxNjExNzMsImV4cCI6MTcxNzE4Mjc3M30.sgqC7GVMI4sR-EHv1whmqxKt2tsLoKqlWXJe7wX27cZUgdOoOUxny9G1aLDucNi0",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
       console.log("Server Response:", response.data);
+      const qnaId = response.data.result.qnaId;
+      router.push(`/complaints/detail/${qnaId}`);
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -183,7 +200,7 @@ export default function Board({ options }: BoardProps) {
           </div>
         </div>
 
-        <TinyEditor onChange={(content) => setValue("content", content)} />
+        <TinyEditor onChange={(content) => setEditorContent(content)} />
       </div>
       <div className="flex justify-center mt-10 gap-4">
         <button
