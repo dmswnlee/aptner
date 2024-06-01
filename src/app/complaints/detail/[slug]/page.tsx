@@ -4,6 +4,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import Comment from "@/components/comment/Comment";
 
 // 인터페이스 정의
 interface Qna {
@@ -156,6 +157,7 @@ export default function DailPage() {
             onReaction={handleReaction}
             emojiCounts={emojiCounts}
           />
+          <Comment initialComments={[]} author={nickname} postId={qna.id} page={'qna'}/>
         </>
       )}
     </div>

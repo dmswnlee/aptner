@@ -1,9 +1,10 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import { FaRegCommentDots } from "react-icons/fa6";
 import CommentList from './comments/CommentList';
 import CommentForm from './comments/CommentForm';
 import Modal from '../modal/Modal';
 import { useSession } from 'next-auth/react';
+import axios from 'axios';
 
 interface CommentType {
   id: number;
@@ -11,6 +12,7 @@ interface CommentType {
   date: string;
   content: string;
   image?: string;
+  imageName?: string;
   replies: CommentType[];
 }
 
@@ -18,9 +20,18 @@ interface CommentProps {
   initialComments: CommentType[];
   author: string;
   postId: number;
+  page: string
 }
 
-const Comment = ({ initialComments, author }: CommentProps) => {
+interface SessionData {
+  user: {
+    name: string;
+    email: string;
+  };
+  accessToken: string;
+}
+
+const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
   const [comments, setComments] = useState<CommentType[]>(initialComments);
   const [newComment, setNewComment] = useState<string>('');
   const [charCount, setCharCount] = useState<number>(0);
@@ -29,8 +40,14 @@ const Comment = ({ initialComments, author }: CommentProps) => {
   const [editingContent, setEditingContent] = useState<string>('');
   const [showModal, setShowModal] = useState<boolean>(false);
   const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
-  const apartCode = "RO000"
   const { data: session } = useSession();
+  const apartCode = "RO000";
+
+  useEffect(() => {
+    if (session && session.accessToken) {
+      // Fetch initial comments or perform any required initialization
+    }
+  }, [session]);
 
   const getCurrentDateTime = () => new Date().toLocaleString();
 
@@ -50,49 +67,60 @@ const Comment = ({ initialComments, author }: CommentProps) => {
   };
 
   const handleAddComment = async () => {
+    if (!session || !session.accessToken) {
+      console.error('No session or access token found');
+      return;
+    }
     if (newComment.trim() === '') return;
-    
+
+    const requestPayload = {
+      parentId: null,
+      content: newComment,
+    };
+
     const formData = new FormData();
-    formData.append('request', JSON.stringify({
-      parentId: 0,
-      content: newComment
-    }));
+    formData.append('request', new Blob([JSON.stringify(requestPayload)], { type: 'application/json' }));
     if (image) {
       formData.append('image', image);
     }
-    
-    const newCommentObj: CommentType = {
-      id: Date.now(),
-      author: author,
-      date: getCurrentDateTime(),
-      content: newComment,
-      image: image ? URL.createObjectURL(image) : undefined,
-      replies: [],
-    };
-
-    
 
     try {
-      const response = await fetch(`https://aptner.site//v1/api/posts/{apartCode}/{postId}/comments`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session?.accessToken}`,
-          'Content-Type': 'multipart/form-data',
-        },
-        body: formData,
-      });
+      const response = await axios.post(
+        `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${(session as SessionData).accessToken}`,
+            'Content-Type': 'multipart/form-data',
+          },
+          
+        }
+      );
+      console.log('Response:', response.data);
 
-      const result = await response.json();
-      if (result.success) {
-        setComments([...comments, { ...newCommentObj, id: result.result.postCommentId }]);
+      if (response.data.success) {
+        const newCommentObj: CommentType = {
+          id: response.data.result.postCommentId,
+          author: author,
+          date: getCurrentDateTime(),
+          content: newComment,
+          image: image ? URL.createObjectURL(image) : undefined,
+          replies: [],
+        };
+
+        setComments([...comments, newCommentObj]);
         setNewComment('');
         setCharCount(0);
         setImage(null);
       } else {
-        console.error('Failed to add comment:', result.message);
+        console.error('Failed to add comment:', response.data.message);
       }
-    } catch (error) {
-      console.error('Error adding comment:', error);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error adding comment:', error.response?.data);
+      } else {
+        console.error('Error adding comment:', error);
+      }
     }
   };
 

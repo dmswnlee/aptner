@@ -102,6 +102,7 @@ export default function Board({ options }: BoardProps) {
           },
         }
       );
+      console.log('Form Data:', formData);
       console.log("Server Response:", response.data);
       const qnaId = response.data.result.qnaId;
       router.push(`/complaints/detail/${qnaId}`);
