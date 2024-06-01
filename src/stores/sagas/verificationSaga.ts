@@ -10,11 +10,11 @@ import {
 import axios from "axios";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { SagaIterator } from "redux-saga";
-import { SendVerificationPayload, VerifyCodePayload } from '@/interfaces/VerificationState';
+import { SendVerificationPayload, VerifyCodePayload } from "@/interfaces/VerificationState";
 
 function* sendVerificationSaga(action: PayloadAction<SendVerificationPayload>): SagaIterator {
 	try {
-		const response = yield call(axios.get, `https://aptner.site/v1/api/members/send-verification`, {
+		const response = yield call(axios.get, `${process.env.NEXT_PUBLIC_API_URL}/members/send-verification`, {
 			params: { phone: action.payload.phoneNumber },
 		});
 		const { code, expiredAt } = response.data.result;
@@ -27,7 +27,7 @@ function* sendVerificationSaga(action: PayloadAction<SendVerificationPayload>): 
 
 function* verifyCodeSaga(action: PayloadAction<VerifyCodePayload>): SagaIterator {
 	try {
-		const response = yield call(axios.get, `https://aptner.site/v1/api/members/verify-code`, {
+		const response = yield call(axios.get, `${process.env.NEXT_PUBLIC_API_URL}/members/verify-code`, {
 			params: { phone: action.payload.phoneNumber, verificationCode: action.payload.code },
 		});
 		const { verify } = response.data.result;
