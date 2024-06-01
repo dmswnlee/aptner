@@ -2,6 +2,7 @@
 import React, { useRef } from "react";
 import Button from "@/components/buttons/Button";
 import Input from "../../components/Input/Input";
+import UserEdit from "./_component/UserEdit";
 export default function MyPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -12,7 +13,10 @@ export default function MyPage() {
   };
   return (
     <>
-      <div className="ml-[21px] flex flex-col items-center">
+      <div className="flex flex-col items-center relative">
+        <div className="absolute left-0">
+          <UserEdit />
+        </div>
         <div className="w-[586px] relative ">
           <input
             ref={fileInputRef}
@@ -36,31 +40,7 @@ export default function MyPage() {
             <p className="text-[20px]">아이디</p>
             <p className="w-[428px] ml-[10px] pl-[30px]">fastcampus</p>
           </div>
-          <Input
-            id="password"
-            label="현재 비밀번호"
-            type="text"
-            placeholder="fastcampus_v1"
-          />
-          <Input
-            id="password"
-            label="새 비밀번호"
-            type="text"
-            placeholder="fastcampus_v1"
-          />
-          <Input
-            id="password"
-            label="새 비밀번호 확인"
-            type="text"
-            placeholder="fastcampus_v1"
-          />
-          <Input
-            id="phoneNumber"
-            label="휴대폰 번호"
-            type="text"
-            placeholder="010-1234-5678"
-          />
-          <Input id="username" label="이름" type="text" placeholder="홍길동" />
+
           <Input
             id="username"
             label="닉네임"
