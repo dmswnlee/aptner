@@ -1,4 +1,3 @@
-import Menu from "@/components/menu/Menu";
 import TabBar from "./_component/TabBar";
 import UserImageUploader from "./_component/UserImageUploader";
 
@@ -21,7 +20,6 @@ export default function MyPageLayout({
         <TabBar />
         <main>{children}</main>
       </div>
-      <Menu />
     </div>
   );
 }
