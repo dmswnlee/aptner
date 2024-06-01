@@ -9,13 +9,19 @@ import emoji5 from "../../assets/images/emoji/emoji5.png";
 
 // Props 타입 정의
 interface UserPostProps {
-  // handleEdit: () => void; // 수정 버튼을 눌렀을 때 실행되는 함수
-  // handleDelete: () => void; // 삭제 버튼을 눌렀을 때 실행되는 함수
   category: string;
   nickname: string;
   title: string;
   content: string;
   createdAt: string;
+  onReaction: (reactionType: string) => void;
+  emojiCounts: {
+    likeCount: number;
+    empathyCount: number;
+    funCount: number;
+    amazingCount: number;
+    sadCount: number;
+  };
 }
 
 // UserPost 컴포넌트에 타입 적용
@@ -25,6 +31,8 @@ const UserPost: React.FC<UserPostProps> = ({
   title,
   content,
   createdAt,
+  onReaction,
+  emojiCounts,
 }) => {
   return (
     <div>
@@ -62,40 +70,43 @@ const UserPost: React.FC<UserPostProps> = ({
       ></div>
 
       <div className="flex mb-10 gap-16 justify-center">
-        <button className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
+        <button
+          onClick={() => onReaction("LIKE")}
+          className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center"
+        >
           <Image src={emoji1} alt="emoji1" width={40} height={40} />
           좋아요
+          <div>{emojiCounts.likeCount}</div>
         </button>
-        <button className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
+        <button
+          onClick={() => onReaction("EMPATHY")}
+          className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center"
+        >
           <Image src={emoji2} alt="emoji2" width={40} height={40} />
           공감돼요
+          {emojiCounts.empathyCount}
         </button>
-        <button className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
+        <button
+          onClick={() => onReaction("FUN")}
+          className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center"
+        >
           <Image src={emoji3} alt="emoji3" width={40} height={40} />
-          재밌어요
+          재밌어요 {emojiCounts.funCount}
         </button>
-        <button className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
+        <button
+          onClick={() => onReaction("AMAZING")}
+          className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center"
+        >
           <Image src={emoji4} alt="emoji4" width={40} height={40} />
-          놀라워요
+          놀라워요 {emojiCounts.amazingCount}
         </button>
-        <button className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
+        <button
+          onClick={() => onReaction("SAD")}
+          className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center"
+        >
           <Image src={emoji5} alt="emoji5" width={40} height={40} />
           슬퍼요
-        </button>
-      </div>
-
-      <div className="flex gap-3 text-[14px] pb-10 border-b">
-        <button
-          className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
-          // onClick={handleEdit}
-        >
-          수정
-        </button>
-        <button
-          className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
-          // onClick={handleDelete}
-        >
-          삭제
+          <div>{emojiCounts.sadCount}</div>
         </button>
       </div>
     </div>

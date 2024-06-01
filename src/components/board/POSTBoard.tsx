@@ -10,6 +10,7 @@ import { HiOutlineFolderPlus } from "react-icons/hi2";
 import TinyEditor from "./TinyEditor";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 
 interface Option {
   label: string;
@@ -26,6 +27,14 @@ interface FormData {
   isPrivate: boolean;
 }
 
+interface SessionData {
+  user: {
+    name: string;
+    email: string;
+  };
+  accessToken: string;
+}
+
 export default function Board({ options }: BoardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options[0].label);
@@ -33,6 +42,8 @@ export default function Board({ options }: BoardProps) {
   const [editorContent, setEditorContent] = useState<string>("");
   const router = useRouter();
   const fileInput = useRef<HTMLInputElement>(null);
+  const { data: session } = useSession();
+  const [isHovered, setIsHovered] = useState(false);
   const handleCancel = () => {
     router.back();
   };
@@ -86,8 +97,7 @@ export default function Board({ options }: BoardProps) {
         formData,
         {
           headers: {
-            Authorization:
-              "Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqaW55bmdnNUBnbWFpbC5jb20iLCJpYXQiOjE3MTcxMjY2OTEsImV4cCI6MTcxNzE0ODI5MX0.c81q3W5IF5BO_qB43ExGP9bm6yc_raCkVZGaFl1srQBZXJVymQXiFfvvrSZY0WDt",
+            Authorization: `Bearer ${(session as SessionData).accessToken}`,
             "Content-Type": "multipart/form-data",
           },
         }
@@ -132,27 +142,49 @@ export default function Board({ options }: BoardProps) {
         </div>
 
         <input
-          className="px-[30px] py-[15px] rounded-[5px] bg-gray_00 border text-[16px] placeholder:text-[16px] placeholder:text-gray_06 focus:border-gray_05 outline-gray_05 leading-[18px]"
+          className="px-[18px] py-[15px] rounded-[5px] border text-[16px] placeholder:text-[16px] placeholder:text-gray_06 focus:border-gray_05 outline-gray_05 leading-[18px]"
           {...register("title")}
           type="text"
           placeholder="제목을 입력하세요"
         />
 
-        <div className="flex justify-between">
-          <label className="w-[100px]">
-            <span className="sr-only">파일 첨부하기</span>
-            <input
-              type="file"
-              ref={fileInput}
-              onChange={handleChange}
-              multiple
-              className="hidden"
-            />
-            <div className="flex items-center font-[16px] cursor-pointer mt-4 p-[11px] w-[145px] border rounded-[5px] shadow-sm leading-normal text-[#222]">
-              <GoFileDirectory className="mr-2" />
-              파일 첨부하기
+        <div className="flex justify-between border-t mt-4">
+          <div className="flex items-center gap-2">
+            <label>
+              <input
+                type="file"
+                ref={fileInput}
+                onChange={handleChange}
+                multiple
+                className="hidden"
+              />
+              <div className="flex items-center gap-2 cursor-pointer mt-4 px-[11px] py-[10px] w-[145px] border rounded-[5px] leading-normal text-[#222]">
+                <GoFileDirectory />
+                파일 첨부하기
+              </div>
+            </label>
+            <div
+              className="relative"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
+              <IoMdInformationCircleOutline className="text-[20px] mt-4 cursor-pointer" />
+              {isHovered && (
+                <div className="absolute top-0 left-0 w-[682px] p-[10px] bg-white border rounded-[5px] shadow-xl z-10 tooltip">
+                  <div className="flex ] gap-2">
+                    <IoMdInformationCircleOutline className="text-[20px] mt-[2px]" />
+                    <p className="leading-normal">
+                      허용 확장자 : HWP, DOC, DOCX, XLS, PPT, PPTX, PDF, JPG,
+                      JPEG, PNG, GIF, BMP, MOV,
+                      <br />
+                      AVI, MPG, 3GP, 3G2, MIDI, MID, MP3, MP4, WebM, WMV
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
-          </label>
+          </div>
+
           <label className="flex gap-2 items-center">
             <input
               {...register("isPrivate")}
@@ -164,25 +196,32 @@ export default function Board({ options }: BoardProps) {
         </div>
         {/* Displaying list of files with an option to remove */}
         {fileNames.length > 0 ? (
-          <div className="flex flex-col gap-3 py-3 text-[#666] bg-gray_00 max-h-[182px] rounded-[5px] mt-4 overflow-y-scroll custom-scrollbar">
-            {fileNames.map((name, index) => (
-              <div
-                key={index}
-                className="inline-flex w-fit items-center rounded-[5px] border p-[10px]"
-              >
-                <p className="w-[120px] truncate flex-shrink-0">{name}</p>
-                <button
-                  onClick={() => handleRemoveFile(name)}
-                  className="text-2xl"
-                  type="button"
-                >
-                  <IoClose />
-                </button>
+          <div className="border rounded-[5px] mt-4">
+            <p className="bg-[#f7f7f7] h-10 flex text-[#666]">
+              <div className="px-4 py-2">
+                <IoClose className="text-2xl" />
               </div>
-            ))}
+              <p className="px-4 py-2">파일명</p>
+            </p>
+            <div className="flex flex-col text-[#666] border-t bg-gray_00 max-h-[120px] overflow-y-scroll custom-scrollbar">
+              {fileNames.map((name, index) => (
+                <div key={index} className="inline-flex w-fit items-center">
+                  <button
+                    onClick={() => handleRemoveFile(name)}
+                    className="text-2xl px-4 py-2"
+                    type="button"
+                  >
+                    <IoClose />
+                  </button>
+                  <p className="px-4 py-2 w-[500px] truncate flex-shrink-0">
+                    {name}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
-          <div className="flex justify-center gap-1 text-[#666] items-center h-20 border rounded-[5px] mt-4">
+          <div className="flex justify-center gap-1 text-[#666] bg-[#fcfcfc] items-center h-20 border rounded-[5px] mt-4">
             <HiOutlineFolderPlus className="text-xl" />
             파일을 첨부해 주세요.
           </div>
@@ -190,7 +229,7 @@ export default function Board({ options }: BoardProps) {
 
         {/* Legal warning message */}
         <div className="border-t mt-4 text-center font-xl leading-[18px] text-[#222]">
-          <div className="mt-4 mb-[18px]">
+          <div className="mt-4 mb-[18px] py-[10px] border bg-[#f7f7f7]">
             <p className="flex justify-center items-center gap-1">
               <IoMdInformationCircleOutline className="text-[20px]" />
               게시글 작성시 욕설, 비방, 허위사실 유포 등의 내용이 포함되어 있을
@@ -203,17 +242,17 @@ export default function Board({ options }: BoardProps) {
         <TinyEditor onChange={(content) => setEditorContent(content)} />
       </div>
       <div className="flex justify-center mt-10 gap-4">
-        <button
-          type="submit"
-          className="w-[108px] h-9 text-[14px] rounded-[5px] bg-gray_04 text-black_100"
-        >
-          저장
-        </button>
         <Button
           text="취소"
           className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100"
           onClick={handleCancel}
         />
+        <button
+          type="submit"
+          className="w-[108px] h-9 text-[14px] rounded-[5px] bg-[#EBF7FF] text-[#1674B7]"
+        >
+          작성
+        </button>
       </div>
     </form>
   );
