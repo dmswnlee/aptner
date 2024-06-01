@@ -8,10 +8,11 @@ interface CommentFormProps {
   image: File | null;
   onTextareaChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRemoveImage: () => void;
   onAddComment: () => void;
 }
 
-const CommentForm = ({ author, newComment, charCount, image, onTextareaChange, onFileChange, onAddComment }: CommentFormProps) => {
+const CommentForm = ({ author, newComment, charCount, image, onTextareaChange, onFileChange, onRemoveImage, onAddComment }: CommentFormProps) => {
   return (
     <div>
       <div className="flex items-center gap-3 p-2 rounded-[5px] mt-5">
@@ -28,6 +29,7 @@ const CommentForm = ({ author, newComment, charCount, image, onTextareaChange, o
         image={image}
         onTextareaChange={onTextareaChange}
         onFileChange={onFileChange}
+        onRemoveImage={onRemoveImage}
         onSave={onAddComment}
       />
     </div>

@@ -15,10 +15,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 		<html lang="ko" className="h-full">
 			<body className="flex flex-col min-h-screen">
 				<MSWComponent />
+				<AuthSession>
 				<Header />
 				<ReduxProvider>
 					<main className="flex-1">{children}</main>
 				</ReduxProvider>
+				</AuthSession>
         <Footer />
 				{/* <QuickMenu /> */}
 			</body>

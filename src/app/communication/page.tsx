@@ -1,142 +1,184 @@
-'use client'
-
+"use client";
+import Link from "next/link";
+import axios from "axios";
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '@/stores/store';
-import { FaListUl } from "react-icons/fa";
-import { RiGalleryView2 } from "react-icons/ri";
-import GalleryTab from "./_component/GalleryTab";
-import ComList from "./_component/ComList";
-import Gallery from "./_component/Gallery";
+import { useSession } from "next-auth/react";
+import { PiPencilSimpleLineLight } from "react-icons/pi";
+import { RiImageFill } from "react-icons/ri";
+import New from "@/assets/images/New.png";
+import Image from "next/image";
 import { Pagination } from "antd";
-import type { PaginationProps } from "antd";
-import Tabs from "@/components/noticeboard/Tabs";
-import DropdownSearch from "@/components/DropdownSearch";
-import SearchBoard from "@/components/SearchBoard";
-import { setOption, setQuery, searchCommunications } from '@/stores/slice/communicationsSlice';
 
-interface Tab {
+// Communication 타입 정의
+interface Writer {
+  id: number;
   name: string;
-  label: string;
-  icon: JSX.Element;
+  nickname: string;
+}
+interface Category {
+  id: number;
+  type: string;
+  code: string;
+  name: string;
+}
+interface Communication {
+  id: number;
+  category: Category;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  writer: Writer;
+  title: string;
+  viewCount: number;
+  status: string;
+}
+interface SessionData {
+  user: {
+    name: string;
+    email: string;
+  };
+  accessToken: string;
 }
 
-interface Option {
-  value: string;
-  label: string;
-}
+const Posts = () => {
+  const [communications, setCommunications] = useState<Communication[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const { data: session } = useSession();
 
-const CommunicationPage = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const communications = useSelector((state: RootState) => state.communications.posts);
-  const loading = useSelector((state: RootState) => state.communications.loading);
-  const query = useSelector((state: RootState) => state.communications.query);
-  const option = useSelector((state: RootState) => state.communications.option);
-  const pinnedPosts = useSelector((state: RootState) => state.communications.pinnedPosts);
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    };
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("ko-KR", options)
+      .format(date)
+      .replace(/.$/, "");
+  };
 
-  const [category, setCategory] = useState<string>("all");
-  const [current, setCurrent] = useState<number>(1);
-  const [view, setView] = useState<string>("list");
-  const [selectedOption, setSelectedOption] = useState<Option>({ value: "", label: "검색 조건" });
-  const [searchActive, setSearchActive] = useState<boolean>(false);
+  const isToday = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
+  };
+
+  const fetchCommunications = async (page: number) => {
+    if (!session) return;
+    try {
+      const response = await axios.get(`https://aptner.site/v1/api/posts/RO000`, {
+        headers: {
+          Authorization: `Bearer ${(session as SessionData).accessToken}`,
+        },
+        params: {
+          page: page,
+          size: 15,
+          sort: "LATEST",
+        },
+      });
+      setCommunications(response.data.result.result.posts);
+      setTotalCount(response.data.result.totalCount); // 총 항목 수 설정
+      console.log(response.data.result);
+      console.log(response.data.result.result.posts);
+      setLoading(false);
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
 
   useEffect(() => {
-    dispatch({ type: 'communications/fetchCommunications' });
-  }, [dispatch]);
+    if (session) {
+      fetchCommunications(currentPage);
+    }
+  }, [session, currentPage]);
 
-  const categoryTabs: Tab[] = [
-    { name: "all", label: "전체", icon: <></> },
-    { name: "freeboard", label: "자유게시판", icon: <></> },
-    { name: "market", label: "나눔장터", icon: <></> },
-    { name: "hobby", label: "취미게시판", icon: <></> },
-    { name: "recommendations", label: "주변 추천", icon: <></> },
-    { name: "lost-and-found", label: "분실물", icon: <></> },
-  ];
-
-  const viewTabs: Tab[] = [
-    { name: "list", label: "리스트 보기", icon: <FaListUl /> },
-    { name: "gallery", label: "갤러리 보기", icon: <RiGalleryView2 /> },
-  ];
-
-  const ListTitle = [
-    { key: "category", header: "분류", width: "w-[112px]" },
-    { key: "title", header: "글 제목", width: "w-[629px]" },
-    { key: "writer", header: "글쓴이", width: "w-[96px]" },
-    { key: "views", header: "조회수", width: "w-[120px]" },
-    { key: "createdAt", header: "등록일", width: "w-[123px]" },
-  ];
-
-  const handleViewTabChange = (tabName: string) => {
-    setView(tabName);
+  const hasImageOrIframe = (content: string): boolean => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(content, "text/html");
+    return !!doc.querySelector("img, iframe");
   };
 
-  const handleCategoryTabChange = (tabName: string) => {
-    setCategory(tabName);
-    dispatch(setQuery('')); // 검색어 초기화
-    setSearchActive(false); // 검색 상태 초기화
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
-  const handleChange: PaginationProps["onChange"] = (page: number) => {
-    setCurrent(page);
-  };
-
-  const handleSearchOptionSelect = (option: Option) => {
-    setSelectedOption(option);
-    dispatch(setOption(option.value));
-  };
-
-  const handleSearch = (query: string) => { 
-    dispatch(setQuery(query));
-    dispatch(searchCommunications());
-    setSearchActive(true);
-  };
-
-  const filteredCommunications = communications.filter(post => {
-    const matchesCategory = category === "all" || post.category?.code === category;
-    if (!searchActive || !query || !option) return matchesCategory;
-    const matchesQuery = (() => {
-      switch (option) {
-        case 'title_content':
-          return post.title.includes(query) || post.content.includes(query);
-        case 'title':
-          return post.title.includes(query);
-        case 'content':
-          return post.content.includes(query);
-        case 'author':
-          return post.writer && (post.writer.nickname.includes(query) || post.writer.name?.includes(query));
-        default:
-          return true;
-      }
-    })();
-    return matchesCategory && matchesQuery;
-  });
-
-  const sortedCommunications = [...filteredCommunications].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  const sortedPinnedPosts = [...pinnedPosts].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  
-  const displayedPosts = searchActive ? sortedCommunications : (category === "all" ? [...sortedPinnedPosts, ...sortedCommunications] : [...sortedPinnedPosts.filter(post => post.category?.code === category), ...sortedCommunications]);
 
   return (
-    <div className="mt-12 flex justify-center">
-      <div className="w-[1080px] flex flex-col">
-        <h2 className="text-2xl mb-10">소통공간</h2>
-        <Tabs tabs={categoryTabs} onTabChange={handleCategoryTabChange} />
-        <GalleryTab tabs={viewTabs} onTabChange={handleViewTabChange} />
-        {view === "list" ? (
-          <ComList ListTitle={ListTitle} data={displayedPosts} detailPath="/detail" highlightQuery={searchActive ? query : ''} />
-        ) : (
-          <Gallery data={filteredCommunications} detailPath="/detail" loading={loading} />
-        )}
-        <div className="flex justify-center p-5">
-          <Pagination current={current} onChange={handleChange} total={filteredCommunications.length} />
+    <div className="w-full flex flex-col items-center mb-[100px]">
+      <div className="max-h-[1021px] mb-[100px] border-t border-b border-t-[#2A3F6D] relative">
+        <div className="grid grid-cols-[112px,546px,118px,68px,118px]">
+          {/* Header */}
+          <div className="border-b border-b-[#2A3F6D] py-4 bg-[#F9F9F9] text-center">
+            분류
+          </div>
+          <div className="border-b border-b-[#2A3F6D] py-4 bg-[#F9F9F9] text-center">
+            글 제목
+          </div>
+          <div className="border-b border-b-[#2A3F6D] py-4 bg-[#F9F9F9] text-center">
+            글쓴이
+          </div>
+          <div className="border-b border-b-[#2A3F6D] py-4 bg-[#F9F9F9] text-center">
+            조회수
+          </div>
+          <div className="border-b border-b-[#2A3F6D] py-4 bg-[#F9F9F9] text-center">
+            등록일
+          </div>
+          {/* Data */}
+          {communications?.map((posts) => (
+            <div key={posts.id} className="contents">
+              <div className="border-b py-4 text-center">
+                {posts.category.name}
+              </div>
+              <Link
+                href={`/communication/details/${posts.id}`}
+                className="border-b py-4 ml-[3px] flex gap-[3px] items-center"
+              >
+                {posts.title}
+                {hasImageOrIframe(posts.content) && (
+                  <RiImageFill className="ml-1 " />
+                )}
+                {isToday(posts.createdAt) && (
+                  <Image
+                    src={New}
+                    alt="new"
+                    width={14}
+                    height={14}
+                    className="text-red-500 ml-1"
+                  />
+                )}
+              </Link>
+              <div className="border-b py-4 text-center">
+                {posts.writer.nickname}
+              </div>
+              <div className="border-b py-4 text-center">{posts.viewCount}</div>
+              <div className="border-b py-4 text-center">
+                {formatDate(posts.createdAt)}
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="flex justify-center p-5 mb-[100px] gap-3">
-          <DropdownSearch onSelect={handleSearchOptionSelect} selectedOption={selectedOption} />
-          <SearchBoard selectedOption={selectedOption} onSearch={handleSearch} />
-        </div>
+        <Link
+          href="/communications/board"
+          className="absolute flex justify-center items-center gap-[2px] right-0 mt-[30px] bg-[#3ABEFF] rounded-[5px] text-white w-[78px] h-[36px] text-[14px]"
+        >
+          <PiPencilSimpleLineLight className="text-2xl" />
+          <p>글작성</p>
+        </Link>
       </div>
+      <Pagination
+        current={currentPage}
+        total={totalCount} // 총 항목 수 전달
+        pageSize={10} // 페이지당 항목 수 설정
+        onChange={handlePageChange}
+      />
     </div>
   );
 };
 
-export default CommunicationPage;
+export default Posts;

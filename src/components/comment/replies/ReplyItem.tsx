@@ -50,17 +50,6 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply }: ReplyItemProps)
       <div className="ml-[50px]">
         <ButtonGroup onEdit={() => onEdit(reply.id)} onDelete={() => onDelete(reply.id)} onReply={() => setIsReplying(!isReplying)} />
       </div>
-      {/* {isReplying && (
-        <div className="mt-2">
-          <textarea
-            className="w-full p-2 border border-gray-300 rounded"
-            placeholder="답글을 입력해 주세요."
-            value={replyContent}
-            onChange={handleReplyChange}
-          />
-          <SmallBorderButton text="답글 달기" size="mini" onClick={handleReplySubmit} />
-        </div>
-      )} */}
     </div>
   );
 };

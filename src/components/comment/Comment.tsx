@@ -3,18 +3,21 @@ import { FaRegCommentDots } from "react-icons/fa6";
 import CommentList from './comments/CommentList';
 import CommentForm from './comments/CommentForm';
 import Modal from '../modal/Modal';
+import { useSession } from 'next-auth/react';
 
 interface CommentType {
   id: number;
   author: string;
   date: string;
   content: string;
-  replies: CommentType[]; 
+  image?: string;
+  replies: CommentType[];
 }
 
 interface CommentProps {
   initialComments: CommentType[];
   author: string;
+  postId: number;
 }
 
 const Comment = ({ initialComments, author }: CommentProps) => {
@@ -26,6 +29,8 @@ const Comment = ({ initialComments, author }: CommentProps) => {
   const [editingContent, setEditingContent] = useState<string>('');
   const [showModal, setShowModal] = useState<boolean>(false);
   const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
+  const apartCode = "RO000"
+  const { data: session } = useSession();
 
   const getCurrentDateTime = () => new Date().toLocaleString();
 
@@ -40,21 +45,55 @@ const Comment = ({ initialComments, author }: CommentProps) => {
     }
   };
 
-  const handleAddComment = () => {
-    if (newComment.trim() === '') return;
+  const handleRemoveImage = () => {
+    setImage(null);
+  };
 
+  const handleAddComment = async () => {
+    if (newComment.trim() === '') return;
+    
+    const formData = new FormData();
+    formData.append('request', JSON.stringify({
+      parentId: 0,
+      content: newComment
+    }));
+    if (image) {
+      formData.append('image', image);
+    }
+    
     const newCommentObj: CommentType = {
       id: Date.now(),
       author: author,
       date: getCurrentDateTime(),
       content: newComment,
+      image: image ? URL.createObjectURL(image) : undefined,
       replies: [],
     };
 
-    setComments([...comments, newCommentObj]);
-    setNewComment('');
-    setCharCount(0);
-    setImage(null);
+    
+
+    try {
+      const response = await fetch(`https://aptner.site//v1/api/posts/{apartCode}/{postId}/comments`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session?.accessToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setComments([...comments, { ...newCommentObj, id: result.result.postCommentId }]);
+        setNewComment('');
+        setCharCount(0);
+        setImage(null);
+      } else {
+        console.error('Failed to add comment:', result.message);
+      }
+    } catch (error) {
+      console.error('Error adding comment:', error);
+    }
   };
 
   const handleEditComment = (id: number) => {
@@ -65,10 +104,10 @@ const Comment = ({ initialComments, author }: CommentProps) => {
     }
   };
 
-  const handleUpdateComment = (id: number, content: string) => {
+  const handleUpdateComment = (id: number, content: string, image?: string) => {
     setComments(comments.map(comment => {
       if (comment.id === id) {
-        return { ...comment, content: content };
+        return { ...comment, content: content, image: image || comment.image };
       }
       return comment;
     }));
@@ -88,7 +127,7 @@ const Comment = ({ initialComments, author }: CommentProps) => {
     setCommentToDelete(null);
   };
 
-  const handleReply = (parentId: number, content: string) => {
+  const handleReply = (parentId: number, content: string, image?: string) => {
     if (content.trim() === '') return;
 
     const newReply: CommentType = {
@@ -96,6 +135,7 @@ const Comment = ({ initialComments, author }: CommentProps) => {
       author: author,
       date: getCurrentDateTime(),
       content: content,
+      image: image ? URL.createObjectURL(new Blob([image])) : undefined,
       replies: [],
     };
 
@@ -140,6 +180,7 @@ const Comment = ({ initialComments, author }: CommentProps) => {
         image={image}
         onTextareaChange={handleTextareaChange}
         onFileChange={handleFileChange}
+        onRemoveImage={handleRemoveImage}
         onAddComment={handleAddComment}
       />
     </div>
