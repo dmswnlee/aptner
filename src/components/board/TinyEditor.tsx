@@ -38,7 +38,7 @@ const TinyEditor: React.FC<TinyEditorProps> = ({ onChange }) => {
           color: #BBB;
           } `,
         }}
-        onEditorChange={(content, editor) => {
+        onEditorChange={(content) => {
           onChange(content); // 에디터에서 내용이 변경될 때마다 호출됨
         }}
       />
