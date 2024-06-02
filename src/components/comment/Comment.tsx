@@ -21,7 +21,9 @@ interface CommentProps {
   author: string;
   postId: number;
   page: string;
+  categoryCode: string; // Add this line
 }
+
 
 interface SessionData {
   user: {
@@ -31,7 +33,7 @@ interface SessionData {
   accessToken: string;
 }
 
-const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
+const Comment = ({ initialComments, author, postId, page, categoryCode }: CommentProps) => {
   const [comments, setComments] = useState<CommentType[]>(initialComments);
   const [newComment, setNewComment] = useState<string>('');
   const [charCount, setCharCount] = useState<number>(0);
@@ -46,7 +48,7 @@ const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
 
   useEffect(() => {
     if (session && session.accessToken) {
-      fetchComments(currentPage);
+      // fetchComments(currentPage);
     }
   }, [session, currentPage]);
 
@@ -67,44 +69,34 @@ const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
     setImage(null);
   };
 
-  const fetchComments = async (page: number) => {
-    try {
-      const response = await axios.get(
-        `https://aptner.site/v1/api/posts/${apartCode}/${postId}/comments`,{
-          headers: {
-            Authorization: `Bearer ${(session as SessionData).accessToken}`,
-            'Content-Type': 'application/json',
-          },
-          params: {
-            page: page,
-            size: 10,
-            sort: "LATEST",
-            search: null
-          },
-        }
-      );
-      console.log(response.data)
-      if (response.data.success) {
-        const fetchedComments: CommentType[] = response.data.result.result.map((comment: any) => ({
-          id: comment.id,
-          author: comment.author,
-          date: comment.date,
-          content: comment.content,
-          image: comment.image,
-          replies: comment.replies || [],
-        }));
-        setComments(fetchedComments);
-      } else {
-        console.error('Failed to fetch comments:', response.data.message);
-      }
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        console.error('Error fetching comments:', error.response?.data);
-      } else {
-        console.error('Error fetching comments:', error);
-      }
-    }
-  };
+  // const fetchComments = async (page: number) => {
+  //   if (!session) return;
+  //   try {
+  //     const response = await axios.get(
+  //       `https://aptner.site/v1/api/posts/${apartCode}/${postId}/comments`, {
+  //         headers: {
+  //           Authorization: `Bearer ${(session as SessionData).accessToken}`,
+  //         },
+  //         params: {
+  //           page: page,
+  //           size: 10,
+  //           sort: "LATEST",
+  //           search: null,
+  //           type: null,
+  //           categoryCode: categoryCode 
+  //         },
+  //       }
+  //     );
+  //     console.log('Fetch response:', response);
+  //     setComments(response.data);
+  //   } catch (err) {
+  //     if (axios.isAxiosError(err)) {
+  //       console.error('Error fetching comments:', err.response?.data);
+  //     } else {
+  //       console.error('Error fetching comments:', err);
+  //     }
+  //   }
+  // };
 
   const handleAddComment = async () => {
     if (!session || !session.accessToken) {
@@ -124,7 +116,7 @@ const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
       formData.append('image', image);
     }
 
-    try { 
+    try {
       const response = await axios.post(
         `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments`,
         formData,

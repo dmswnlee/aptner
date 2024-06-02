@@ -7,11 +7,14 @@ import Gallery from "./_component/Gallery";
 import GalleryTab from "./_component/GalleryTab";
 import { RiListUnordered, RiGalleryView2 } from "react-icons/ri";
 import Tabs from "@/components/noticeboard/Tabs";
+import DropdownSearch from "@/components/DropdownSearch";
+import SearchBoard from "@/components/SearchBoard";
 
 interface Tab {
   name: string;
   label: string;
   icon: JSX.Element;
+  code: string;
 }
 interface Writer {
   id: number;
@@ -42,6 +45,10 @@ interface SessionData {
   };
   accessToken: string;
 } 
+interface Option {
+  value: string;
+  label: string;
+}
 
 export default function CommunicationPage() {
   const [activeTab, setActiveTab] = useState<string>("Posts");
@@ -51,14 +58,16 @@ export default function CommunicationPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const { data: session } = useSession();
-  
+  const [selectedOption, setSelectedOption] = useState<Option>({ value: "", label: "" });
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
   const categoryTabs: Tab[] = [
-    { name: "all", label: "전체", icon: <></> },
-    { name: "freeboard", label: "자유게시판", icon: <></> },
-    { name: "market", label: "나눔장터", icon: <></> },
-    { name: "hobby", label: "취미게시판", icon: <></> },
-    { name: "recommendations", label: "주변 추천", icon: <></> },
-    { name: "lost-and-found", label: "분실물", icon: <></> },
+    { name: "all", label: "전체", icon: <></>, code: "" },
+    { name: "freeboard", label: "자유게시판", icon: <></>, code: "PT001" },
+    { name: "market", label: "나눔장터", icon: <></>, code: "PT002" },
+    { name: "hobby", label: "취미게시판", icon: <></>, code: "PT003" },
+    { name: "recommendations", label: "주변 추천", icon: <></>, code: "PT004" },
+    { name: "lost-and-found", label: "분실물", icon: <></>, code: "PT005" },
   ];
   const tabs = [
     { name: "Posts", icon: <RiListUnordered /> },
@@ -71,29 +80,48 @@ export default function CommunicationPage() {
   };
 
   const handleCategoryTabChange = (tabName: string) => {
-    setCategory(tabName);
+    const selectedCategory = categoryTabs.find(tab => tab.name === tabName);
+    if (selectedCategory) {
+      setCategory(selectedCategory.code);
+    }
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
   
+  const handleSearchOptionSelect = (option: Option) => {
+    setSelectedOption(option);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
+
+  console.log(searchQuery)
+  console.log(selectedOption.value)
+  
   const fetchCommunications = async (page: number) => {
     if (!session) return;
     try {
-      const response = await axios.get(`https://aptner.site/v1/api/posts/RO000`, {
+      const response = await axios.get(
+        `https://aptner.site/v1/api/posts/RO000`, {
         headers: {
           Authorization: `Bearer ${(session as SessionData).accessToken}`,
         },
         params: {
           page: page,
-          size: activeTab === "Gallery" ? 16 : 15,  // Adjust page size based on active tab
+          size: activeTab === "Gallery" ? 16 : 15,
           sort: "LATEST",
-          search: null
+          search: searchQuery || null,
+          type: selectedOption.value || null,
+          categoryCode: category === "all" ? null : category
         },
       });
+      console.log(response.data.result)
       setCommunications(response.data.result.result.posts);
-      setTotalCount(response.data.result.totalCount); // Set total count for pagination
+      setTotalCount(response.data.result.totalCount);
       setLoading(false);
     } catch (err) {
       console.log("err", err);
@@ -104,7 +132,7 @@ export default function CommunicationPage() {
     if (session) {
       fetchCommunications(currentPage);
     }
-  }, [session, currentPage, activeTab]);
+  }, [session, currentPage, activeTab, category, searchQuery, selectedOption]);
 
   return (
     <div className="mt-[70px] w-[1080px] mx-auto">
@@ -121,6 +149,7 @@ export default function CommunicationPage() {
             currentPage={currentPage}
             total={totalCount}
             onPageChange={handlePageChange}
+            searchQuery={searchQuery} // Pass searchQuery as prop
           />
         ) : (
           <Gallery
@@ -133,6 +162,10 @@ export default function CommunicationPage() {
             onPageChange={handlePageChange}
           />
         )}
+        <div className="flex justify-center p-5 mb-[100px] gap-3">
+          <DropdownSearch onSelect={handleSearchOptionSelect} selectedOption={selectedOption} />
+          <SearchBoard selectedOption={selectedOption} onSearch={handleSearch} />
+        </div>
       </div>
     </div>
   );

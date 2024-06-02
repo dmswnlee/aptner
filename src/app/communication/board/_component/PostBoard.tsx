@@ -10,24 +10,24 @@ import TinyEditor from "@/components/board/TinyEditor";
 import Button from "@/components/buttons/Button";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 
-// Option 인터페이스 정의
+// Option interface definition
 interface Option {
   label: string;
 }
 
-// BoardProps 인터페이스 정의
+// BoardProps interface definition
 interface BoardProps {
   options: Option[];
 }
 
-// FormData 인터페이스 정의
+// FormData interface definition
 interface FormData {
   categoryCode: string;
   title: string;
   content: string;
 }
 
-// SessionData 인터페이스 정의
+// SessionData interface definition
 interface SessionData {
   user: {
     name: string;
@@ -36,11 +36,11 @@ interface SessionData {
   accessToken: string;
 }
 
-// PostBoard 컴포넌트 정의
+// PostBoard component definition
 export default function PostBoard({ options }: BoardProps) {
-  const [selectedOption, setSelectedOption] = useState(options[0].label); // 선택된 카테고리 상태 관리
-  const [fileNames, setFileNames] = useState<string[]>([]); // 파일명 상태 관리
-  const [editorContent, setEditorContent] = useState<string>(""); // 에디터 내용 상태 관리
+  const [selectedOption, setSelectedOption] = useState(options[0].label); // Manage selected category state
+  const [fileNames, setFileNames] = useState<string[]>([]); // Manage file names state
+  const [editorContent, setEditorContent] = useState<string>(""); // Manage editor content state
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -50,18 +50,18 @@ export default function PostBoard({ options }: BoardProps) {
     },
   });
 
-  // 취소 버튼 핸들러
+  // Cancel button handler
   const handleCancel = () => {
     router.back();
   };
 
-  // 폼 제출 핸들러
+  // Form submission handler
   const onSubmit = async (data: FormData) => {
     const formData = new FormData();
     const categoryIndex = options.findIndex((option) => option.label === selectedOption) + 1;
     const categoryCode = `PT${String(categoryIndex).padStart(3, "0")}`;
 
-    // 첫 번째 이미지 추출 함수
+    // Function to extract the first image
     const extractFirstImage = (content: string) => {
       const imgRegex = /<img src="([^"]+)"[^>]*>/;
       const match = imgRegex.exec(content);
@@ -73,10 +73,11 @@ export default function PostBoard({ options }: BoardProps) {
 
     const firstImage = extractFirstImage(editorContent);
 
+    // Prepare JSON payload
     const jsonPayload = {
       categoryCode: categoryCode,
       title: data.title,
-      content: firstImage ? editorContent.replace(firstImage, "") : editorContent, // 첫 번째 이미지가 있는 경우 내용에서 제거
+      content: editorContent, // Keep the full content including the first image URL
     };
 
     formData.append(
@@ -87,7 +88,19 @@ export default function PostBoard({ options }: BoardProps) {
     if (firstImage) {
       const response = await fetch(firstImage);
       const blob = await response.blob();
-      formData.append("image", blob);
+      const file = new File([blob], "thumbnail.jpg", { type: blob.type });
+      formData.append("image", file);
+  
+      // Log detailed information about the file
+      console.log("Image file details:", {
+        name: file.name,
+        size: file.size,
+        type: file.type
+      });
+    }
+    
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
     }
 
     try {
@@ -102,7 +115,7 @@ export default function PostBoard({ options }: BoardProps) {
         }
       );
       const postId = response.data.result.postId;
-      router.push(`/complaints/detail/${postId}`);
+      router.push(`/communication/details/${postId}`);
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -111,7 +124,7 @@ export default function PostBoard({ options }: BoardProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col relative border rounded-[5px] p-5 border-gray_05">
-        {/* 드롭다운 컴포넌트 */}
+        {/* Dropdown component */}
         <Dropdown
           options={options}
           selectedOption={selectedOption}
@@ -120,7 +133,7 @@ export default function PostBoard({ options }: BoardProps) {
             setValue("categoryCode", option);
           }}
         />
-        {/* 제목 입력 필드 */}
+        {/* Title input field */}
         <input
           className="px-[18px] py-[15px] rounded-[5px] border text-[16px] placeholder:text-[16px] placeholder:text-gray_06 focus:border-gray_05 outline-gray_05 leading-[18px]"
           {...register("title")}
@@ -128,10 +141,10 @@ export default function PostBoard({ options }: BoardProps) {
           placeholder="제목을 입력하세요"
         />
 
-        {/* 파일 업로더 컴포넌트 */}
+        {/* File uploader component */}
         <FileUploader fileNames={fileNames} setFileNames={setFileNames} />
 
-        {/* 법적 경고 메시지 */}
+        {/* Legal warning message */}
         <div className="border-t mt-4 text-center font-xl leading-[18px] text-[#222]">
           <div className="mt-4 mb-[18px] py-[10px] border bg-[#f7f7f7]">
             <p className="flex justify-center items-center gap-1">
@@ -142,7 +155,7 @@ export default function PostBoard({ options }: BoardProps) {
           </div>
         </div>
 
-        {/* TinyEditor 컴포넌트 */}
+        {/* TinyEditor component */}
         <TinyEditor onChange={(content: string) => setEditorContent(content)} />
       </div>
       <div className="flex justify-center mt-10 mb-20 gap-4">

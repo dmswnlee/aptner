@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
 import { Pagination } from "antd";
+import { highlightText } from "@/utils/highlightText";
+
 
 // Communication 타입 정의
 interface Writer {
@@ -43,16 +45,16 @@ interface ListProps {
   currentPage: number;
   total: number;
   onPageChange: (page: number) => void;
+  searchQuery: string; // Add searchQuery prop
 }
 
-const List = ({ data, loading, currentPage, total, onPageChange }: ListProps) => {
-
+const List = ({ data, loading, currentPage, total, onPageChange, searchQuery }: ListProps) => {
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="w-full flex flex-col items-center mb-[100px]">
+    <div className="w-full flex flex-col items-center mb-[30px]">
       <div className="max-h-[1021px] mb-[100px] border-t border-b border-t-[#2A3F6D] relative w-[1080px]">
         <div className="grid grid-cols-[160px,590px,130px,70px,130px]">
           {/* Header */}
@@ -79,9 +81,9 @@ const List = ({ data, loading, currentPage, total, onPageChange }: ListProps) =>
               </div>
               <Link
                 href={`/communication/details/${posts.id}`}
-                className="border-b py-4 ml-[3px] flex gap-[3px] items-center"
+                className="border-b py-4 ml-[3px] flex px-[5px]"
               >
-                {posts.title}
+                {highlightText(posts.title, searchQuery)}
               </Link>
               <div className="border-b py-4 text-center">
                 {posts.writer.nickname}
