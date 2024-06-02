@@ -48,7 +48,7 @@ const Header = () => {
 						</div>
 					) : (
 						<div className="ml-[215px]">
-							<span className="text-white">{session?.user?.email}</span>
+							<span className="text-white">{session?.user?.nickname}</span>
 							<span className="text-white mx-2">|</span>
 							<button onClick={handleLogout} className="text-white">
 								로그아웃
