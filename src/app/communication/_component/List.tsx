@@ -37,45 +37,19 @@ interface SessionData {
   accessToken: string;
 }
 
-const Posts = () => {
-  const [communications, setCommunications] = useState<Communication[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const { data: session } = useSession();
+interface ListProps {
+  data: Communication[];
+  loading: boolean;
+  currentPage: number;
+  total: number;
+  onPageChange: (page: number) => void;
+}
 
-  const fetchCommunications = async (page: number) => {
-    if (!session) return;
-    try {
-      const response = await axios.get(`https://aptner.site/v1/api/posts/RO000`, {
-        headers: {
-          Authorization: `Bearer ${(session as SessionData).accessToken}`,
-        },
-        params: {
-          page: page,
-          size: 15,
-          sort: "LATEST",
-        },
-      });
-      setCommunications(response.data.result.result.posts);
-      setTotalCount(response.data.result.totalCount); // 총 항목 수 설정
-      console.log(response.data.result);
-      console.log(response.data.result.result.posts);
-      setLoading(false);
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
+const List = ({ data, loading, currentPage, total, onPageChange }: ListProps) => {
 
-  useEffect(() => {
-    if (session) {
-      fetchCommunications(currentPage);
-    }
-  }, [session, currentPage]);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="w-full flex flex-col items-center mb-[100px]">
@@ -98,7 +72,7 @@ const Posts = () => {
             등록일
           </div>
           {/* Data */}
-          {communications?.map((posts) => (
+          {data.map((posts) => (
             <div key={posts.id} className="contents">
               <div className="border-b py-4 text-center">
                 {posts.category.name}
@@ -124,7 +98,7 @@ const Posts = () => {
           ))}
         </div>
         <Link
-          href="/communications/board"
+          href="/communication/board"
           className="absolute flex justify-center items-center gap-[2px] right-0 mt-[30px] bg-[#3ABEFF] rounded-[5px] text-white w-[78px] h-[36px] text-[14px]"
         >
           <PiPencilSimpleLineLight className="text-2xl" />
@@ -133,12 +107,12 @@ const Posts = () => {
       </div>
       <Pagination
         current={currentPage}
-        total={totalCount} // 총 항목 수 전달
-        pageSize={10} // 페이지당 항목 수 설정
-        onChange={handlePageChange}
+        total={total} // 총 항목 수 전달
+        pageSize={15} // 페이지당 항목 수 설정
+        onChange={onPageChange}
       />
     </div>
   );
 };
 
-export default Posts;
+export default List;

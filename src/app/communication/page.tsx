@@ -2,11 +2,17 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import Posts from "./_component/Post";
+import List from "./_component/List";
 import Gallery from "./_component/Gallery";
 import GalleryTab from "./_component/GalleryTab";
-import { RiListUnordered, RiGalleryFill } from "react-icons/ri";
+import { RiListUnordered, RiGalleryView2 } from "react-icons/ri";
+import Tabs from "@/components/noticeboard/Tabs";
 
+interface Tab {
+  name: string;
+  label: string;
+  icon: JSX.Element;
+}
 interface Writer {
   id: number;
   name: string;
@@ -35,24 +41,44 @@ interface SessionData {
     email: string;
   };
   accessToken: string;
-}
+} 
 
-export default function ComplaintPage() {
+export default function CommunicationPage() {
   const [activeTab, setActiveTab] = useState<string>("Posts");
+  const [category, setCategory] = useState<string>("all");
   const [communications, setCommunications] = useState<Communication[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
   const { data: session } = useSession();
   
+  const categoryTabs: Tab[] = [
+    { name: "all", label: "전체", icon: <></> },
+    { name: "freeboard", label: "자유게시판", icon: <></> },
+    { name: "market", label: "나눔장터", icon: <></> },
+    { name: "hobby", label: "취미게시판", icon: <></> },
+    { name: "recommendations", label: "주변 추천", icon: <></> },
+    { name: "lost-and-found", label: "분실물", icon: <></> },
+  ];
   const tabs = [
     { name: "Posts", icon: <RiListUnordered /> },
-    { name: "Gallery", icon: <RiGalleryFill /> }
+    { name: "Gallery", icon: <RiGalleryView2 /> }
   ];
 
   const handleTabChange = (tabName: string) => {
     setActiveTab(tabName);
+    setCurrentPage(1); 
   };
 
-  const fetchCommunications = async () => {
+  const handleCategoryTabChange = (tabName: string) => {
+    setCategory(tabName);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+  
+  const fetchCommunications = async (page: number) => {
     if (!session) return;
     try {
       const response = await axios.get(`https://aptner.site/v1/api/posts/RO000`, {
@@ -60,12 +86,14 @@ export default function ComplaintPage() {
           Authorization: `Bearer ${(session as SessionData).accessToken}`,
         },
         params: {
-          page: 1,
-          size: 15,
+          page: page,
+          size: activeTab === "Gallery" ? 16 : 15,  // Adjust page size based on active tab
           sort: "LATEST",
+          search: null
         },
       });
       setCommunications(response.data.result.result.posts);
+      setTotalCount(response.data.result.totalCount); // Set total count for pagination
       setLoading(false);
     } catch (err) {
       console.log("err", err);
@@ -74,21 +102,36 @@ export default function ComplaintPage() {
 
   useEffect(() => {
     if (session) {
-      fetchCommunications();
+      fetchCommunications(currentPage);
     }
-  }, [session]);
+  }, [session, currentPage, activeTab]);
 
   return (
     <div className="mt-[70px] w-[1080px] mx-auto">
       <p className="text-[24px] font-semibold leading-[27px] mb-[40px]">
-        소통게시판
+        소통공간
       </p>
+      <Tabs tabs={categoryTabs} onTabChange={handleCategoryTabChange} />
       <GalleryTab tabs={tabs} onTabChange={handleTabChange} />
       <div className="w-[1080px] mx-auto">
         {activeTab === "Posts" ? (
-          <Posts />
+          <List
+            data={communications}
+            loading={loading}
+            currentPage={currentPage}
+            total={totalCount}
+            onPageChange={handlePageChange}
+          />
         ) : (
-          <Gallery data={communications} detailPath="/communication/details" loading={loading} />
+          <Gallery
+            data={communications}
+            detailPath="/communication/details"
+            loading={loading}
+            currentPage={currentPage}
+            total={totalCount}
+            pageSize={16}
+            onPageChange={handlePageChange}
+          />
         )}
       </div>
     </div>

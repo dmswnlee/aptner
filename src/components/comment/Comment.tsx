@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { FaRegCommentDots } from "react-icons/fa6";
 import CommentList from './comments/CommentList';
 import CommentForm from './comments/CommentForm';
@@ -20,7 +20,7 @@ interface CommentProps {
   initialComments: CommentType[];
   author: string;
   postId: number;
-  page: string
+  page: string;
 }
 
 interface SessionData {
@@ -36,6 +36,7 @@ const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
   const [newComment, setNewComment] = useState<string>('');
   const [charCount, setCharCount] = useState<number>(0);
   const [image, setImage] = useState<File | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingContent, setEditingContent] = useState<string>('');
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -45,9 +46,9 @@ const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
 
   useEffect(() => {
     if (session && session.accessToken) {
-      // Fetch initial comments or perform any required initialization
+      fetchComments(currentPage);
     }
-  }, [session]);
+  }, [session, currentPage]);
 
   const getCurrentDateTime = () => new Date().toLocaleString();
 
@@ -64,6 +65,45 @@ const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
 
   const handleRemoveImage = () => {
     setImage(null);
+  };
+
+  const fetchComments = async (page: number) => {
+    try {
+      const response = await axios.get(
+        `https://aptner.site/v1/api/posts/${apartCode}/${postId}/comments`,{
+          headers: {
+            Authorization: `Bearer ${(session as SessionData).accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          params: {
+            page: page,
+            size: 10,
+            sort: "LATEST",
+            search: null
+          },
+        }
+      );
+      console.log(response.data)
+      if (response.data.success) {
+        const fetchedComments: CommentType[] = response.data.result.result.map((comment: any) => ({
+          id: comment.id,
+          author: comment.author,
+          date: comment.date,
+          content: comment.content,
+          image: comment.image,
+          replies: comment.replies || [],
+        }));
+        setComments(fetchedComments);
+      } else {
+        console.error('Failed to fetch comments:', response.data.message);
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error fetching comments:', error.response?.data);
+      } else {
+        console.error('Error fetching comments:', error);
+      }
+    }
   };
 
   const handleAddComment = async () => {
@@ -84,7 +124,7 @@ const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
       formData.append('image', image);
     }
 
-    try {
+    try { 
       const response = await axios.post(
         `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments`,
         formData,
@@ -93,7 +133,6 @@ const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
             'Content-Type': 'multipart/form-data',
           },
-          
         }
       );
       console.log('Response:', response.data);
