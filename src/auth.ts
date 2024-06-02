@@ -15,7 +15,6 @@ export const {
 				password: { label: "Password", type: "password" },
 			},
 			async authorize(credentials) {
-				console.log("Sending request to the server with:", credentials);
 				try {
 					const res = await axios.post(
 						`${process.env.NEXT_PUBLIC_API_URL}/members/sign-in`,
@@ -31,10 +30,11 @@ export const {
 					const user = res.data.result;
 					if (user) {
 						return {
-							id: user.member.id,
-							email: user.member.email,
+							id: user.loginMember.id,
+							email: user.loginMember.email,
+							nickname: user.loginMember.nickname,
 							token: user.token.accessToken,
-							status: user.member.status,
+							status: user.loginMember.status,
 						};
 					}
 					throw new Error("Authentication failed");
@@ -49,11 +49,13 @@ export const {
 		jwt: async ({ token, user }) => {
 			if (user) {
 				token.accessToken = user.token;
+				token.nickname = user.nickname;
 			}
 			return token;
 		},
 		session: async ({ session, token }) => {
 			session.accessToken = token.accessToken;
+			session.user.nickname = token.nickname;
 			return session;
 		},
 	},
