@@ -29,7 +29,7 @@ const Modal = ({ text, onClose, onConfirm }: modalProps) => {
 
   return (
     <div
-      className="w-full h-full flex justify-center items-center z-10 fixed top-0 left-0 bg-black bg-opacity-50"
+      className="w-full h-full flex justify-center items-center z-40 fixed top-0 left-0 bg-black bg-opacity-50"
       onClick={handleBackgroundClick}
     >
       <div
