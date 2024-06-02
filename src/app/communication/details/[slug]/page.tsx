@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import Comment from "@/components/comment/Comment";
 
 // 인터페이스 정의
-interface Qna {
+interface Post {
   id: number;
   category: {
     id: number;
@@ -46,49 +46,46 @@ interface SessionData {
     name: string;
     email: string;
   };
-  accessToken: string;
+  accessToken: string; 
 }
 
-export default function DailPage() {
+const DetailPage = () => {
   const { slug } = useParams();
-  const [qna, setQna] = useState<Qna | null>(null);
+  const [post, setPost] = useState<Post | null>(null);
   const { data: session } = useSession();
 
   useEffect(() => {
     if (session && session.accessToken) {
-      fetchComplaint();
+      fetchPosts();
     }
   }, [session, slug]);
 
-  const fetchComplaint = async () => {
+  const fetchPosts = async () => {
     if (!session || !session.accessToken) return;
 
     try {
       const response = await axios.get(
-        `https://aptner.site/v1/api/qna/RO000/${slug}`,
+        `https://aptner.site/v1/api/posts/RO000/${slug}`,
         {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
           },
         }
       );
-      console.log(response.data.result.qna);
-      const qnaData = response.data.result.qna;
-      setQna(qnaData);
+      console.log(response.data.result.post);
+      const postData = response.data.result.post;
+      setPost(postData);
     } catch (err) {
       console.log("err", err);
     }
   };
 
   const handleReaction = async (reactionType: string) => {
-    if (!qna || !session || !session.accessToken) return;
-
-    console.log(qna.id);
-    console.log("Reaction type:", reactionType);
+    if (!post || !session || !session.accessToken) return;
 
     try {
       const response = await axios.post(
-        `https://aptner.site/v1/api/qna/RO000/${qna.id}/emoji`,
+        `https://aptner.site/v1/api/posts/RO000/${post.id}/emoji`,
         {},
         {
           headers: {
@@ -102,38 +99,38 @@ export default function DailPage() {
       console.log(response.data);
 
       // Update emoji counts based on the reaction
-      const newQna = { ...qna };
+      const newPost = { ...post };
       switch (reactionType) {
         case "LIKE":
-          newQna.emoji.emojiCount.likeCount++;
+          newPost.emoji.emojiCount.likeCount++;
           break;
         case "EMPATHY":
-          newQna.emoji.emojiCount.empathyCount++;
+          newPost.emoji.emojiCount.empathyCount++;
           break;
         case "FUN":
-          newQna.emoji.emojiCount.funCount++;
+          newPost.emoji.emojiCount.funCount++;
           break;
         case "AMAZING":
-          newQna.emoji.emojiCount.amazingCount++;
+          newPost.emoji.emojiCount.amazingCount++;
           break;
         case "SAD":
-          newQna.emoji.emojiCount.sadCount++;
+          newPost.emoji.emojiCount.sadCount++;
           break;
         default:
           break;
       }
-      setQna(newQna);
+      setPost(newPost);
     } catch (error) {
       console.error("Error sending reaction:", error);
     }
   };
 
-  const category = qna?.category.name || "";
-  const title = qna?.title || "";
-  const nickname = qna?.writer.nickname || "";
-  const content = qna?.content || "";
-  const createdAt = qna?.createdAt || "";
-  const emojiCounts = qna?.emoji.emojiCount || {
+  const category = post?.category?.name || "";
+  const title = post?.title || "";
+  const nickname = post?.writer?.nickname || "";
+  const content = post?.content || "";
+  const createdAt = post?.createdAt || "";
+  const emojiCounts = post?.emoji?.emojiCount || {
     likeCount: 0,
     empathyCount: 0,
     funCount: 0,
@@ -143,10 +140,10 @@ export default function DailPage() {
 
   return (
     <div className="mt-[70px] w-[1080px] mx-auto">
-      {qna && (
+      {post && (
         <>
           <p className="text-[24px] font-semibold leading-[27px] mb-[40px]">
-            민원게시판
+            소통게시판
           </p>
           <UserPost
             category={category}
@@ -157,9 +154,11 @@ export default function DailPage() {
             onReaction={handleReaction}
             emojiCounts={emojiCounts}
           />
-          <Comment initialComments={[]} author={nickname} postId={qna.id} page={'qna'}/>
+          <Comment initialComments={[]} author={nickname} postId={post.id} page={'posts'}/>
         </>
       )}
     </div>
   );
 }
+
+export default DetailPage;
