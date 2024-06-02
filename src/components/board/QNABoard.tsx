@@ -242,7 +242,7 @@ export default function Board({ options }: BoardProps) {
 
         <TinyEditor onChange={(content) => setEditorContent(content)} />
       </div>
-      <div className="flex justify-center mt-10 gap-4">
+      <div className="flex justify-center mt-10 mb-20 gap-4">
         <Button
           text="취소"
           className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100"
