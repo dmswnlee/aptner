@@ -190,7 +190,7 @@ const Posts = () => {
       <Pagination
         current={currentPage}
         total={totalCount} // 총 항목 수 전달
-        pageSize={10} // 페이지당 항목 수 설정
+        pageSize={15} // 페이지당 항목 수 설정
         onChange={handlePageChange}
       />
     </div>
