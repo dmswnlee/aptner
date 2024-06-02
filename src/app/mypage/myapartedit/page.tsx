@@ -1,5 +1,5 @@
 import Button from "@/components/buttons/Button";
-import Input from "../../../components/Input/Input";
+import Input from "@/components/input/Input";
 import UserEdit from "../_component/UserEdit";
 
 export default function MyApartEditPage() {
