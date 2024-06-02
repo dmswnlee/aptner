@@ -11,9 +11,8 @@ import { signIn } from "next-auth/react";
 import { Checkbox } from "antd";
 
 const Login = () => {
-	const { register, watch } = useForm();
+	const { register, handleSubmit, watch, clearErrors } = useForm();
 	const [isChecked, setIsChecked] = useState(false);
-	const [isDisabled, setIsDisabled] = useState(true);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [loginError, setLoginError] = useState("");
 	const [loginAttempts, setLoginAttempts] = useState(10);
@@ -32,12 +31,33 @@ const Login = () => {
 		}
 	};
 
-	const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
+	const validateForm = () => {
+		if (!email && !password) {
+			setLoginError("아이디 / 비밀번호를 입력해주세요");
+			setIsModalOpen(true);
+			return false;
+		}
+		if (!email) {
+			setLoginError("아이디를 입력해주세요");
+			setIsModalOpen(true);
+			return false;
+		}
+		if (!password) {
+			setLoginError("비밀번호를 입력해주세요");
+			setIsModalOpen(true);
+			return false;
+		}
+		return true;
+	};
+
+	const onSubmit = async () => {
+		if (!validateForm()) {
+			return;
+		}
 
 		const result = await signIn("credentials", {
-			email,
-			password,
+			email: email,
+			password: password,
 			redirect: false,
 		});
 
@@ -55,10 +75,6 @@ const Login = () => {
 	};
 
 	useEffect(() => {
-		setIsDisabled(!email || !password);
-	}, [email, password]);
-
-	useEffect(() => {
 		const autoLogin = localStorage.getItem("autoLogin");
 		const autoLoginEmail = localStorage.getItem("autoLoginEmail");
 		const autoLoginPassword = localStorage.getItem("autoLoginPassword");
@@ -74,6 +90,7 @@ const Login = () => {
 
 	const handleCloseModal = () => {
 		setIsModalOpen(false);
+		clearErrors();
 	};
 
 	return (
@@ -82,22 +99,24 @@ const Login = () => {
 				<div className="w-full flex justify-center px-[24px] mb-[40px]">
 					<h2 className="text-2xl font-semibold pb-[16px]">로그인</h2>
 				</div>
-				<form onSubmit={onSubmit} className="w-[430px] h-full flex flex-col justify-center gap-[10px]">
+				<form
+					onSubmit={handleSubmit(onSubmit)}
+					className="w-[430px] h-full flex flex-col justify-center gap-[10px]">
 					<input
 						type="email"
 						placeholder="아이디 입력"
-						{...register("email", { required: true })}
+						{...register("email")}
 						className="w-[430px] h-[48px] px-[30px] py-[15px] outline-none border border-solid border-border rounded-[5px] focus:border-blue_05 focus:text-blue_05 bg-gray_00"
 					/>
 					<input
 						type="password"
 						placeholder="비밀번호 입력"
-						{...register("password", { required: true })}
+						{...register("password")}
 						className="w-[430px] h-[48px] px-[30px] py-[15px] outline-none border border-solid border-border rounded-[5px] focus:border-blue_05 focus:text-blue_05 bg-gray_00"
 					/>
 					{loginError && <p className="text-red">현재 남은 로그인 시도횟수({10 - loginAttempts + 1}/10)</p>}
 					<div className="mt-[56px]">
-						<ColorButton text="로그인" size="lg" disabled={isDisabled} />
+						<ColorButton text="로그인" size="lg" />
 					</div>
 					<div className="w-full mt-5  text-gray_400">
 						<div className="flex justify-between">
@@ -108,9 +127,9 @@ const Login = () => {
 								</label>
 							</div>
 							<div className="flex gap-[10px]">
-								<Link href="/find-id-password">아이디 찾기</Link>
+								<Link href="/find-id-password?tab=id">아이디 찾기</Link>
 								<div className="w-[1px] bg-[#ccc]"></div>
-								<button>비밀번호 찾기</button>
+								<Link href="/find-id-password?tab=password">비밀번호 찾기</Link>
 							</div>
 						</div>
 						{isChecked && (
