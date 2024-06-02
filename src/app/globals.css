@@ -73,3 +73,19 @@ div .tox .tox-edit-area::before {
     box-shadow: 0px 4px 4px 0px rgba(255, 255, 255, 0.25) inset, 0px 5px 4px 0px rgba(0, 0, 0, 0.35);
     backdrop-filter: blur(4.5px);
   }
+
+/* 페이지네이션 커스텀 */
+.ant-pagination .ant-pagination-item-active {
+    border-color: #00A8FF;
+    background-color: #00A8FF;
+    border-radius: 5px;
+    font-size: 16px;
+
+}
+.ant-pagination .ant-pagination-item-active a{
+    background-color: #00A8FF;
+    font-size: 16px;
+    border-radius: 5px;
+    border:none;
+    color: white;
+}
