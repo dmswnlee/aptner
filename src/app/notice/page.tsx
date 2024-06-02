@@ -1,7 +1,5 @@
 "use client";
 import List from "@/components/List";
-import NoticeDetail from "./_component/NoticeDetail";
-import NoticeMain from "./_component/NoticeMain";
 import { notices } from "@/mocks/data/notice";
 import Tabs from "@/components/noticeboard/Tabs";
 import type { PaginationProps } from "antd";
