@@ -3,12 +3,12 @@ import { useState } from "react";
 
 interface Tab {
   name: string;
-  icon: JSX.Element; // Only need the icon property
+  icon: JSX.Element;
 }
 
 interface TabsProps {
   tabs: Tab[];
-  onTabChange?: (tabName: string) => void;
+  onTabChange: (tabName: string) => void;
 }
 
 const GalleryTab = ({ tabs, onTabChange }: TabsProps) => {
@@ -16,9 +16,7 @@ const GalleryTab = ({ tabs, onTabChange }: TabsProps) => {
 
   const handleTabClick = (tabName: string) => {
     setActiveTab(tabName);
-    if (onTabChange) {
-      onTabChange(tabName);
-    } 
+    onTabChange(tabName);
   };
 
   return (

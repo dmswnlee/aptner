@@ -6,6 +6,7 @@ interface CommentType {
   author: string;
   date: string;
   content: string;
+  image?: string;
   replies: CommentType[];
 }
 
@@ -14,9 +15,9 @@ interface CommentListProps {
   author: string;
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
-  onReply: (parentId: number, content: string) => void;
-  onReplyToReply: (parentId: number, content: string) => void;
-  onUpdate: (id: number, content: string) => void;
+  onReply: (parentId: number, content: string, image?: string) => void;
+  onReplyToReply: (parentId: number, content: string, image?: string) => void;
+  onUpdate: (id: number, content: string, date: string, image?: string) => void;
 }
 
 const CommentList = ({ comments, author, onEdit, onDelete, onReply, onReplyToReply, onUpdate }: CommentListProps) => {

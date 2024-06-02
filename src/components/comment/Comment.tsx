@@ -1,23 +1,37 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import { FaRegCommentDots } from "react-icons/fa6";
 import CommentList from './comments/CommentList';
 import CommentForm from './comments/CommentForm';
 import Modal from '../modal/Modal';
+import { useSession } from 'next-auth/react';
+import axios from 'axios';
 
 interface CommentType {
   id: number;
   author: string;
   date: string;
   content: string;
-  replies: CommentType[]; 
+  image?: string;
+  imageName?: string;
+  replies: CommentType[];
 }
 
 interface CommentProps {
   initialComments: CommentType[];
   author: string;
+  postId: number;
+  page: string
 }
 
-const Comment = ({ initialComments, author }: CommentProps) => {
+interface SessionData {
+  user: {
+    name: string;
+    email: string;
+  };
+  accessToken: string;
+}
+
+const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
   const [comments, setComments] = useState<CommentType[]>(initialComments);
   const [newComment, setNewComment] = useState<string>('');
   const [charCount, setCharCount] = useState<number>(0);
@@ -26,6 +40,14 @@ const Comment = ({ initialComments, author }: CommentProps) => {
   const [editingContent, setEditingContent] = useState<string>('');
   const [showModal, setShowModal] = useState<boolean>(false);
   const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
+  const { data: session } = useSession();
+  const apartCode = "RO000";
+
+  useEffect(() => {
+    if (session && session.accessToken) {
+      // Fetch initial comments or perform any required initialization
+    }
+  }, [session]);
 
   const getCurrentDateTime = () => new Date().toLocaleString();
 
@@ -40,21 +62,66 @@ const Comment = ({ initialComments, author }: CommentProps) => {
     }
   };
 
-  const handleAddComment = () => {
+  const handleRemoveImage = () => {
+    setImage(null);
+  };
+
+  const handleAddComment = async () => {
+    if (!session || !session.accessToken) {
+      console.error('No session or access token found');
+      return;
+    }
     if (newComment.trim() === '') return;
 
-    const newCommentObj: CommentType = {
-      id: Date.now(),
-      author: author,
-      date: getCurrentDateTime(),
+    const requestPayload = {
+      parentId: null,
       content: newComment,
-      replies: [],
     };
 
-    setComments([...comments, newCommentObj]);
-    setNewComment('');
-    setCharCount(0);
-    setImage(null);
+    const formData = new FormData();
+    formData.append('request', new Blob([JSON.stringify(requestPayload)], { type: 'application/json' }));
+    if (image) {
+      formData.append('image', image);
+    }
+
+    try {
+      const response = await axios.post(
+        `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${(session as SessionData).accessToken}`,
+            'Content-Type': 'multipart/form-data',
+          },
+          
+        }
+      );
+      console.log('Response:', response.data);
+
+      if (response.data.success) {
+        const newCommentObj: CommentType = {
+          id: response.data.result.postCommentId,
+          author: author,
+          date: getCurrentDateTime(),
+          content: newComment,
+          image: image ? URL.createObjectURL(image) : undefined,
+          replies: [],
+        };
+
+        setComments([...comments, newCommentObj]);
+        setNewComment('');
+        setCharCount(0);
+        setImage(null);
+      } else {
+        console.error('Failed to add comment:', response.data.message);
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error adding comment:', error.response?.data);
+      } else {
+        console.error('Error adding comment:', error);
+      }
+    }
   };
 
   const handleEditComment = (id: number) => {
@@ -65,10 +132,10 @@ const Comment = ({ initialComments, author }: CommentProps) => {
     }
   };
 
-  const handleUpdateComment = (id: number, content: string) => {
+  const handleUpdateComment = (id: number, content: string, image?: string) => {
     setComments(comments.map(comment => {
       if (comment.id === id) {
-        return { ...comment, content: content };
+        return { ...comment, content: content, image: image || comment.image };
       }
       return comment;
     }));
@@ -88,7 +155,7 @@ const Comment = ({ initialComments, author }: CommentProps) => {
     setCommentToDelete(null);
   };
 
-  const handleReply = (parentId: number, content: string) => {
+  const handleReply = (parentId: number, content: string, image?: string) => {
     if (content.trim() === '') return;
 
     const newReply: CommentType = {
@@ -96,6 +163,7 @@ const Comment = ({ initialComments, author }: CommentProps) => {
       author: author,
       date: getCurrentDateTime(),
       content: content,
+      image: image ? URL.createObjectURL(new Blob([image])) : undefined,
       replies: [],
     };
 
@@ -140,6 +208,7 @@ const Comment = ({ initialComments, author }: CommentProps) => {
         image={image}
         onTextareaChange={handleTextareaChange}
         onFileChange={handleFileChange}
+        onRemoveImage={handleRemoveImage}
         onAddComment={handleAddComment}
       />
     </div>
