@@ -366,7 +366,7 @@ const IdentityVerification = () => {
 						/>
 					</div>
 					{showVerificationInput && (
-						<div className="flex gap-[10px] mt-[16px] ml-[130px]">
+						<div className="flex gap-[10px] mt-4 ml-[130px]">
 							<div className="flex flex-col gap-2">
 								<div className="relative">
 									<input
@@ -374,7 +374,7 @@ const IdentityVerification = () => {
 										placeholder="인증번호를 입력하세요"
 										className={`${inputStyle} ${
 											errors.verificationCode || verificationError || isExpired ? inputErrorStyle : ""
-										} w-[447px] h-[48px] px-[30px]`}
+										} w-[430px] h-[48px] px-[30px]`}
 										{...register("verificationCode", {
 											required: "인증번호는 필수 입력 항목입니다.",
 											pattern: {

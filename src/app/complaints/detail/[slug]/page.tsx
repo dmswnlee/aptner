@@ -9,37 +9,37 @@ import { useRouter, usePathname } from "next/navigation";
 
 // 인터페이스 정의
 interface Qna {
-  id: number;
-  category: {
-    id: number;
-    type: string;
-    code: string;
-    name: string;
-  };
-  content: string;
-  createdAt: string;
-  title: string;
-  writer: {
-    id: number;
-    name: string;
-    nickname: string;
-  };
-  emoji: {
-    emojiCount: {
-      likeCount: number;
-      empathyCount: number;
-      funCount: number;
-      amazingCount: number;
-      sadCount: number;
-    };
-    emojiReaction: {
-      reactedLike: boolean;
-      reactedEmpathy: boolean;
-      reactedFun: boolean;
-      reactedAmazing: boolean;
-      reactedSad: boolean;
-    };
-  };
+	id: number;
+	category: {
+		id: number;
+		type: string;
+		code: string;
+		name: string;
+	};
+	content: string;
+	createdAt: string;
+	title: string;
+	writer: {
+		id: number;
+		name: string;
+		nickname: string;
+	};
+	emoji: {
+		emojiCount: {
+			likeCount: number;
+			empathyCount: number;
+			funCount: number;
+			amazingCount: number;
+			sadCount: number;
+		};
+		emojiReaction: {
+			reactedLike: boolean;
+			reactedEmpathy: boolean;
+			reactedFun: boolean;
+			reactedAmazing: boolean;
+			reactedSad: boolean;
+		};
+	};
 }
 
 interface QnaFileInfo {
@@ -50,11 +50,11 @@ interface QnaFileInfo {
 }
 
 interface SessionData {
-  user: {
-    name: string;
-    email: string;
-  };
-  accessToken: string;
+	user: {
+		name: string;
+		email: string;
+	};
+	accessToken: string;
 }
 
 export default function DailPage() {
@@ -66,14 +66,15 @@ export default function DailPage() {
   const pathname = usePathname();
   const basePath = pathname.split("/")[1]; // 첫 번째 경로를 추출
 
-  useEffect(() => {
-    if (session && session.accessToken) {
-      fetchComplaint();
-    }
-  }, [session, slug]);
 
-  const fetchComplaint = async () => {
-    if (!session || !session.accessToken) return;
+	useEffect(() => {
+		if (session && session.accessToken) {
+			fetchComplaint();
+		}
+	}, [session, slug]);
+
+	const fetchComplaint = async () => {
+		if (!session || !session.accessToken) return;
 
     try {
       const response = await axios.get(
@@ -93,53 +94,53 @@ export default function DailPage() {
     }
   };
 
-  const handleReaction = async (reactionType: string) => {
-    if (!qna || !session || !session.accessToken) return;
+	const handleReaction = async (reactionType: string) => {
+		if (!qna || !session || !session.accessToken) return;
 
-    console.log(qna.id);
-    console.log("Reaction type:", reactionType);
+		console.log(qna.id);
+		console.log("Reaction type:", reactionType);
 
-    try {
-      const response = await axios.post(
-        `https://aptner.site/v1/api/qna/RO000/${qna.id}/emoji`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${(session as SessionData).accessToken}`,
-          },
-          params: {
-            type: reactionType,
-          },
-        }
-      );
-      console.log(response.data);
+		try {
+			const response = await axios.post(
+				`https://aptner.site/v1/api/qna/RO000/${qna.id}/emoji`,
+				{},
+				{
+					headers: {
+						Authorization: `Bearer ${(session as SessionData).accessToken}`,
+					},
+					params: {
+						type: reactionType,
+					},
+				},
+			);
+			console.log(response.data);
 
-      // Update emoji counts based on the reaction
-      const newQna = { ...qna };
-      switch (reactionType) {
-        case "LIKE":
-          newQna.emoji.emojiCount.likeCount++;
-          break;
-        case "EMPATHY":
-          newQna.emoji.emojiCount.empathyCount++;
-          break;
-        case "FUN":
-          newQna.emoji.emojiCount.funCount++;
-          break;
-        case "AMAZING":
-          newQna.emoji.emojiCount.amazingCount++;
-          break;
-        case "SAD":
-          newQna.emoji.emojiCount.sadCount++;
-          break;
-        default:
-          break;
-      }
-      setQna(newQna);
-    } catch (error) {
-      console.error("Error sending reaction:", error);
-    }
-  };
+			// Update emoji counts based on the reaction
+			const newQna = { ...qna };
+			switch (reactionType) {
+				case "LIKE":
+					newQna.emoji.emojiCount.likeCount++;
+					break;
+				case "EMPATHY":
+					newQna.emoji.emojiCount.empathyCount++;
+					break;
+				case "FUN":
+					newQna.emoji.emojiCount.funCount++;
+					break;
+				case "AMAZING":
+					newQna.emoji.emojiCount.amazingCount++;
+					break;
+				case "SAD":
+					newQna.emoji.emojiCount.sadCount++;
+					break;
+				default:
+					break;
+			}
+			setQna(newQna);
+		} catch (error) {
+			console.error("Error sending reaction:", error);
+		}
+	};
 
   const handleDelete = async () => {
     if (!qna || !session || !session.accessToken) return;
