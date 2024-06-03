@@ -13,7 +13,6 @@ import SearchBoard from "@/components/SearchBoard";
 interface Tab {
   name: string;
   label: string;
-  icon: JSX.Element;
   code: string;
 }
 interface Writer {
@@ -62,12 +61,12 @@ export default function CommunicationPage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const categoryTabs: Tab[] = [
-    { name: "all", label: "전체", icon: <></>, code: "" },
-    { name: "freeboard", label: "자유게시판", icon: <></>, code: "PT001" },
-    { name: "market", label: "나눔장터", icon: <></>, code: "PT002" },
-    { name: "hobby", label: "취미게시판", icon: <></>, code: "PT003" },
-    { name: "recommendations", label: "주변 추천", icon: <></>, code: "PT004" },
-    { name: "lost-and-found", label: "분실물", icon: <></>, code: "PT005" },
+    { name: "all", label: "전체", code: "" },
+    { name: "freeboard", label: "자유게시판", code: "PT001" },
+    { name: "market", label: "나눔장터", code: "PT002" },
+    { name: "hobby", label: "취미게시판", code: "PT003" },
+    { name: "recommendations", label: "주변 추천", code: "PT004" },
+    { name: "lost-and-found", label: "분실물", code: "PT005" },
   ];
   const tabs = [
     { name: "Posts", icon: <RiListUnordered /> },
