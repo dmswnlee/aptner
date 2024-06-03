@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Comment from "@/components/comment/Comment";
 
-// 인터페이스 정의
+// Interface definitions
 interface Post {
   id: number;
   category: {
@@ -46,7 +46,7 @@ interface SessionData {
     name: string;
     email: string;
   };
-  accessToken: string; 
+  accessToken: string;
 }
 
 const DetailPage = () => {
@@ -126,6 +126,7 @@ const DetailPage = () => {
   };
 
   const category = post?.category?.name || "";
+  const categoryCode = post?.category?.code || ""; // Extract the category code
   const title = post?.title || "";
   const nickname = post?.writer?.nickname || "";
   const content = post?.content || "";
@@ -143,7 +144,7 @@ const DetailPage = () => {
       {post && (
         <>
           <p className="text-[24px] font-semibold leading-[27px] mb-[40px]">
-            소통게시판
+            소통공간
           </p>
           <UserPost
             category={category}
@@ -154,7 +155,13 @@ const DetailPage = () => {
             onReaction={handleReaction}
             emojiCounts={emojiCounts}
           />
-          <Comment initialComments={[]} author={nickname} postId={post.id} page={'posts'}/>
+          <Comment
+            initialComments={[]} 
+            author={nickname} 
+            postId={post.id} 
+            page={'posts'} 
+            categoryCode={categoryCode} // Pass the category code to the Comment component
+          />
         </>
       )}
     </div>
