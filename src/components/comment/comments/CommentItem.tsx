@@ -3,28 +3,18 @@ import { AiOutlineDownload } from "react-icons/ai";
 import ButtonGroup from '../CommentButtonGroup';
 import CommentForm from './CommentForm';
 import ReplyList from '../replies/ReplyList';
-
-interface CommentType {
-  id: number;
-  author: string;
-  date: string;
-  content: string;
-  image?: string;
-  imageName?: string;
-  replies: CommentType[];
-}
+import { CommentType } from '@/interfaces/Comment';
 
 interface CommentItemProps {
   comment: CommentType;
   author: string;
-  onEdit: (id: number) => void;
+  onEdit: (id: number, parentId: number | null) => void;
   onDelete: (id: number) => void;
-  onReply: (parentId: number, content: string, image?: string) => void;
-  onReplyToReply: (parentId: number, content: string, image?: string) => void;
-  onUpdate: (id: number, content: string, date: string, image?: string) => void;
+  onReply: (parentId: number | null, content: string, image: File | null) => Promise<void>;
+  onUpdate: (id: number, content: string, parentId: number | null, image?: File | null) => Promise<void>;
 }
 
-const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onReplyToReply, onUpdate }: CommentItemProps) => {
+const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: CommentItemProps) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [replyContent, setReplyContent] = useState<string>('');
   const [replyImage, setReplyImage] = useState<File | null>(null);
@@ -54,18 +44,26 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onReplyToRepl
     }
   };
 
-  const handleReplySubmit = () => {
-    onReply(comment.id, replyContent, replyImage ? URL.createObjectURL(replyImage) : undefined);
+  const handleReplySubmit = async () => {
+    await onReply(comment.id, replyContent, replyImage);
     setReplyContent('');
     setIsReplying(false);
     setReplyImage(null);
     setCharCount(0);
   };
 
-  const handleUpdateSubmit = () => {
-    const updatedDate = new Date().toISOString();
-    onUpdate(comment.id, editContent, updatedDate, editImage ? URL.createObjectURL(editImage) : undefined);
+  const handleUpdateSubmit = async () => {
+    await onUpdate(comment.id, editContent, comment.parentId, editImage);
     setIsEditing(false);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${date.toLocaleTimeString('ko-KR')}`;
   };
 
   return (
@@ -81,7 +79,7 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onReplyToRepl
               onTextareaChange={handleEditChange}
               onFileChange={handleEditFileChange}
               onRemoveImage={() => setEditImage(null)}
-              onAddComment={handleUpdateSubmit}
+              onAddComment={() => handleUpdateSubmit()}
             />
           </>
         ) : (
@@ -90,9 +88,9 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onReplyToRepl
               <p className="w-10 h-10 flex justify-center items-center rounded-[5px] bg-[#D9F2FE]">UI</p>
               <div className="flex flex-col gap-2">
                 <div className="flex gap-1">
-                  <p>{comment.author}</p>
+                  <p>{comment.writer.nickname}</p>
                   <div className="w-[1px] bg-[#A3A3A3]"></div>
-                  <p>{comment.date}</p>
+                  <p>{formatDate(comment.updatedAt)}</p>
                 </div>
               </div>
             </div>
@@ -125,7 +123,8 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onReplyToRepl
             onTextareaChange={handleReplyChange} 
             onFileChange={handleReplyFileChange} 
             onRemoveImage={() => setReplyImage(null)} 
-            onAddComment={handleReplySubmit} 
+            onAddComment={() => handleReplySubmit()} 
+            parentId={comment.id}
           />
         )}
       </div>
@@ -135,7 +134,8 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onReplyToRepl
           author={author}
           onEdit={onEdit}
           onDelete={onDelete}
-          onReply={onReplyToReply}
+          onReply={onReply} 
+          onUpdate={onUpdate}
         />
       </div>
     </div>

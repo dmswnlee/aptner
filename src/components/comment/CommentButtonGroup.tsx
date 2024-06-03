@@ -5,7 +5,7 @@ import { BsArrowReturnRight } from "react-icons/bs";
 interface ButtonGroupProps {
   onEdit: () => void;
   onDelete: () => void;
-  onReply: () => void;
+  onReply?: () => void;
 }
 
 const ButtonGroup = ({ onEdit, onDelete, onReply }: ButtonGroupProps) => {

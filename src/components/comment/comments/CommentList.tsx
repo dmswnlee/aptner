@@ -1,37 +1,27 @@
 import React from 'react';
 import CommentItem from './CommentItem';
-
-interface CommentType {
-  id: number;
-  author: string;
-  date: string;
-  content: string;
-  image?: string;
-  replies: CommentType[];
-}
+import { CommentType } from '@/interfaces/Comment';
 
 interface CommentListProps {
   comments: CommentType[];
   author: string;
-  onEdit: (id: number) => void;
+  onEdit: (id: number, parentId: number | null) => void;
   onDelete: (id: number) => void;
-  onReply: (parentId: number, content: string, image?: string) => void;
-  onReplyToReply: (parentId: number, content: string, image?: string) => void;
-  onUpdate: (id: number, content: string, date: string, image?: string) => void;
+  onReply: (parentId: number | null, content: string, image: File | null) => Promise<void>;
+  onUpdate: (id: number, content: string, parentId: number | null, image?: File | null) => Promise<void>;
 }
 
-const CommentList = ({ comments, author, onEdit, onDelete, onReply, onReplyToReply, onUpdate }: CommentListProps) => {
+const CommentList = ({ comments, author, onEdit, onDelete, onReply, onUpdate }: CommentListProps) => {
   return (
     <>
-      {comments.map(comment => (
+      {Array.isArray(comments) && comments.map(comment => (
         <CommentItem
           key={comment.id}
           comment={comment}
-          author={author} 
+          author={author}
           onEdit={onEdit}
           onDelete={onDelete}
           onReply={onReply}
-          onReplyToReply={onReplyToReply}
           onUpdate={onUpdate}
         />
       ))}

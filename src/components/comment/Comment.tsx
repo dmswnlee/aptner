@@ -5,42 +5,17 @@ import CommentForm from './comments/CommentForm';
 import Modal from '../modal/Modal';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
-
-interface CommentType {
-  id: number;
-  author: string;
-  date: string;
-  content: string;
-  image?: string;
-  imageName?: string;
-  replies: CommentType[];
-}
-
-interface CommentProps {
-  initialComments: CommentType[];
-  author: string;
-  postId: number;
-  page: string;
-  categoryCode: string; // Add this line
-}
-
-
-interface SessionData {
-  user: {
-    name: string;
-    email: string;
-  };
-  accessToken: string;
-}
+import { CommentType, CommentProps, SessionData } from '@/interfaces/Comment';
 
 const Comment = ({ initialComments, author, postId, page, categoryCode }: CommentProps) => {
-  const [comments, setComments] = useState<CommentType[]>(initialComments);
+  const [comments, setComments] = useState<CommentType[]>(initialComments || []);
   const [newComment, setNewComment] = useState<string>('');
   const [charCount, setCharCount] = useState<number>(0);
   const [image, setImage] = useState<File | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingContent, setEditingContent] = useState<string>('');
+  const [editingParentId, setEditingParentId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
   const { data: session } = useSession();
@@ -48,7 +23,7 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
 
   useEffect(() => {
     if (session && session.accessToken) {
-      // fetchComments(currentPage);
+      fetchComments(currentPage);
     }
   }, [session, currentPage]);
 
@@ -69,45 +44,46 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
     setImage(null);
   };
 
-  // const fetchComments = async (page: number) => {
-  //   if (!session) return;
-  //   try {
-  //     const response = await axios.get(
-  //       `https://aptner.site/v1/api/posts/${apartCode}/${postId}/comments`, {
-  //         headers: {
-  //           Authorization: `Bearer ${(session as SessionData).accessToken}`,
-  //         },
-  //         params: {
-  //           page: page,
-  //           size: 10,
-  //           sort: "LATEST",
-  //           search: null,
-  //           type: null,
-  //           categoryCode: categoryCode 
-  //         },
-  //       }
-  //     );
-  //     console.log('Fetch response:', response);
-  //     setComments(response.data);
-  //   } catch (err) {
-  //     if (axios.isAxiosError(err)) {
-  //       console.error('Error fetching comments:', err.response?.data);
-  //     } else {
-  //       console.error('Error fetching comments:', err);
-  //     }
-  //   }
-  // };
+  const fetchComments = async (page: number) => {
+    if (!session) return;
+    try {
+      const response = await axios.get(
+        `https://aptner.site/v1/api/posts/${apartCode}/${postId}/comments`, {
+          headers: {
+            Authorization: `Bearer ${(session as SessionData).accessToken}`,
+          },
+          params: {
+            page: page,
+            size: 100, // Adjust this value as needed
+            sort: "LATEST",
+          },
+        }
+      );
+      console.log('Fetch response:', response.data.result.result.comments);
+      const fetchedComments = response.data.result.result.comments.map((comment: CommentType) => ({
+        ...comment,
+        replies: comment.replies || []
+      }));
+      setComments(fetchedComments || []);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        console.error('Error fetching comments:', err.response?.data);
+      } else {
+        console.error('Error fetching comments:', err);
+      }
+    }
+  };
 
-  const handleAddComment = async () => {
+  const handleAddComment = async (parentId: number | null = null, content: string = newComment, image: File | null = null): Promise<void> => {
     if (!session || !session.accessToken) {
       console.error('No session or access token found');
       return;
     }
-    if (newComment.trim() === '') return;
+    if (content.trim() === '') return;
 
     const requestPayload = {
-      parentId: null,
-      content: newComment,
+      parentId: parentId,
+      content: content,
     };
 
     const formData = new FormData();
@@ -132,14 +108,31 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
       if (response.data.success) {
         const newCommentObj: CommentType = {
           id: response.data.result.postCommentId,
-          author: author,
-          date: getCurrentDateTime(),
-          content: newComment,
+          writer: {
+            nickname: author,
+          },
+          createdAt: getCurrentDateTime(),
+          content: content,
           image: image ? URL.createObjectURL(image) : undefined,
           replies: [],
+          parentId: parentId,
+          postId: postId,
+          updatedAt: ''
         };
 
-        setComments([...comments, newCommentObj]);
+        if (parentId) {
+          setComments(prevComments => prevComments.map(comment => {
+            if (comment.id === parentId) {
+              return {
+                ...comment,
+                replies: [...(comment.replies || []), newCommentObj],
+              };
+            }
+            return comment;
+          }));
+        } else {
+          setComments([...comments, newCommentObj]);
+        }
         setNewComment('');
         setCharCount(0);
         setImage(null);
@@ -155,55 +148,99 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
     }
   };
 
-  const handleEditComment = (id: number) => {
+  const handleEditComment = (id: number, parentId: number | null) => {
     const comment = comments.find(comment => comment.id === id);
     if (comment) {
       setEditingCommentId(id);
       setEditingContent(comment.content);
+      setEditingParentId(parentId);
     }
   };
 
-  const handleUpdateComment = (id: number, content: string, image?: string) => {
-    setComments(comments.map(comment => {
-      if (comment.id === id) {
-        return { ...comment, content: content, image: image || comment.image };
-      }
-      return comment;
-    }));
+  const handleUpdateComment = async (id: number, content: string, parentId: number | null, image?: File | null) => {
+    if (!session || !session.accessToken) return;
 
-    setEditingCommentId(null);
-    setEditingContent('');
+    const requestPayload = {
+      parentId: parentId,
+      content: content,
+    };
+
+    const formData = new FormData();
+    formData.append('request', new Blob([JSON.stringify(requestPayload)], { type: 'application/json' }));
+    if (image) {
+      formData.append('image', image);
+    }
+
+    try {
+      const response = await axios.patch(
+        `https://aptner.site/v1/api/posts/${apartCode}/${postId}/comments/${id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${(session as SessionData).accessToken}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setComments(comments.map(comment => {
+          if (comment.id === id) {
+            return {
+              ...comment,
+              content: content,
+              image: image ? URL.createObjectURL(image) : comment.image,
+            };
+          }
+          return comment;
+        }));
+        setEditingCommentId(null);
+        setEditingContent('');
+        setEditingParentId(null);
+      } else {
+        console.error('Failed to update comment:', response.data.message);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error updating comment:', error.response?.data);
+      } else {
+        console.error('Error updating comment:', error);
+      }
+    }
   };
 
-  const handleDeleteComment = (id: number) => {
-    setShowModal(true);
-    setCommentToDelete(id);
+  const handleDeleteComment = async (id: number) => {
+    if (!session || !session.accessToken) return;
+    try {
+      const response = await axios.delete(
+        `https://aptner.site/v1/api/posts/${apartCode}/${postId}/comments/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${(session as SessionData).accessToken}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setComments(comments.filter(comment => comment.id !== id));
+      } else {
+        console.error('Failed to delete comment:', response.data.message);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error deleting comment:', error.response?.data);
+      } else {
+        console.error('Error deleting comment:', error);
+      }
+    }
   };
 
   const confirmDeleteComment = () => {
-    setComments(comments.filter(comment => comment.id !== commentToDelete));
+    if (commentToDelete !== null) {
+      handleDeleteComment(commentToDelete);
+    }
     setShowModal(false);
     setCommentToDelete(null);
-  };
-
-  const handleReply = (parentId: number, content: string, image?: string) => {
-    if (content.trim() === '') return;
-
-    const newReply: CommentType = {
-      id: Date.now(),
-      author: author,
-      date: getCurrentDateTime(),
-      content: content,
-      image: image ? URL.createObjectURL(new Blob([image])) : undefined,
-      replies: [],
-    };
-
-    setComments(comments.map(comment => {
-      if (comment.id === parentId) {
-        return { ...comment, replies: [...comment.replies, newReply] };
-      }
-      return comment;
-    }));
   };
 
   return (
@@ -227,8 +264,7 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
           author={author}
           onEdit={handleEditComment}
           onDelete={handleDeleteComment}
-          onReply={handleReply}
-          onReplyToReply={handleReply}
+          onReply={handleAddComment}
           onUpdate={handleUpdateComment}
         />
       </div>
@@ -240,7 +276,7 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
         onTextareaChange={handleTextareaChange}
         onFileChange={handleFileChange}
         onRemoveImage={handleRemoveImage}
-        onAddComment={handleAddComment}
+        onAddComment={() => handleAddComment(null, newComment, image)}
       />
     </div>
   );

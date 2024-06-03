@@ -157,7 +157,7 @@ export default function DailPage() {
             onReaction={handleReaction}
             emojiCounts={emojiCounts}
           />
-          <Comment initialComments={[]} author={nickname} postId={qna.id} page={'qna'}/>
+          <Comment initialComments={[]} author={nickname} postId={qna.id} page={'qna'} categoryCode={""}/>
         </>
       )}
     </div>
