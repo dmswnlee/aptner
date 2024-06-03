@@ -9,9 +9,11 @@ import emoji4 from "../../assets/images/emoji/emoji4.png";
 import emoji5 from "../../assets/images/emoji/emoji5.png";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
+import Modal from "../../components/modal/Modal";
 
 // Props 타입 정의
 interface UserPostProps {
+  id: number; // 추가된 속성
   category: string;
   nickname: string;
   title: string;
@@ -26,7 +28,7 @@ interface UserPostProps {
     sadCount: number;
   };
   handleDelete: () => void;
-  qnaFileInfoList: {
+  fileInfoList?: {
     id: number;
     name: string;
     path: string;
@@ -36,6 +38,7 @@ interface UserPostProps {
 
 // UserPost 컴포넌트에 타입 적용
 const UserPost: React.FC<UserPostProps> = ({
+  id,
   category,
   nickname,
   title,
@@ -44,18 +47,48 @@ const UserPost: React.FC<UserPostProps> = ({
   onReaction,
   emojiCounts,
   handleDelete,
-  qnaFileInfoList,
+  fileInfoList = [],
 }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const handleListClick = () => {
     const basePath = pathname.split("/")[1]; // 첫 번째 경로를 추출
     router.push(`/${basePath}`); // 첫 번째 경로로 이동
   };
 
-  // 수정 및 삭제 버튼을 렌더링할 경로
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
+  const confirmDelete = () => {
+    handleDelete();
+    closeModal();
+  };
+
+  const handleEdit = () => {
+    if (id === undefined) {
+      console.error("id가 정의되지 않았습니다.");
+      return;
+    }
+
+    const queryParams = new URLSearchParams({
+      id: id.toString(),
+      category,
+      title,
+      content,
+      isPrivate: "true", // boolean 값을 문자열로 변환
+      fileInfoList: JSON.stringify(fileInfoList), // 파일 리스트를 JSON 문자열로 변환
+    });
+    router.push(`/complaints/board?${queryParams.toString()}`);
+  };
+
   const shouldShowEditDeleteButtons =
     pathname.includes("complaints") || pathname.includes("communication");
 
@@ -80,7 +113,7 @@ const UserPost: React.FC<UserPostProps> = ({
                 <p>{createdAt}</p>
                 <div className="w-[1px] bg-[#A3A3A3]"></div>
                 <p>조회 48</p>
-                <div className="w-[1px] bg-[#A3A3A3]"></div>
+                <div className="w/[1px] bg-[#A3A3A3]"></div>
                 <div className="flex items-center gap-1">
                   <FaRegCommentDots />
                   <p>댓글 3</p>
@@ -88,18 +121,18 @@ const UserPost: React.FC<UserPostProps> = ({
               </div>
             </div>
           </div>
-          {qnaFileInfoList.length > 0 && (
+          {fileInfoList.length > 0 && (
             <div className="relative">
               <button
                 className="flex items-center gap-[10px] p-[10px] bg-gray_04 text-black_100 rounded-[5px]"
                 onClick={toggleDropdown}
               >
                 <GoFileDirectory />
-                <p>첨부파일 {qnaFileInfoList.length}</p>
+                <p>첨부파일 {fileInfoList.length}</p>
               </button>
               {isDropdownOpen && (
                 <ul className="absolute right-0 mt-2 p-3 w-[220px] bg-white tooltip border rounded-[5px] z-10">
-                  {qnaFileInfoList.map((file) => (
+                  {fileInfoList.map((file) => (
                     <li
                       key={file.id}
                       className="hover:bg-gray-100 p-[2px] flex-shrink-0 cursor-pointer underline"
@@ -131,56 +164,74 @@ const UserPost: React.FC<UserPostProps> = ({
               <Image src={emoji1} alt="emoji1" width={40} />
               좋아요
             </button>
-            <div>{emojiCounts.likeCount}</div>
+            <div>
+              {emojiCounts.likeCount > 0 ? emojiCounts.likeCount : <>&nbsp;</>}
+            </div>
           </div>
 
-          <div className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
+          <div className="w/[52px] h/[82px] text-[14px] flex flex-col items-center justify-center">
             <button onClick={() => onReaction("EMPATHY")}>
               <Image src={emoji2} alt="emoji2" width={40} />
               공감돼요
             </button>
-            <div>{emojiCounts.empathyCount}</div>
+            <div>
+              {emojiCounts.empathyCount > 0 ? (
+                emojiCounts.empathyCount
+              ) : (
+                <>&nbsp;</>
+              )}
+            </div>
           </div>
 
-          <div className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
+          <div className="w/[52px] h/[82px] text-[14px] flex flex-col items-center justify=center">
             <button onClick={() => onReaction("FUN")}>
               <Image src={emoji3} alt="emoji3" width={40} />
               재밌어요
             </button>
-            <div>{emojiCounts.funCount}</div>
+            <div>
+              {emojiCounts.funCount > 0 ? emojiCounts.funCount : <>&nbsp;</>}
+            </div>
           </div>
 
-          <div className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
+          <div className="w/[52px] h/[82px] text-[14px] flex flex-col items-center justify=center">
             <button onClick={() => onReaction("AMAZING")}>
               <Image src={emoji4} alt="emoji4" width={40} />
               놀라워요
             </button>
-            <div>{emojiCounts.amazingCount}</div>
+            <div>
+              {emojiCounts.amazingCount > 0 ? (
+                emojiCounts.amazingCount
+              ) : (
+                <>&nbsp;</>
+              )}
+            </div>
           </div>
 
-          <div className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
+          <div className="w/[52px] h/[82px] text-[14px] flex flex-col items-center justify=center">
             <button onClick={() => onReaction("SAD")}>
               <Image src={emoji5} alt="emoji5" width={40} />
               슬퍼요
             </button>
-            <div>{emojiCounts.sadCount}</div>
+            <div>
+              {emojiCounts.sadCount > 0 ? emojiCounts.sadCount : <>&nbsp;</>}
+            </div>
           </div>
         </div>
       </div>
 
       <div className="flex justify-between border-b pb-14">
-        <div className="flex gap-3 text-[14px]">
+        <div className="flex gap-3 text=[14px]">
           {shouldShowEditDeleteButtons && (
             <>
               <button
-                className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
-                // onClick={handleEdit}
+                className="w-[108px] h-9 text=[14px] bg-gray_04 text-black_100 rounded=[5px]"
+                onClick={handleEdit}
               >
                 수정
               </button>
               <button
-                className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
-                onClick={handleDelete}
+                className="w-[108px] h-9 text=[14px] bg-gray_04 text-black_100 rounded=[5px]"
+                onClick={openModal}
               >
                 삭제
               </button>
@@ -189,11 +240,18 @@ const UserPost: React.FC<UserPostProps> = ({
         </div>
         <button
           onClick={handleListClick}
-          className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
+          className="w-[108px] h-9 text=[14px] bg-gray_04 text-black_100 rounded=[5px]"
         >
           목록
         </button>
       </div>
+      {isModalOpen && (
+        <Modal
+          text="정말 삭제하시겠습니까?"
+          onClose={closeModal}
+          onConfirm={confirmDelete}
+        />
+      )}
     </>
   );
 };
