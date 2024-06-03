@@ -26,7 +26,7 @@ const TinyEditor: React.FC<TinyEditorProps> = ({ onChange }) => {
         apiKey="mmcszsrwbeo7gmf59jj7p3rez05930o3lfv01s7qz44ts2pe"
         init={{
           plugins:
-            "advcode autolink emoticons image link lists media table wordcount checklist mediaembed formatpainter pageembed linkchecker tinymcespellchecker editimage autocorrect typography inlinecss fullscreen help emoticons",
+            "advcode autolink emoticons image link lists media table wordcount checklist mediaembed formatpainter pageembed linkchecker tinymcespellchecker editimage autocorrect typography fullscreen help emoticons",
           toolbar:
             "blocks fontfamily fontsize bold underline removeformat emoticons align table link image media code fullscreen help",
           tinycomments_mode: "embedded",
@@ -36,7 +36,7 @@ const TinyEditor: React.FC<TinyEditorProps> = ({ onChange }) => {
           statusbar: false,
           content_style: `.mce-content-body[data-mce-placeholder]:not(.mce-visualblocks)::before {
           color: #BBB;
-          } `,
+          `,
         }}
         onEditorChange={(content) => {
           onChange(content); // 에디터에서 내용이 변경될 때마다 호출됨

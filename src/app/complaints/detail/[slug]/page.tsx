@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Comment from "@/components/comment/Comment";
+import { useRouter, usePathname } from "next/navigation";
 
 // 인터페이스 정의
 interface Qna {
@@ -41,6 +42,13 @@ interface Qna {
 	};
 }
 
+interface QnaFileInfo {
+  id: number;
+  name: string;
+  path: string;
+  size: number;
+}
+
 interface SessionData {
 	user: {
 		name: string;
@@ -50,9 +58,14 @@ interface SessionData {
 }
 
 export default function DailPage() {
-	const { slug } = useParams();
-	const [qna, setQna] = useState<Qna | null>(null);
-	const { data: session } = useSession();
+  const { slug } = useParams();
+  const [qna, setQna] = useState<Qna | null>(null);
+  const [qnaFileInfoList, setQnaFileInfoList] = useState<QnaFileInfo[]>([]);
+  const { data: session } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname.split("/")[1]; // 첫 번째 경로를 추출
+
 
 	useEffect(() => {
 		if (session && session.accessToken) {
@@ -63,19 +76,23 @@ export default function DailPage() {
 	const fetchComplaint = async () => {
 		if (!session || !session.accessToken) return;
 
-		try {
-			const response = await axios.get(`https://aptner.site/v1/api/qna/RO000/${slug}`, {
-				headers: {
-					Authorization: `Bearer ${(session as SessionData).accessToken}`,
-				},
-			});
-			console.log(response.data.result.qna);
-			const qnaData = response.data.result.qna;
-			setQna(qnaData);
-		} catch (err) {
-			console.log("err", err);
-		}
-	};
+    try {
+      const response = await axios.get(
+        `https://aptner.site/v1/api/qna/RO000/${slug}`,
+        {
+          headers: {
+            Authorization: `Bearer ${(session as SessionData).accessToken}`,
+          },
+        }
+      );
+      console.log(response.data.result);
+      const qnaData = response.data.result.qna;
+      setQna(qnaData);
+      setQnaFileInfoList(response.data.result.qnaFileInfoList || []);
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
 
 	const handleReaction = async (reactionType: string) => {
 		if (!qna || !session || !session.accessToken) return;
@@ -125,36 +142,64 @@ export default function DailPage() {
 		}
 	};
 
-	const category = qna?.category.name || "";
-	const title = qna?.title || "";
-	const nickname = qna?.writer.nickname || "";
-	const content = qna?.content || "";
-	const createdAt = qna?.createdAt || "";
-	const emojiCounts = qna?.emoji.emojiCount || {
-		likeCount: 0,
-		empathyCount: 0,
-		funCount: 0,
-		amazingCount: 0,
-		sadCount: 0,
-	};
+  const handleDelete = async () => {
+    if (!qna || !session || !session.accessToken) return;
+    try {
+      const response = await axios.delete(
+        `https://aptner.site/v1/api/qna/RO000/${qna.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${(session as SessionData).accessToken}`,
+          },
+        }
+      );
+      console.log(response);
+      router.push(`/${basePath}`);
+    } catch (err) {
+      console.error("Error delete:", err);
+    }
+  };
 
-	return (
-		<div className="mt-[70px] w-[1080px] mx-auto">
-			{qna && (
-				<>
-					<p className="text-[24px] font-semibold leading-[27px] mb-[40px]">민원게시판</p>
-					<UserPost
-						category={category}
-						nickname={nickname}
-						title={title}
-						content={content}
-						createdAt={createdAt}
-						onReaction={handleReaction}
-						emojiCounts={emojiCounts}
-					/>
-					<Comment initialComments={[]} author={nickname} postId={qna.id} page={"qna"} categoryCode={""} />
-				</>
-			)}
-		</div>
-	);
+  const category = qna?.category.name || "";
+  const title = qna?.title || "";
+  const nickname = qna?.writer.nickname || "";
+  const content = qna?.content || "";
+  const createdAt = qna?.createdAt || "";
+  const emojiCounts = qna?.emoji.emojiCount || {
+    likeCount: 0,
+    empathyCount: 0,
+    funCount: 0,
+    amazingCount: 0,
+    sadCount: 0,
+  };
+
+  return (
+    <div className="mt-[70px] w-[1080px] mx-auto">
+      {qna && (
+        <>
+          <p className="text-[24px] font-semibold leading-[27px] mb-[40px]">
+            민원게시판
+          </p>
+          <UserPost
+            category={category}
+            nickname={nickname}
+            title={title}
+            content={content}
+            createdAt={createdAt}
+            onReaction={handleReaction}
+            emojiCounts={emojiCounts}
+            handleDelete={handleDelete}
+            qnaFileInfoList={qnaFileInfoList}
+          />
+          <Comment
+            initialComments={[]}
+            author={nickname}
+            postId={qna.id}
+            page={"qna"}
+            categoryCode={qna.category.code}
+          />
+        </>
+      )}
+    </div>
+  );
 }
