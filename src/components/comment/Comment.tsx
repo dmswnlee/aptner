@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { FaRegCommentDots } from "react-icons/fa6";
 import CommentList from './comments/CommentList';
 import CommentForm from './comments/CommentForm';
@@ -20,8 +20,10 @@ interface CommentProps {
   initialComments: CommentType[];
   author: string;
   postId: number;
-  page: string
+  page: string;
+  categoryCode: string; // Add this line
 }
+
 
 interface SessionData {
   user: {
@@ -31,11 +33,12 @@ interface SessionData {
   accessToken: string;
 }
 
-const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
+const Comment = ({ initialComments, author, postId, page, categoryCode }: CommentProps) => {
   const [comments, setComments] = useState<CommentType[]>(initialComments);
   const [newComment, setNewComment] = useState<string>('');
   const [charCount, setCharCount] = useState<number>(0);
   const [image, setImage] = useState<File | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingContent, setEditingContent] = useState<string>('');
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -45,9 +48,9 @@ const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
 
   useEffect(() => {
     if (session && session.accessToken) {
-      // Fetch initial comments or perform any required initialization
+      // fetchComments(currentPage);
     }
-  }, [session]);
+  }, [session, currentPage]);
 
   const getCurrentDateTime = () => new Date().toLocaleString();
 
@@ -65,6 +68,35 @@ const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
   const handleRemoveImage = () => {
     setImage(null);
   };
+
+  // const fetchComments = async (page: number) => {
+  //   if (!session) return;
+  //   try {
+  //     const response = await axios.get(
+  //       `https://aptner.site/v1/api/posts/${apartCode}/${postId}/comments`, {
+  //         headers: {
+  //           Authorization: `Bearer ${(session as SessionData).accessToken}`,
+  //         },
+  //         params: {
+  //           page: page,
+  //           size: 10,
+  //           sort: "LATEST",
+  //           search: null,
+  //           type: null,
+  //           categoryCode: categoryCode 
+  //         },
+  //       }
+  //     );
+  //     console.log('Fetch response:', response);
+  //     setComments(response.data);
+  //   } catch (err) {
+  //     if (axios.isAxiosError(err)) {
+  //       console.error('Error fetching comments:', err.response?.data);
+  //     } else {
+  //       console.error('Error fetching comments:', err);
+  //     }
+  //   }
+  // };
 
   const handleAddComment = async () => {
     if (!session || !session.accessToken) {
@@ -93,7 +125,6 @@ const Comment = ({ initialComments, author, postId, page }: CommentProps) => {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
             'Content-Type': 'multipart/form-data',
           },
-          
         }
       );
       console.log('Response:', response.data);

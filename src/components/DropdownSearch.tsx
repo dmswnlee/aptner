@@ -20,10 +20,10 @@ const DropdownSearch = ({ onSelect, selectedOption }: DropdownSearchProps) => {
   const option = useSelector((state: RootState) => state.communications.option);
 
   const searchOptions: Option[] = [
-    { value: "title_content", label: "제목 + 내용" },
-    { value: "title", label: "제목" },
-    { value: "content", label: "내용" },
-    { value: "author", label: "작성자" },
+    { value: "TITLE_AND_CONTENT", label: "제목 + 내용" },
+    { value: "TITLE", label: "제목" },
+    { value: "CONTENT", label: "내용" },
+    { value: "WRITER", label: "작성자" },
   ];
 
   const [currentOptionLabel, setCurrentOptionLabel] = useState("검색 조건");

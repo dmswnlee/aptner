@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
 import { Pagination } from "antd";
+import { highlightText } from "@/utils/highlightText";
+
 
 // Communication 타입 정의
 interface Writer {
@@ -37,48 +39,22 @@ interface SessionData {
   accessToken: string;
 }
 
-const Posts = () => {
-  const [communications, setCommunications] = useState<Communication[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const { data: session } = useSession();
+interface ListProps {
+  data: Communication[];
+  loading: boolean;
+  currentPage: number;
+  total: number;
+  onPageChange: (page: number) => void;
+  searchQuery: string; // Add searchQuery prop
+}
 
-  const fetchCommunications = async (page: number) => {
-    if (!session) return;
-    try {
-      const response = await axios.get(`https://aptner.site/v1/api/posts/RO000`, {
-        headers: {
-          Authorization: `Bearer ${(session as SessionData).accessToken}`,
-        },
-        params: {
-          page: page,
-          size: 15,
-          sort: "LATEST",
-        },
-      });
-      setCommunications(response.data.result.result.posts);
-      setTotalCount(response.data.result.totalCount); // 총 항목 수 설정
-      console.log(response.data.result);
-      console.log(response.data.result.result.posts);
-      setLoading(false);
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
-
-  useEffect(() => {
-    if (session) {
-      fetchCommunications(currentPage);
-    }
-  }, [session, currentPage]);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+const List = ({ data, loading, currentPage, total, onPageChange, searchQuery }: ListProps) => {
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="w-full flex flex-col items-center mb-[100px]">
+    <div className="w-full flex flex-col items-center mb-[30px]">
       <div className="max-h-[1021px] mb-[100px] border-t border-b border-t-[#2A3F6D] relative w-[1080px]">
         <div className="grid grid-cols-[160px,590px,130px,70px,130px]">
           {/* Header */}
@@ -98,16 +74,16 @@ const Posts = () => {
             등록일
           </div>
           {/* Data */}
-          {communications?.map((posts) => (
+          {data.map((posts) => (
             <div key={posts.id} className="contents">
               <div className="border-b py-4 text-center">
                 {posts.category.name}
               </div>
               <Link
                 href={`/communication/details/${posts.id}`}
-                className="border-b py-4 ml-[3px] flex gap-[3px] items-center"
+                className="border-b py-4 ml-[3px] flex px-[5px]"
               >
-                {posts.title}
+                {highlightText(posts.title, searchQuery)}
               </Link>
               <div className="border-b py-4 text-center">
                 {posts.writer.nickname}
@@ -124,7 +100,7 @@ const Posts = () => {
           ))}
         </div>
         <Link
-          href="/communications/board"
+          href="/communication/board"
           className="absolute flex justify-center items-center gap-[2px] right-0 mt-[30px] bg-[#3ABEFF] rounded-[5px] text-white w-[78px] h-[36px] text-[14px]"
         >
           <PiPencilSimpleLineLight className="text-2xl" />
@@ -133,12 +109,12 @@ const Posts = () => {
       </div>
       <Pagination
         current={currentPage}
-        total={totalCount} // 총 항목 수 전달
-        pageSize={10} // 페이지당 항목 수 설정
-        onChange={handlePageChange}
+        total={total} // 총 항목 수 전달
+        pageSize={15} // 페이지당 항목 수 설정
+        onChange={onPageChange}
       />
     </div>
   );
 };
 
-export default Posts;
+export default List;
