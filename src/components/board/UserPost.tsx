@@ -1,11 +1,14 @@
 import { FaRegCommentDots } from "react-icons/fa6";
 import { GoFileDirectory } from "react-icons/go";
+import { LuDownload } from "react-icons/lu";
 import Image from "next/image";
 import emoji1 from "../../assets/images/emoji/emoji1.png";
 import emoji2 from "../../assets/images/emoji/emoji2.png";
 import emoji3 from "../../assets/images/emoji/emoji3.png";
 import emoji4 from "../../assets/images/emoji/emoji4.png";
 import emoji5 from "../../assets/images/emoji/emoji5.png";
+import { useRouter, usePathname } from "next/navigation";
+import { useState } from "react";
 
 // Props 타입 정의
 interface UserPostProps {
@@ -22,6 +25,13 @@ interface UserPostProps {
     amazingCount: number;
     sadCount: number;
   };
+  handleDelete: () => void;
+  qnaFileInfoList: {
+    id: number;
+    name: string;
+    path: string;
+    size: number;
+  }[];
 }
 
 // UserPost 컴포넌트에 타입 적용
@@ -33,7 +43,26 @@ const UserPost: React.FC<UserPostProps> = ({
   createdAt,
   onReaction,
   emojiCounts,
+  handleDelete,
+  qnaFileInfoList,
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+
+  const handleListClick = () => {
+    const basePath = pathname.split("/")[1]; // 첫 번째 경로를 추출
+    router.push(`/${basePath}`); // 첫 번째 경로로 이동
+  };
+
+  // 수정 및 삭제 버튼을 렌더링할 경로
+  const shouldShowEditDeleteButtons =
+    pathname.includes("complaints") || pathname.includes("communication");
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!isDropdownOpen);
+  };
+
   return (
     <>
       <div>
@@ -59,14 +88,40 @@ const UserPost: React.FC<UserPostProps> = ({
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-[10px] p-[10px] bg-[#EEEEEE] rounded-[5px]">
-            <GoFileDirectory />
-            <p>첨부파일 2</p>
-          </div>
+          {qnaFileInfoList.length > 0 && (
+            <div className="relative">
+              <button
+                className="flex items-center gap-[10px] p-[10px] bg-gray_04 text-black_100 rounded-[5px]"
+                onClick={toggleDropdown}
+              >
+                <GoFileDirectory />
+                <p>첨부파일 {qnaFileInfoList.length}</p>
+              </button>
+              {isDropdownOpen && (
+                <ul className="absolute right-0 mt-2 p-3 w-[220px] bg-white tooltip border rounded-[5px] z-10">
+                  {qnaFileInfoList.map((file) => (
+                    <li
+                      key={file.id}
+                      className="hover:bg-gray-100 p-[2px] flex-shrink-0 cursor-pointer underline"
+                    >
+                      <a
+                        href={file.path}
+                        download={file.name}
+                        className="flex justify-between items-center"
+                      >
+                        <div className="w-[170px] truncate ">{file.name}</div>
+                        <LuDownload />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </div>
 
         <div
-          className="py-12 min-h-[200px] border-t"
+          className="py-12 min-h-[300px] border-t"
           dangerouslySetInnerHTML={{ __html: content }}
         ></div>
 
@@ -115,21 +170,27 @@ const UserPost: React.FC<UserPostProps> = ({
 
       <div className="flex justify-between border-b pb-14">
         <div className="flex gap-3 text-[14px]">
-          <button
-            className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
-
-            // onClick={handleEdit}
-          >
-            수정
-          </button>
-          <button
-            className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
-            // onClick={handleDelete}
-          >
-            삭제
-          </button>
+          {shouldShowEditDeleteButtons && (
+            <>
+              <button
+                className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
+                // onClick={handleEdit}
+              >
+                수정
+              </button>
+              <button
+                className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
+                onClick={handleDelete}
+              >
+                삭제
+              </button>
+            </>
+          )}
         </div>
-        <button className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]">
+        <button
+          onClick={handleListClick}
+          className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
+        >
           목록
         </button>
       </div>

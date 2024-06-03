@@ -23,8 +23,8 @@ const TabBar: React.FC<TabBarProps> = ({
   return (
     <div className="border-b-2 text-gray_07 h-[60px] text-xl font-semibold mb-6 flex gap-10 items-center">
       <button
-        className={`h-full flex justify-center items-center w-[90px] ${isActive("QA000")}`}
-        onClick={() => handleCategoryClick("QA000")}
+        className={`h-full flex justify-center items-center w-[90px] ${isActive("")}`}
+        onClick={() => handleCategoryClick("")}
       >
         전체
       </button>

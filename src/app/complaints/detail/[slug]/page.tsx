@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Comment from "@/components/comment/Comment";
+import { useRouter, usePathname } from "next/navigation";
 
 // 인터페이스 정의
 interface Qna {
@@ -41,6 +42,13 @@ interface Qna {
   };
 }
 
+interface QnaFileInfo {
+  id: number;
+  name: string;
+  path: string;
+  size: number;
+}
+
 interface SessionData {
   user: {
     name: string;
@@ -52,7 +60,11 @@ interface SessionData {
 export default function DailPage() {
   const { slug } = useParams();
   const [qna, setQna] = useState<Qna | null>(null);
+  const [qnaFileInfoList, setQnaFileInfoList] = useState<QnaFileInfo[]>([]);
   const { data: session } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname.split("/")[1]; // 첫 번째 경로를 추출
 
   useEffect(() => {
     if (session && session.accessToken) {
@@ -72,9 +84,10 @@ export default function DailPage() {
           },
         }
       );
-      console.log(response.data.result.qna);
+      console.log(response.data.result);
       const qnaData = response.data.result.qna;
       setQna(qnaData);
+      setQnaFileInfoList(response.data.result.qnaFileInfoList || []);
     } catch (err) {
       console.log("err", err);
     }
@@ -128,6 +141,24 @@ export default function DailPage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!qna || !session || !session.accessToken) return;
+    try {
+      const response = await axios.delete(
+        `https://aptner.site/v1/api/qna/RO000/${qna.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${(session as SessionData).accessToken}`,
+          },
+        }
+      );
+      console.log(response);
+      router.push(`/${basePath}`);
+    } catch (err) {
+      console.error("Error delete:", err);
+    }
+  };
+
   const category = qna?.category.name || "";
   const title = qna?.title || "";
   const nickname = qna?.writer.nickname || "";
@@ -156,12 +187,15 @@ export default function DailPage() {
             createdAt={createdAt}
             onReaction={handleReaction}
             emojiCounts={emojiCounts}
+            handleDelete={handleDelete}
+            qnaFileInfoList={qnaFileInfoList}
           />
           <Comment
             initialComments={[]}
             author={nickname}
             postId={qna.id}
             page={"qna"}
+            categoryCode={qna.category.code}
           />
         </>
       )}

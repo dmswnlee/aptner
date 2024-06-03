@@ -35,34 +35,89 @@ interface SessionData {
   accessToken: string;
 }
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+const MAX_FILE_COUNT = 20;
+
 export default function Board({ options }: BoardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options[0].label);
-  const [fileNames, setFileNames] = useState<string[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
   const [editorContent, setEditorContent] = useState<string>("");
   const router = useRouter();
   const fileInput = useRef<HTMLInputElement>(null);
   const { data: session } = useSession();
   const [isHovered, setIsHovered] = useState(false);
+
+  const allowedExtensions = [
+    "hwp",
+    "doc",
+    "docx",
+    "xls",
+    "ppt",
+    "pptx",
+    "pdf",
+    "jpg",
+    "jpeg",
+    "png",
+    "gif",
+    "bmp",
+    "mov",
+    "avi",
+    "mpg",
+    "3gp",
+    "3g2",
+    "midi",
+    "mid",
+    "mp3",
+    "mp4",
+    "webm",
+    "wmv",
+  ];
+
   const handleCancel = () => {
     router.back();
   };
+
   const toggleDropdown = () => setIsOpen(!isOpen);
+
   const selectOption = (option: string) => {
     setSelectedOption(option);
     setValue("categoryCode", option);
     setIsOpen(false);
   };
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      const files = event.target.files;
-      const newFileNames = Array.from(files).map((file) => file.name);
-      setFileNames((prevFileNames) => [...prevFileNames, ...newFileNames]);
+      const selectedFiles = Array.from(event.target.files);
+      let validFiles = selectedFiles.filter((file) => {
+        const extension = file.name.split(".").pop()?.toLowerCase();
+        const isValidExtension =
+          extension && allowedExtensions.includes(extension);
+        const isValidSize = file.size <= MAX_FILE_SIZE;
+
+        if (!isValidExtension) {
+          alert(`${file.name} 파일은 허용되지 않는 확장자입니다.`);
+        }
+        if (!isValidSize) {
+          alert(`${file.name} 파일의 크기가 10MB를 초과합니다.`);
+        }
+
+        return isValidExtension && isValidSize;
+      });
+
+      const totalFiles = files.length + validFiles.length;
+      if (totalFiles > MAX_FILE_COUNT) {
+        alert(`파일은 최대 ${MAX_FILE_COUNT}개까지 첨부할 수 있습니다.`);
+        validFiles = validFiles.slice(0, MAX_FILE_COUNT - files.length);
+      }
+
+      setFiles((prevFiles) => [...prevFiles, ...validFiles]);
     }
   };
+
   const handleRemoveFile = (fileName: string) => {
-    setFileNames((currentFileNames) =>
-      currentFileNames.filter((name) => name !== fileName)
+    setFiles((currentFiles) =>
+      currentFiles.filter((file) => file.name !== fileName)
     );
   };
 
@@ -83,13 +138,22 @@ export default function Board({ options }: BoardProps) {
       categoryCode: categoryCode,
       title: data.title,
       content: editorContent,
-      isPrivate: data.isPrivate,
+      private: data.isPrivate,
     };
 
     formData.append(
       "request",
       new Blob([JSON.stringify(jsonPayload)], { type: "application/json" })
     );
+
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
+
+    console.log("Form Data (JSON):", JSON.stringify(jsonPayload));
+    files.forEach((file, index) => {
+      console.log(`File ${index + 1}:`, file);
+    });
 
     try {
       const response = await axios.post(
@@ -102,7 +166,6 @@ export default function Board({ options }: BoardProps) {
           },
         }
       );
-      console.log('Form Data:', formData);
       console.log("Server Response:", response.data);
       const qnaId = response.data.result.qnaId;
       router.push(`/complaints/detail/${qnaId}`);
@@ -196,7 +259,7 @@ export default function Board({ options }: BoardProps) {
           </label>
         </div>
         {/* Displaying list of files with an option to remove */}
-        {fileNames.length > 0 ? (
+        {files.length > 0 ? (
           <div className="border rounded-[5px] mt-4">
             <p className="bg-[#f7f7f7] h-10 flex text-[#666]">
               <div className="px-4 py-2">
@@ -205,17 +268,17 @@ export default function Board({ options }: BoardProps) {
               <p className="px-4 py-2">파일명</p>
             </p>
             <div className="flex flex-col text-[#666] border-t bg-gray_00 max-h-[120px] overflow-y-scroll custom-scrollbar">
-              {fileNames.map((name, index) => (
+              {files.map((file, index) => (
                 <div key={index} className="inline-flex w-fit items-center">
                   <button
-                    onClick={() => handleRemoveFile(name)}
+                    onClick={() => handleRemoveFile(file.name)}
                     className="text-2xl px-4 py-2"
                     type="button"
                   >
                     <IoClose />
                   </button>
                   <p className="px-4 py-2 w-[500px] truncate flex-shrink-0">
-                    {name}
+                    {file.name}
                   </p>
                 </div>
               ))}

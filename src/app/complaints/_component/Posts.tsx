@@ -51,7 +51,7 @@ const Posts = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState<string>("QA000");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const { data: session } = useSession();
 
   const formatDate = (dateString: string) => {
@@ -76,7 +76,7 @@ const Posts = () => {
     );
   };
 
-  const fetchComplaint = async (page: number) => {
+  const fetchComplaint = async (page: number, categoryCode: string) => {
     if (!session) return;
 
     try {
@@ -88,12 +88,12 @@ const Posts = () => {
           page: page,
           size: 15,
           sort: "LATEST",
-          categoryCode: selectedCategory,
+          categoryCode: categoryCode,
         },
       });
       setQnas(response.data.result.result.qnas);
       setTotalCount(response.data.result.totalCount); // 총 항목 수 설정
-      console.log(response.data.result);
+      console.log(response.data);
       setLoading(false);
     } catch (err) {
       console.log("err", err);
@@ -102,7 +102,7 @@ const Posts = () => {
 
   useEffect(() => {
     if (session) {
-      fetchComplaint(currentPage);
+      fetchComplaint(currentPage, selectedCategory);
     }
   }, [session, currentPage, selectedCategory]);
 
@@ -157,12 +157,12 @@ const Posts = () => {
             {/* Data */}
             {qnas.map((qna) => (
               <div key={qna.id} className="contents">
-                <div className="border-b py-4 text-center">
+                <div className="border-b h-[60px] px-4 flex justify-center items-center">
                   {qna.category.name}
                 </div>
                 <Link
                   href={`/complaints/detail/${qna.id}`}
-                  className="border-b py-4 ml-[3px] flex gap-[3px] items-center"
+                  className="border-b py-4 pl-3 gap-[3px] flex items-center"
                 >
                   {qna.isPrivate && <MdLockOutline />}
                   {qna.title}
@@ -180,14 +180,18 @@ const Posts = () => {
                   )}
                 </Link>
 
-                <div className="border-b py-4 text-center">
+                <div className="border-b py-4 flex justify-center">
                   {qna.writer.nickname}
                 </div>
-                <div className="border-b py-4 text-center">{qna.viewCount}</div>
-                <div className="border-b py-4 text-center">
+                <div className="border-b py-4 flex justify-center">
+                  {qna.viewCount}-
+                </div>
+                <div className="border-b py-4 flex justify-center">
                   {formatDate(qna.createdAt)}
                 </div>
-                <div className="border-b py-4 text-center">{qna.status}</div>
+                <div className="border-b py-4 flex justify-center">
+                  {qna.status}-
+                </div>
               </div>
             ))}
           </div>
