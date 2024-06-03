@@ -1,50 +1,59 @@
 "use client";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import React from "react";
 
-export default function TabBar() {
-  const pathname = usePathname();
+interface TabBarProps {
+  onSelectCategory: (categoryCode: string) => void;
+  selectedCategory: string;
+}
 
-  const isActive = (hrefs: string[]) => {
-    // 정확한 경로 일치 검사
-    return hrefs.includes(pathname)
+const TabBar: React.FC<TabBarProps> = ({
+  onSelectCategory,
+  selectedCategory,
+}) => {
+  const isActive = (categoryCode: string) => {
+    return selectedCategory === categoryCode
       ? "border-b-4 border-black_100 text-black_100 mt-[3px]"
       : "";
   };
 
+  const handleCategoryClick = (categoryCode: string) => {
+    onSelectCategory(categoryCode);
+  };
+
   return (
     <div className="border-b-2 text-gray_07 h-[60px] text-xl font-semibold mb-6 flex gap-10 items-center">
-      <Link
-        href="/complaints"
-        className={`h-full flex justify-center items-center w-[90px] ${isActive(["/complaints"])}`}
+      <button
+        className={`h-full flex justify-center items-center w-[90px] ${isActive("QA000")}`}
+        onClick={() => handleCategoryClick("QA000")}
       >
         전체
-      </Link>
-      <Link
-        href="/complaints"
-        className={`h-full flex justify-center items-center w-[90px] ${isActive(["/complaints/하자보수"])}`}
+      </button>
+      <button
+        className={`h-full flex justify-center items-center w-[100px] ${isActive("QA001")}`}
+        onClick={() => handleCategoryClick("QA001")}
       >
         하자/보수
-      </Link>
-      <Link
-        href="/complaints"
-        className={`h-full flex items-center ${isActive(["/complaints/관리업체 및 사업자선정"])}`}
+      </button>
+      <button
+        className={`h-full flex items-center ${isActive("QA002")}`}
+        onClick={() => handleCategoryClick("QA002")}
       >
         관리업체 및 사업자선정
-      </Link>
-      <Link
-        href="/complaints"
-        className={`h-full flex items-center justify-center w-[90px] ${isActive(["/complaints/시설관리"])}`}
+      </button>
+      <button
+        className={`h-full flex items-center justify-center w-[90px] ${isActive("QA003")}`}
+        onClick={() => handleCategoryClick("QA003")}
       >
         시설관리
-      </Link>
-      <Link
-        href="/complaints"
-        className={`h-full flex items-center justify-center w-[90px] ${isActive(["/complaints/입대위"])}`}
+      </button>
+      <button
+        className={`h-full flex items-center justify-center w-[90px] ${isActive("QA004")}`}
+        onClick={() => handleCategoryClick("QA004")}
       >
         입대위
-      </Link>
+      </button>
     </div>
   );
-}
+};
+
+export default TabBar;
