@@ -27,7 +27,7 @@ const IdForm = () => {
 			return;
 		}
 		if (!phone) {
-			setModalMessage("휴대폰 번호를 입력해주세요");
+			setModalMessage("핸드폰 번호를 입력해주세요");
 			setIsModalOpen(true);
 			return;
 		}
@@ -57,7 +57,7 @@ const IdForm = () => {
 				</div>
 			</div>
 			<div className="flex gap-[10px]">
-				<p className="w-[120px] p-[10px]">휴대폰 번호</p>
+				<p className="w-[120px] p-[10px]">핸드폰 번호</p>
 				<div className="flex flex-col gap-2">
 					<input
 						type="text"
