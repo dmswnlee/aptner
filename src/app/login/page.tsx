@@ -103,7 +103,7 @@ const Login = () => {
 					onSubmit={handleSubmit(onSubmit)}
 					className="w-[430px] h-full flex flex-col justify-center gap-[10px]">
 					<input
-						type="email"
+						type="text"
 						placeholder="아이디 입력"
 						{...register("email")}
 						className="w-[430px] h-[48px] px-[30px] py-[15px] outline-none border border-solid border-border rounded-[5px] focus:border-blue_05 focus:text-blue_05 bg-gray_00"

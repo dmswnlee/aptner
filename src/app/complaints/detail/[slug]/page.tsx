@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Comment from "@/components/comment/Comment";
+import { useRouter, usePathname } from "next/navigation";
 
 // 인터페이스 정의
 interface Qna {
@@ -41,6 +42,13 @@ interface Qna {
   };
 }
 
+interface QnaFileInfo {
+  id: number;
+  name: string;
+  path: string;
+  size: number;
+}
+
 interface SessionData {
   user: {
     name: string;
@@ -52,7 +60,11 @@ interface SessionData {
 export default function DailPage() {
   const { slug } = useParams();
   const [qna, setQna] = useState<Qna | null>(null);
+  const [fileInfoList, setFileInfoList] = useState<QnaFileInfo[]>([]);
   const { data: session } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname.split("/")[1]; // 첫 번째 경로를 추출
 
   useEffect(() => {
     if (session && session.accessToken) {
@@ -72,9 +84,10 @@ export default function DailPage() {
           },
         }
       );
-      console.log(response.data.result.qna);
+      console.log(response.data.result);
       const qnaData = response.data.result.qna;
       setQna(qnaData);
+      setFileInfoList(response.data.result.qnaFileInfoList || []);
     } catch (err) {
       console.log("err", err);
     }
@@ -86,45 +99,53 @@ export default function DailPage() {
     console.log(qna.id);
     console.log("Reaction type:", reactionType);
 
+    // reactionType을 기반으로 매핑
+    const reactedKey =
+      `reacted${reactionType.charAt(0).toUpperCase()}${reactionType.slice(1).toLowerCase()}` as keyof typeof qna.emoji.emojiReaction;
+    const countKey =
+      `${reactionType.toLowerCase()}Count` as keyof typeof qna.emoji.emojiCount;
+
+    const reacted = qna.emoji.emojiReaction[reactedKey];
+    const method = reacted ? "delete" : "post";
+
     try {
-      const response = await axios.post(
-        `https://aptner.site/v1/api/qna/RO000/${qna.id}/emoji`,
-        {},
+      const response = await axios({
+        method,
+        url: `https://aptner.site/v1/api/qna/RO000/${qna.id}/emoji`,
+        headers: {
+          Authorization: `Bearer ${(session as SessionData).accessToken}`,
+        },
+        params: {
+          type: reactionType,
+        },
+      });
+      console.log(response.data);
+
+      // Update emoji counts and reaction status based on the reaction
+      const newQna = { ...qna };
+      newQna.emoji.emojiCount[countKey] += reacted ? -1 : 1;
+      newQna.emoji.emojiReaction[reactedKey] = !reacted;
+      setQna(newQna);
+    } catch (error) {
+      console.error("Error sending reaction:", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!qna || !session || !session.accessToken) return;
+    try {
+      const response = await axios.delete(
+        `https://aptner.site/v1/api/qna/RO000/${qna.id}`,
         {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
           },
-          params: {
-            type: reactionType,
-          },
         }
       );
-      console.log(response.data);
-
-      // Update emoji counts based on the reaction
-      const newQna = { ...qna };
-      switch (reactionType) {
-        case "LIKE":
-          newQna.emoji.emojiCount.likeCount++;
-          break;
-        case "EMPATHY":
-          newQna.emoji.emojiCount.empathyCount++;
-          break;
-        case "FUN":
-          newQna.emoji.emojiCount.funCount++;
-          break;
-        case "AMAZING":
-          newQna.emoji.emojiCount.amazingCount++;
-          break;
-        case "SAD":
-          newQna.emoji.emojiCount.sadCount++;
-          break;
-        default:
-          break;
-      }
-      setQna(newQna);
-    } catch (error) {
-      console.error("Error sending reaction:", error);
+      console.log(response);
+      router.push(`/${basePath}`);
+    } catch (err) {
+      console.error("Error delete:", err);
     }
   };
 
@@ -149,6 +170,7 @@ export default function DailPage() {
             민원게시판
           </p>
           <UserPost
+            id={qna.id} // 추가된 속성
             category={category}
             nickname={nickname}
             title={title}
@@ -156,8 +178,16 @@ export default function DailPage() {
             createdAt={createdAt}
             onReaction={handleReaction}
             emojiCounts={emojiCounts}
+            handleDelete={handleDelete}
+            fileInfoList={fileInfoList}
           />
-          <Comment initialComments={[]} author={nickname} postId={qna.id} page={'qna'} categoryCode={""}/>
+          <Comment
+            initialComments={[]}
+            author={nickname}
+            postId={qna.id}
+            page={"qna"}
+            categoryCode={qna.category.code}
+          />
         </>
       )}
     </div>

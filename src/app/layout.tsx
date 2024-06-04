@@ -5,29 +5,32 @@ import ReduxProvider from "@/stores/provider";
 import Footer from "@/components/Footer";
 import QuickMenu from "@/components/quickmenu/QuickMenu";
 import AuthSession from "./_component/AuthSession";
+import localFont from "next/font/local";
 
 export const metadata = {
-  title: "아파트너",
+	title: "아파트너",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="ko" className="h-full">
-      <body className="flex flex-col min-h-screen">
-        <MSWComponent />
-        <AuthSession>
-          <Header />
-          <ReduxProvider>
-            <main className="flex-1">{children}</main>
-          </ReduxProvider>
-          <Footer />
-           {/* <QuickMenu /> */}
-        </AuthSession>
-      </body>
-    </html>
-  );
+const pretendard = localFont({
+	src: "../assets/fonts/PretendardVariable.woff2",
+	display: "swap",
+	weight: "45 920",
+});
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+	return (
+		<html lang="ko" className="h-full">
+			<body className={`flex flex-col min-h-screen ${pretendard.className}`}>
+				<MSWComponent />
+				<AuthSession>
+					<Header />
+					<ReduxProvider>
+						<main className="flex-1">{children}</main>
+					</ReduxProvider>
+					<Footer />
+					{/* <QuickMenu /> */}
+				</AuthSession>
+			</body>
+		</html>
+	);
 }

@@ -1,7 +1,7 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Button from "../buttons/Button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { GoFileDirectory } from "react-icons/go";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoMdInformationCircleOutline } from "react-icons/io";
@@ -35,35 +35,114 @@ interface SessionData {
   accessToken: string;
 }
 
+interface FileInfo {
+  id: number;
+  name: string;
+  path: string;
+  size: number;
+  file?: File;
+}
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+const MAX_FILE_COUNT = 20;
+
 export default function Board({ options }: BoardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options[0].label);
-  const [fileNames, setFileNames] = useState<string[]>([]);
+  const [files, setFiles] = useState<FileInfo[]>([]);
   const [editorContent, setEditorContent] = useState<string>("");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const fileInput = useRef<HTMLInputElement>(null);
   const { data: session } = useSession();
   const [isHovered, setIsHovered] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [qnaId, setQnaId] = useState<string | null>(null);
+
+  const allowedExtensions = [
+    "hwp",
+    "doc",
+    "docx",
+    "xls",
+    "ppt",
+    "pptx",
+    "pdf",
+    "jpg",
+    "jpeg",
+    "png",
+    "gif",
+    "bmp",
+    "mov",
+    "avi",
+    "mpg",
+    "3gp",
+    "3g2",
+    "midi",
+    "mid",
+    "mp3",
+    "mp4",
+    "webm",
+    "wmv",
+  ];
+
   const handleCancel = () => {
     router.back();
   };
+
   const toggleDropdown = () => setIsOpen(!isOpen);
+
   const selectOption = (option: string) => {
     setSelectedOption(option);
     setValue("categoryCode", option);
     setIsOpen(false);
   };
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      const files = event.target.files;
-      const newFileNames = Array.from(files).map((file) => file.name);
-      setFileNames((prevFileNames) => [...prevFileNames, ...newFileNames]);
+      const selectedFiles = Array.from(event.target.files);
+      let validFiles = selectedFiles.filter((file) => {
+        const extension = file.name.split(".").pop()?.toLowerCase();
+        const isValidExtension =
+          extension && allowedExtensions.includes(extension);
+        const isValidSize = file.size <= MAX_FILE_SIZE;
+
+        if (!isValidExtension) {
+          alert(`${file.name} 파일은 허용되지 않는 확장자입니다.`);
+        }
+        if (!isValidSize) {
+          alert(`${file.name} 파일의 크기가 10MB를 초과합니다.`);
+        }
+
+        return isValidExtension && isValidSize;
+      });
+
+      const totalFiles = files.length + validFiles.length;
+      if (totalFiles > MAX_FILE_COUNT) {
+        alert(`파일은 최대 ${MAX_FILE_COUNT}개까지 첨부할 수 있습니다.`);
+        validFiles = validFiles.slice(0, MAX_FILE_COUNT - files.length);
+      }
+
+      const fileInfos = validFiles.map((file) => ({
+        id: Date.now(),
+        name: file.name,
+        path: URL.createObjectURL(file),
+        size: file.size,
+        file: file,
+      }));
+
+      setFiles((prevFiles) => [...prevFiles, ...fileInfos]);
     }
   };
+
   const handleRemoveFile = (fileName: string) => {
-    setFileNames((currentFileNames) =>
-      currentFileNames.filter((name) => name !== fileName)
-    );
+    console.log(`Removing file: ${fileName}`);
+    setFiles((currentFiles) => {
+      const updatedFiles = currentFiles.filter(
+        (file) => file.name !== fileName
+      );
+      console.log("Updated files:", updatedFiles);
+      return updatedFiles;
+    });
   };
 
   const { register, handleSubmit, setValue } = useForm<FormData>({
@@ -72,6 +151,34 @@ export default function Board({ options }: BoardProps) {
       isPrivate: false,
     },
   });
+
+  useEffect(() => {
+    const queryParams = searchParams;
+
+    if (queryParams) {
+      const id = queryParams.get("id");
+      const category = queryParams.get("category");
+      const title = queryParams.get("title");
+      const content = queryParams.get("content");
+      const isPrivate = queryParams.get("isPrivate") === "true";
+      const fileInfoList = queryParams.get("fileInfoList");
+
+      if (id && category && title && content) {
+        setIsEdit(true);
+        setQnaId(id);
+        setValue("categoryCode", category);
+        setSelectedOption(category);
+        setValue("title", title);
+        setEditorContent(content);
+        setValue("isPrivate", isPrivate);
+
+        if (fileInfoList) {
+          const parsedFileInfoList: FileInfo[] = JSON.parse(fileInfoList);
+          setFiles(parsedFileInfoList);
+        }
+      }
+    }
+  }, [searchParams, setValue]);
 
   const onSubmit = async (data: FormData) => {
     const formData = new FormData();
@@ -83,7 +190,7 @@ export default function Board({ options }: BoardProps) {
       categoryCode: categoryCode,
       title: data.title,
       content: editorContent,
-      isPrivate: data.isPrivate,
+      private: data.isPrivate,
     };
 
     formData.append(
@@ -91,21 +198,41 @@ export default function Board({ options }: BoardProps) {
       new Blob([JSON.stringify(jsonPayload)], { type: "application/json" })
     );
 
+    files.forEach((fileInfo) => {
+      if (fileInfo.file) {
+        formData.append("files", fileInfo.file);
+      }
+    });
+
     try {
-      const response = await axios.post(
-        "https://aptner.site/v1/api/qna/RO000",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${(session as SessionData).accessToken}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log('Form Data:', formData);
-      console.log("Server Response:", response.data);
-      const qnaId = response.data.result.qnaId;
-      router.push(`/complaints/detail/${qnaId}`);
+      if (isEdit && qnaId) {
+        const response = await axios.patch(
+          `https://aptner.site/v1/api/qna/RO000/${qnaId}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${(session as SessionData).accessToken}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        console.log("Server Response:", response.data);
+        router.push(`/complaints/detail/${qnaId}`);
+      } else {
+        const response = await axios.post(
+          "https://aptner.site/v1/api/qna/RO000",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${(session as SessionData).accessToken}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        console.log("Server Response:", response.data);
+        const newQnaId = response.data.result.qnaId;
+        // router.push(`/complaints/detail/${newQnaId}`);
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -196,7 +323,7 @@ export default function Board({ options }: BoardProps) {
           </label>
         </div>
         {/* Displaying list of files with an option to remove */}
-        {fileNames.length > 0 ? (
+        {files.length > 0 ? (
           <div className="border rounded-[5px] mt-4">
             <p className="bg-[#f7f7f7] h-10 flex text-[#666]">
               <div className="px-4 py-2">
@@ -205,17 +332,17 @@ export default function Board({ options }: BoardProps) {
               <p className="px-4 py-2">파일명</p>
             </p>
             <div className="flex flex-col text-[#666] border-t bg-gray_00 max-h-[120px] overflow-y-scroll custom-scrollbar">
-              {fileNames.map((name, index) => (
+              {files.map((file, index) => (
                 <div key={index} className="inline-flex w-fit items-center">
                   <button
-                    onClick={() => handleRemoveFile(name)}
+                    onClick={() => handleRemoveFile(file.name)}
                     className="text-2xl px-4 py-2"
                     type="button"
                   >
                     <IoClose />
                   </button>
                   <p className="px-4 py-2 w-[500px] truncate flex-shrink-0">
-                    {name}
+                    {file.name}
                   </p>
                 </div>
               ))}
@@ -240,7 +367,10 @@ export default function Board({ options }: BoardProps) {
           </div>
         </div>
 
-        <TinyEditor onChange={(content) => setEditorContent(content)} />
+        <TinyEditor
+          initialValue={editorContent}
+          onChange={(content) => setEditorContent(content)}
+        />
       </div>
       <div className="flex justify-center mt-10 mb-20 gap-4">
         <Button
