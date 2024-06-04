@@ -50,12 +50,15 @@ export const {
 			if (user) {
 				token.accessToken = user.token;
 				token.nickname = user.nickname;
+				token.id = user.id;
 			}
+
 			return token;
 		},
 		session: async ({ session, token }) => {
 			session.accessToken = token.accessToken;
 			session.user.nickname = token.nickname;
+			session.user.id = token.id;
 			return session;
 		},
 	},
