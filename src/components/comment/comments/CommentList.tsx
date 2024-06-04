@@ -12,9 +12,33 @@ interface CommentListProps {
 }
 
 const CommentList = ({ comments, author, onEdit, onDelete, onReply, onUpdate }: CommentListProps) => {
+  // Function to build a nested comment structure
+  const buildNestedComments = (comments: CommentType[]) => {
+    const commentMap = new Map<number, CommentType>();
+    const nestedComments: CommentType[] = [];
+
+    comments.forEach(comment => {
+      comment.replies = [];
+      commentMap.set(comment.id, comment);
+    });
+
+    comments.forEach(comment => {
+      if (comment.parentId) {
+        const parent = commentMap.get(comment.parentId);
+        parent?.replies.push(comment);
+      } else {
+        nestedComments.push(comment);
+      }
+    });
+
+    return nestedComments;
+  };
+
+  const nestedComments = buildNestedComments(comments);
+
   return (
     <>
-      {Array.isArray(comments) && comments.map(comment => (
+      {nestedComments.map(comment => (
         <CommentItem
           key={comment.id}
           comment={comment}

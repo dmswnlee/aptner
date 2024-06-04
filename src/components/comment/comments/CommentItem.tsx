@@ -23,27 +23,32 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
   const [editContent, setEditContent] = useState<string>(comment.content);
   const [editImage, setEditImage] = useState<File | null>(null);
 
+  // Handle reply content change
   const handleReplyChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setReplyContent(e.target.value);
     setCharCount(e.target.value.length);
   };
 
+  // Handle edit content change
   const handleEditChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setEditContent(e.target.value);
   };
 
+  // Handle reply file change
   const handleReplyFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setReplyImage(e.target.files[0]);
     }
   };
 
+  // Handle edit file change
   const handleEditFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setEditImage(e.target.files[0]);
     }
   };
 
+  // Submit a reply
   const handleReplySubmit = async () => {
     await onReply(comment.id, replyContent, replyImage);
     setReplyContent('');
@@ -52,17 +57,18 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
     setCharCount(0);
   };
 
+  // Submit an edit
   const handleUpdateSubmit = async () => {
     await onUpdate(comment.id, editContent, comment.parentId, editImage);
     setIsEditing(false);
   };
 
+  // Format the date string to a more readable format
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-
     return `${year}-${month}-${day} ${date.toLocaleTimeString('ko-KR')}`;
   };
 
@@ -79,7 +85,7 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
               onTextareaChange={handleEditChange}
               onFileChange={handleEditFileChange}
               onRemoveImage={() => setEditImage(null)}
-              onAddComment={() => handleUpdateSubmit()}
+              onAddComment={handleUpdateSubmit}
             />
           </>
         ) : (
@@ -123,7 +129,7 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
             onTextareaChange={handleReplyChange} 
             onFileChange={handleReplyFileChange} 
             onRemoveImage={() => setReplyImage(null)} 
-            onAddComment={() => handleReplySubmit()} 
+            onAddComment={handleReplySubmit} 
             parentId={comment.id}
           />
         )}

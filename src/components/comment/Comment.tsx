@@ -54,16 +54,12 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
           },
           params: {
             page: page,
-            size: 100, // Adjust this value as needed
+            size: 100,
             sort: "LATEST",
           },
         }
       );
-      console.log('Fetch response:', response.data.result.result.comments);
-      const fetchedComments = response.data.result.result.comments.map((comment: CommentType) => ({
-        ...comment,
-        replies: comment.replies || []
-      }));
+      const fetchedComments = response.data.result.result.comments;
       setComments(fetchedComments || []);
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -75,11 +71,7 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
   };
 
   const handleAddComment = async (parentId: number | null = null, content: string = newComment, image: File | null = null): Promise<void> => {
-    if (!session || !session.accessToken) {
-      console.error('No session or access token found');
-      return;
-    }
-    if (content.trim() === '') return;
+    if (!session || !session.accessToken || content.trim() === '') return;
 
     const requestPayload = {
       parentId: parentId,
@@ -88,9 +80,7 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
 
     const formData = new FormData();
     formData.append('request', new Blob([JSON.stringify(requestPayload)], { type: 'application/json' }));
-    if (image) {
-      formData.append('image', image);
-    }
+    if (image) formData.append('image', image);
 
     try {
       const response = await axios.post(
@@ -103,14 +93,11 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
           },
         }
       );
-      console.log('Response:', response.data);
 
       if (response.data.success) {
         const newCommentObj: CommentType = {
           id: response.data.result.postCommentId,
-          writer: {
-            nickname: author,
-          },
+          writer: { nickname: author },
           createdAt: getCurrentDateTime(),
           content: content,
           image: image ? URL.createObjectURL(image) : undefined,
@@ -120,19 +107,19 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
           updatedAt: ''
         };
 
-        if (parentId) {
-          setComments(prevComments => prevComments.map(comment => {
-            if (comment.id === parentId) {
-              return {
-                ...comment,
-                replies: [...(comment.replies || []), newCommentObj],
-              };
-            }
-            return comment;
-          }));
-        } else {
-          setComments([...comments, newCommentObj]);
-        }
+        setComments(prevComments => {
+          if (parentId) {
+            return prevComments.map(comment => {
+              if (comment.id === parentId) {
+                return { ...comment, replies: [...(comment.replies || []), newCommentObj] };
+              }
+              return comment;
+            });
+          } else {
+            return [...prevComments, newCommentObj];
+          }
+        });
+
         setNewComment('');
         setCharCount(0);
         setImage(null);
@@ -160,16 +147,10 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
   const handleUpdateComment = async (id: number, content: string, parentId: number | null, image?: File | null) => {
     if (!session || !session.accessToken) return;
 
-    const requestPayload = {
-      parentId: parentId,
-      content: content,
-    };
-
+    const requestPayload = { parentId: parentId, content: content };
     const formData = new FormData();
     formData.append('request', new Blob([JSON.stringify(requestPayload)], { type: 'application/json' }));
-    if (image) {
-      formData.append('image', image);
-    }
+    if (image) formData.append('image', image);
 
     try {
       const response = await axios.patch(
@@ -186,11 +167,7 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
       if (response.data.success) {
         setComments(comments.map(comment => {
           if (comment.id === id) {
-            return {
-              ...comment,
-              content: content,
-              image: image ? URL.createObjectURL(image) : comment.image,
-            };
+            return { ...comment, content: content, image: image ? URL.createObjectURL(image) : comment.image };
           }
           return comment;
         }));

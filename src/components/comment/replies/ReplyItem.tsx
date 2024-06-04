@@ -44,8 +44,7 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
   };
 
   const handleReplySubmit = async () => {
-    const replyWithAuthor = `@${reply.writer.nickname}\n${replyContent}`;
-    await onReply(reply.id, replyWithAuthor, replyImage);
+    await onReply(reply.id, replyContent, replyImage);
     setReplyContent('');
     setIsReplying(false);
     setReplyImage(null);
@@ -57,6 +56,15 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
     setIsEditing(false);
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${date.toLocaleTimeString('ko-KR')}`;
+  };
+
   return (
     <div className="ml-[50px] mt-5">
       <div className="flex items-center gap-3 ">
@@ -65,7 +73,7 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
           <div className="flex gap-1">
             <p>{reply.writer.nickname}</p>
             <div className="w-[1px] bg-[#A3A3A3]"></div>
-            <p>{reply.createdAt}</p>
+            <p>{formatDate(reply.updatedAt)}</p>
           </div>
           {isEditing ? (
             <CommentForm
@@ -76,7 +84,7 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
               onTextareaChange={handleEditChange}
               onFileChange={handleEditFileChange}
               onRemoveImage={() => setEditImage(null)}
-              onAddComment={() => handleUpdateSubmit()}
+              onAddComment={handleUpdateSubmit}
             />
           ) : (
             <p>{reply.content}</p>
@@ -96,7 +104,7 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
             onTextareaChange={handleReplyChange} 
             onFileChange={handleReplyFileChange} 
             onRemoveImage={() => setReplyImage(null)} 
-            onAddComment={() => handleReplySubmit()} 
+            onAddComment={handleReplySubmit} 
             parentId={reply.id}
           />
         )}
