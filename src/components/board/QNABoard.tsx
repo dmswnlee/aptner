@@ -1,7 +1,7 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Button from "../buttons/Button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { GoFileDirectory } from "react-icons/go";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoMdInformationCircleOutline } from "react-icons/io";
@@ -35,18 +35,29 @@ interface SessionData {
   accessToken: string;
 }
 
+interface FileInfo {
+  id: number;
+  name: string;
+  path: string;
+  size: number;
+  file?: File;
+}
+
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const MAX_FILE_COUNT = 20;
 
 export default function Board({ options }: BoardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options[0].label);
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<FileInfo[]>([]);
   const [editorContent, setEditorContent] = useState<string>("");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const fileInput = useRef<HTMLInputElement>(null);
   const { data: session } = useSession();
   const [isHovered, setIsHovered] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [qnaId, setQnaId] = useState<string | null>(null);
 
   const allowedExtensions = [
     "hwp",
@@ -111,14 +122,27 @@ export default function Board({ options }: BoardProps) {
         validFiles = validFiles.slice(0, MAX_FILE_COUNT - files.length);
       }
 
-      setFiles((prevFiles) => [...prevFiles, ...validFiles]);
+      const fileInfos = validFiles.map((file) => ({
+        id: Date.now(),
+        name: file.name,
+        path: URL.createObjectURL(file),
+        size: file.size,
+        file: file,
+      }));
+
+      setFiles((prevFiles) => [...prevFiles, ...fileInfos]);
     }
   };
 
   const handleRemoveFile = (fileName: string) => {
-    setFiles((currentFiles) =>
-      currentFiles.filter((file) => file.name !== fileName)
-    );
+    console.log(`Removing file: ${fileName}`);
+    setFiles((currentFiles) => {
+      const updatedFiles = currentFiles.filter(
+        (file) => file.name !== fileName
+      );
+      console.log("Updated files:", updatedFiles);
+      return updatedFiles;
+    });
   };
 
   const { register, handleSubmit, setValue } = useForm<FormData>({
@@ -127,6 +151,34 @@ export default function Board({ options }: BoardProps) {
       isPrivate: false,
     },
   });
+
+  useEffect(() => {
+    const queryParams = searchParams;
+
+    if (queryParams) {
+      const id = queryParams.get("id");
+      const category = queryParams.get("category");
+      const title = queryParams.get("title");
+      const content = queryParams.get("content");
+      const isPrivate = queryParams.get("isPrivate") === "true";
+      const fileInfoList = queryParams.get("fileInfoList");
+
+      if (id && category && title && content) {
+        setIsEdit(true);
+        setQnaId(id);
+        setValue("categoryCode", category);
+        setSelectedOption(category);
+        setValue("title", title);
+        setEditorContent(content);
+        setValue("isPrivate", isPrivate);
+
+        if (fileInfoList) {
+          const parsedFileInfoList: FileInfo[] = JSON.parse(fileInfoList);
+          setFiles(parsedFileInfoList);
+        }
+      }
+    }
+  }, [searchParams, setValue]);
 
   const onSubmit = async (data: FormData) => {
     const formData = new FormData();
@@ -146,29 +198,41 @@ export default function Board({ options }: BoardProps) {
       new Blob([JSON.stringify(jsonPayload)], { type: "application/json" })
     );
 
-    files.forEach((file) => {
-      formData.append("files", file);
-    });
-
-    console.log("Form Data (JSON):", JSON.stringify(jsonPayload));
-    files.forEach((file, index) => {
-      console.log(`File ${index + 1}:`, file);
+    files.forEach((fileInfo) => {
+      if (fileInfo.file) {
+        formData.append("files", fileInfo.file);
+      }
     });
 
     try {
-      const response = await axios.post(
-        "https://aptner.site/v1/api/qna/RO000",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${(session as SessionData).accessToken}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log("Server Response:", response.data);
-      const qnaId = response.data.result.qnaId;
-      router.push(`/complaints/detail/${qnaId}`);
+      if (isEdit && qnaId) {
+        const response = await axios.patch(
+          `https://aptner.site/v1/api/qna/RO000/${qnaId}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${(session as SessionData).accessToken}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        console.log("Server Response:", response.data);
+        router.push(`/complaints/detail/${qnaId}`);
+      } else {
+        const response = await axios.post(
+          "https://aptner.site/v1/api/qna/RO000",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${(session as SessionData).accessToken}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        console.log("Server Response:", response.data);
+        const newQnaId = response.data.result.qnaId;
+        // router.push(`/complaints/detail/${newQnaId}`);
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -303,7 +367,10 @@ export default function Board({ options }: BoardProps) {
           </div>
         </div>
 
-        <TinyEditor onChange={(content) => setEditorContent(content)} />
+        <TinyEditor
+          initialValue={editorContent}
+          onChange={(content) => setEditorContent(content)}
+        />
       </div>
       <div className="flex justify-center mt-10 mb-20 gap-4">
         <Button
