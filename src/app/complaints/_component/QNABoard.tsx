@@ -11,7 +11,6 @@ import TinyEditor from "../../../components/board/TinyEditor";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import Modal from "@/components/modal/Modal";
 
 interface Option {
   label: string;
