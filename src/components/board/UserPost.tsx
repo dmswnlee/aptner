@@ -169,7 +169,7 @@ const UserPost: React.FC<UserPostProps> = ({
             </div>
           </div>
 
-          <div className="w/[52px] h/[82px] text-[14px] flex flex-col items-center justify-center">
+          <div className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
             <button onClick={() => onReaction("EMPATHY")}>
               <Image src={emoji2} alt="emoji2" width={40} />
               공감돼요
@@ -183,7 +183,7 @@ const UserPost: React.FC<UserPostProps> = ({
             </div>
           </div>
 
-          <div className="w/[52px] h/[82px] text-[14px] flex flex-col items-center justify=center">
+          <div className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
             <button onClick={() => onReaction("FUN")}>
               <Image src={emoji3} alt="emoji3" width={40} />
               재밌어요
@@ -193,7 +193,7 @@ const UserPost: React.FC<UserPostProps> = ({
             </div>
           </div>
 
-          <div className="w/[52px] h/[82px] text-[14px] flex flex-col items-center justify=center">
+          <div className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
             <button onClick={() => onReaction("AMAZING")}>
               <Image src={emoji4} alt="emoji4" width={40} />
               놀라워요
@@ -207,7 +207,7 @@ const UserPost: React.FC<UserPostProps> = ({
             </div>
           </div>
 
-          <div className="w/[52px] h/[82px] text-[14px] flex flex-col items-center justify=center">
+          <div className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
             <button onClick={() => onReaction("SAD")}>
               <Image src={emoji5} alt="emoji5" width={40} />
               슬퍼요
@@ -220,17 +220,17 @@ const UserPost: React.FC<UserPostProps> = ({
       </div>
 
       <div className="flex justify-between border-b pb-14">
-        <div className="flex gap-3 text=[14px]">
+        <div className="flex gap-3 text-[14px]">
           {shouldShowEditDeleteButtons && (
             <>
               <button
-                className="w-[108px] h-9 text=[14px] bg-gray_04 text-black_100 rounded=[5px]"
+                className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
                 onClick={handleEdit}
               >
                 수정
               </button>
               <button
-                className="w-[108px] h-9 text=[14px] bg-gray_04 text-black_100 rounded=[5px]"
+                className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
                 onClick={openModal}
               >
                 삭제
@@ -240,7 +240,7 @@ const UserPost: React.FC<UserPostProps> = ({
         </div>
         <button
           onClick={handleListClick}
-          className="w-[108px] h-9 text=[14px] bg-gray_04 text-black_100 rounded=[5px]"
+          className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
         >
           목록
         </button>
