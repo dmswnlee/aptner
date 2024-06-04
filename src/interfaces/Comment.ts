@@ -1,4 +1,5 @@
 export interface CommentType {
+  imageUrl?: string
   postId: any;
   parentId: number | null;
   id: number;

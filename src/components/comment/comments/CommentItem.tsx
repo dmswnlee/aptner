@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import { AiOutlineDownload } from "react-icons/ai";
 import ButtonGroup from '../CommentButtonGroup';
 import CommentForm from './CommentForm';
@@ -16,54 +16,55 @@ interface CommentItemProps {
 
 const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: CommentItemProps) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
-  const [replyContent, setReplyContent] = useState<string>('');
+  const [replyContent, setReplyContent] = useState<string>(`@${comment.writer.nickname} `);
   const [replyImage, setReplyImage] = useState<File | null>(null);
-  const [charCount, setCharCount] = useState<number>(0);
+  const [charCount, setCharCount] = useState<number>(replyContent.length);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editContent, setEditContent] = useState<string>(comment.content);
   const [editImage, setEditImage] = useState<File | null>(null);
+  const [replies, setReplies] = useState<CommentType[]>(comment.replies || []);
 
-  // Handle reply content change
+  useEffect(() => {
+    // Update replies when comment.replies change
+    setReplies(comment.replies || []);
+  }, [comment.replies]);
+
   const handleReplyChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setReplyContent(e.target.value);
     setCharCount(e.target.value.length);
   };
 
-  // Handle edit content change
   const handleEditChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setEditContent(e.target.value);
   };
 
-  // Handle reply file change
   const handleReplyFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setReplyImage(e.target.files[0]);
     }
   };
 
-  // Handle edit file change
   const handleEditFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setEditImage(e.target.files[0]);
     }
   };
 
-  // Submit a reply
   const handleReplySubmit = async () => {
     await onReply(comment.id, replyContent, replyImage);
-    setReplyContent('');
+    // Reset reply form after submission
+    setReplyContent(`@${comment.writer.nickname} `);
     setIsReplying(false);
     setReplyImage(null);
     setCharCount(0);
   };
 
-  // Submit an edit
   const handleUpdateSubmit = async () => {
     await onUpdate(comment.id, editContent, comment.parentId, editImage);
     setIsEditing(false);
+    comment.updatedAt = new Date().toISOString();
   };
 
-  // Format the date string to a more readable format
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -96,7 +97,7 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
                 <div className="flex gap-1">
                   <p>{comment.writer.nickname}</p>
                   <div className="w-[1px] bg-[#A3A3A3]"></div>
-                  <p>{formatDate(comment.updatedAt)}</p>
+                  <p>{formatDate(comment.updatedAt || comment.createdAt)}</p>
                 </div>
               </div>
             </div>
@@ -134,16 +135,18 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
           />
         )}
       </div>
-      <div className='mt-6'>
-        <ReplyList
-          replies={comment.replies}
-          author={author}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          onReply={onReply} 
-          onUpdate={onUpdate}
-        />
-      </div>
+      {(comment.replies && comment.replies.length > 0) && (
+        <div className='ml-[50px] mt-6  p-4 bg-gray-50 '>
+          <ReplyList
+            replies={comment.replies}
+            author={author}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onReply={onReply} 
+            onUpdate={onUpdate}
+          />
+        </div>
+      )}
     </div>
   );
 };

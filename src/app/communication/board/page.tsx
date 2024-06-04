@@ -6,6 +6,7 @@ export default function BoardPage() {
     { label: "취미게시판" },
     { label: "주변 추천" },
     { label: "분실물" },
+    { label: "인테리어" },
   ];
   return (
     <div className="mt-[70px] w-[1080px] mx-auto">

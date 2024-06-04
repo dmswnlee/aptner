@@ -2,6 +2,7 @@ import React from 'react';
 import ReplyItem from './ReplyItem';
 import { CommentType } from '@/interfaces/Comment';
 
+// ReplyList 컴포넌트
 interface ReplyListProps {
   replies: CommentType[];
   author: string;

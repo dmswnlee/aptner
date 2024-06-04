@@ -45,7 +45,7 @@ interface ListProps {
   currentPage: number;
   total: number;
   onPageChange: (page: number) => void;
-  searchQuery: string; // Add searchQuery prop
+  searchQuery: string; // Add searchQuery prop 
 }
 
 const List = ({ data, loading, currentPage, total, onPageChange, searchQuery }: ListProps) => {

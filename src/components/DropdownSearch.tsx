@@ -26,7 +26,7 @@ const DropdownSearch = ({ onSelect, selectedOption }: DropdownSearchProps) => {
     { value: "WRITER", label: "작성자" },
   ];
 
-  const [currentOptionLabel, setCurrentOptionLabel] = useState("검색 조건");
+  const [currentOptionLabel, setCurrentOptionLabel] = useState("제목 + 내용");
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);

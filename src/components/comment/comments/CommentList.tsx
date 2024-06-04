@@ -2,6 +2,7 @@ import React from 'react';
 import CommentItem from './CommentItem';
 import { CommentType } from '@/interfaces/Comment';
 
+// CommentList 컴포넌트
 interface CommentListProps {
   comments: CommentType[];
   author: string;
@@ -12,7 +13,7 @@ interface CommentListProps {
 }
 
 const CommentList = ({ comments, author, onEdit, onDelete, onReply, onUpdate }: CommentListProps) => {
-  // Function to build a nested comment structure
+  // 중첩된 댓글 구조를 빌드하는 함수
   const buildNestedComments = (comments: CommentType[]) => {
     const commentMap = new Map<number, CommentType>();
     const nestedComments: CommentType[] = [];
@@ -48,7 +49,7 @@ const CommentList = ({ comments, author, onEdit, onDelete, onReply, onUpdate }: 
           onReply={onReply}
           onUpdate={onUpdate}
         />
-      ))}
+      ))} 
     </>
   );
 };

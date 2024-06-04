@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { Pagination } from 'antd';
-import { PiPencilSimpleLineLight } from 'react-icons/pi';
 
 interface Post {
   id: number;
@@ -12,6 +11,7 @@ interface Post {
   };
   createdAt: string;
   viewCount: number;
+  thumbnailPath: string; // Add thumbnailPath field
 }
 
 interface GalleryProps {
@@ -26,12 +26,6 @@ interface GalleryProps {
 
 const Gallery = ({ data, detailPath, loading, currentPage, total, pageSize, onPageChange }: GalleryProps) => {
 
-  const hasImageOrIframe = (content: string): boolean => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(content, "text/html");
-    return !!doc.querySelector("img, iframe");
-  };
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -43,9 +37,9 @@ const Gallery = ({ data, detailPath, loading, currentPage, total, pageSize, onPa
           <Link href={`${detailPath}/${item.id}`} key={item.id}>
             <div className="p-2 cursor-pointer overflow-hidden">
               <div className="relative group w-[248px] h-[180px] overflow-hidden">
-                {hasImageOrIframe(item.content) ? (
+                {item.thumbnailPath ? ( // Check if thumbnailPath exists
                   <img
-                    src="/path/to/default/image.png"
+                    src={item.thumbnailPath} // Use thumbnailPath as src
                     alt={item.title}
                     className="mb-2 object-cover rounded-t-lg w-[290px] h-[180px] transition-transform duration-300 ease-in-out group-hover:scale-110"
                     style={{ maxWidth: '100%', maxHeight: '100%', overflow: 'hidden' }}
