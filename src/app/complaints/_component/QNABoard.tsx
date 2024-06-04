@@ -1,16 +1,17 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
-import Button from "../buttons/Button";
+import Button from "../../../components/buttons/Button";
 import { useRouter, useSearchParams } from "next/navigation";
 import { GoFileDirectory } from "react-icons/go";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { HiOutlineFolderPlus } from "react-icons/hi2";
-import TinyEditor from "./TinyEditor";
+import TinyEditor from "../../../components/board/TinyEditor";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import Modal from "@/components/modal/Modal";
 
 interface Option {
   label: string;
@@ -154,16 +155,13 @@ export default function Board({ options }: BoardProps) {
 
   useEffect(() => {
     const queryParams = searchParams;
+    const id = queryParams.get("id");
 
-    if (queryParams) {
-      const id = queryParams.get("id");
-      const category = queryParams.get("category");
-      const title = queryParams.get("title");
-      const content = queryParams.get("content");
-      const isPrivate = queryParams.get("isPrivate") === "true";
-      const fileInfoList = queryParams.get("fileInfoList");
-
-      if (id && category && title && content) {
+    if (id) {
+      const editPostData = sessionStorage.getItem("editPostData");
+      if (editPostData) {
+        const { category, title, content, isPrivate, fileInfoList } =
+          JSON.parse(editPostData);
         setIsEdit(true);
         setQnaId(id);
         setValue("categoryCode", category);
@@ -173,9 +171,10 @@ export default function Board({ options }: BoardProps) {
         setValue("isPrivate", isPrivate);
 
         if (fileInfoList) {
-          const parsedFileInfoList: FileInfo[] = JSON.parse(fileInfoList);
-          setFiles(parsedFileInfoList);
+          setFiles(fileInfoList);
         }
+
+        sessionStorage.removeItem("editPostData");
       }
     }
   }, [searchParams, setValue]);
@@ -231,7 +230,7 @@ export default function Board({ options }: BoardProps) {
         );
         console.log("Server Response:", response.data);
         const newQnaId = response.data.result.qnaId;
-        // router.push(`/complaints/detail/${newQnaId}`);
+        router.push(`/complaints/detail/${newQnaId}`);
       }
     } catch (error) {
       console.error("Error submitting form:", error);

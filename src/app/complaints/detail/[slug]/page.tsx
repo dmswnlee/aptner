@@ -1,5 +1,5 @@
 "use client";
-import UserPost from "@/components/board/UserPost";
+import QNAPost from "../../_component/QNAPost"; // QNAPost 컴포넌트 임포트
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -161,6 +161,13 @@ export default function DailPage() {
     amazingCount: 0,
     sadCount: 0,
   };
+  const emojiReactions = qna?.emoji.emojiReaction || {
+    reactedAmazing: false,
+    reactedEmpathy: false,
+    reactedFun: false,
+    reactedLike: false,
+    reactedSad: false,
+  };
 
   return (
     <div className="mt-[70px] w-[1080px] mx-auto">
@@ -169,8 +176,8 @@ export default function DailPage() {
           <p className="text-[24px] font-semibold leading-[27px] mb-[40px]">
             민원게시판
           </p>
-          <UserPost
-            id={qna.id} // 추가된 속성
+          <QNAPost
+            id={qna.id}
             category={category}
             nickname={nickname}
             title={title}
@@ -178,8 +185,10 @@ export default function DailPage() {
             createdAt={createdAt}
             onReaction={handleReaction}
             emojiCounts={emojiCounts}
+            emojiReactions={emojiReactions}
             handleDelete={handleDelete}
             fileInfoList={fileInfoList}
+            isPrivate={false} // 비밀글 여부
           />
           <Comment
             initialComments={[]}

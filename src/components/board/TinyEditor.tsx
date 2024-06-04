@@ -37,7 +37,6 @@ const TinyEditor: React.FC<TinyEditorProps> = ({
               "advcode autolink emoticons image link lists media table wordcount checklist mediaembed formatpainter pageembed linkchecker tinymcespellchecker editimage autocorrect typography fullscreen help emoticons",
             toolbar:
               "blocks fontfamily fontsize bold underline removeformat emoticons align table link image media code fullscreen help",
-            directionality: "ltr", // 왼쪽에서 오른쪽으로 텍스트 방향 설정
             tinycomments_mode: "embedded",
             tinycomments_author: "Author name",
             placeholder: "내용을 입력하세요.",
