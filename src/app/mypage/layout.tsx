@@ -12,10 +12,8 @@ export default function MyPageLayout({
 }) {
   return (
     <div className="w-[1080px] mx-auto flex">
-      <div className="mt-12 w-[1080px]">
-        <p className="text-[24px] ml-[24px] leading-[18px] font-bold mb-24">
-          마이페이지
-        </p>
+      <div className="mt-[58px] w-[1080px]">
+        <p className="text-[24px] leading-[18px] font-bold mb-10">마이페이지</p>
         <UserImageUploader />
         <TabBar />
         <main>{children}</main>
