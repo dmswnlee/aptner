@@ -160,7 +160,7 @@ export default function CommunicationPage() {
             currentPage={currentPage}
             total={totalCount}
             pageSize={16}
-            onPageChange={handlePageChange}
+            onPageChange={handlePageChange} 
           />
         )}
         <div className="flex justify-center p-5 mb-[100px] gap-3">

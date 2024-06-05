@@ -136,7 +136,7 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
         )}
       </div>
       {(comment.replies && comment.replies.length > 0) && (
-        <div className='ml-[50px] mt-6  p-4 bg-gray-50 '>
+        <div className='ml-[50px] mt-6 px-4 py-1 rounded-xl bg-gray-50 '>
           <ReplyList
             replies={comment.replies}
             author={author}

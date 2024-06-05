@@ -57,7 +57,7 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
     if (!session) return;
     try {
       const response = await axios.get(
-        `https://aptner.site/v1/api/posts/${apartCode}/${postId}/comments`, {
+        `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments`, {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
           },
@@ -179,7 +179,7 @@ const handleAddComment = async (parentId: number | null = null, content: string 
 
     try {
       const response = await axios.patch(
-        `https://aptner.site/v1/api/posts/${apartCode}/${postId}/comments/${id}`,
+        `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments/${id}`,
         formData,
         {
           headers: {
@@ -221,7 +221,7 @@ const handleAddComment = async (parentId: number | null = null, content: string 
     if (!session || !session.accessToken) return;
     try {
       const response = await axios.delete(
-        `https://aptner.site/v1/api/posts/${apartCode}/${postId}/comments/${id}`,
+        `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments/${id}`,
         {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
