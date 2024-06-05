@@ -186,7 +186,7 @@ export default function DailPage() {
             onReaction={handleReaction}
             emojiCounts={emojiCounts}
             emojiReactions={emojiReactions}
-            handleDelete={handleDelete}
+            handleDelete={handleDelete} 
             fileInfoList={fileInfoList}
             isPrivate={false} // 비밀글 여부
           />
@@ -194,7 +194,7 @@ export default function DailPage() {
             initialComments={[]}
             author={nickname}
             postId={qna.id}
-            page={"qna"}
+            pageType={"qna"}
             categoryCode={qna.category.code}
           />
         </>

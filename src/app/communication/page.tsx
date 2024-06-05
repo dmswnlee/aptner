@@ -2,13 +2,14 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import List from "./_component/List";
+import PostList from "./_component/PostList";
 import Gallery from "./_component/Gallery";
 import GalleryTab from "./_component/GalleryTab";
 import { RiListUnordered, RiGalleryView2 } from "react-icons/ri";
 import Tabs from "@/components/noticeboard/Tabs";
 import DropdownSearch from "@/components/DropdownSearch";
 import SearchBoard from "@/components/SearchBoard";
+import { Pagination } from "antd";
 
 interface Tab {
   name: string;
@@ -100,9 +101,6 @@ export default function CommunicationPage() {
     setCurrentPage(1);
   };
 
-  console.log(searchQuery)
-  console.log(selectedOption.value)
-  
   const fetchCommunications = async (page: number) => {
     if (!session) return;
     try {
@@ -144,7 +142,7 @@ export default function CommunicationPage() {
       <GalleryTab tabs={tabs} onTabChange={handleTabChange} />
       <div className="w-[1080px] mx-auto">
         {activeTab === "Posts" ? (
-          <List
+          <PostList
             data={communications}
             loading={loading}
             currentPage={currentPage}
@@ -163,6 +161,14 @@ export default function CommunicationPage() {
             onPageChange={handlePageChange} 
           />
         )}
+        <div className="flex justify-center my-10">
+          <Pagination
+            current={currentPage}
+            total={totalCount}
+            pageSize={activeTab === "Gallery" ? 16 : 15}
+            onChange={handlePageChange}
+          />
+        </div>
         <div className="flex justify-center p-5 mb-[100px] gap-3">
           <DropdownSearch onSelect={handleSearchOptionSelect} selectedOption={selectedOption} />
           <SearchBoard selectedOption={selectedOption} onSearch={handleSearch} />

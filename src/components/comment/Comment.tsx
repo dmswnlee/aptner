@@ -55,6 +55,7 @@ const Comment = ({ initialComments, author, postId, pageType, categoryCode }: Co
   // 댓글을 가져오는 함수
   const fetchComments = async (page: number) => {
     if (!session) return;
+    
     try {
       const response = await axios.get(
         `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments`, {
@@ -85,78 +86,78 @@ const Comment = ({ initialComments, author, postId, pageType, categoryCode }: Co
     setCurrentPage(page);
   };
 
-const handleAddComment = async (parentId: number | null = null, content: string = newComment, image: File | null = null): Promise<void> => {
-  if (!session || !session.accessToken || content.trim() === '') return;
+  const handleAddComment = async (parentId: number | null = null, content: string = newComment, image: File | null = null): Promise<void> => {
+    if (!session || !session.accessToken || content.trim() === '') return;
 
-  const requestPayload = {
-    parentId: parentId,
-    content: content,
-  };
+    const requestPayload = {
+      parentId: parentId,
+      content: content,
+    };
 
-  const formData = new FormData();
-  formData.append('request', new Blob([JSON.stringify(requestPayload)], { type: 'application/json' }));
-  if (image) {
-    formData.append('image', image);
-    console.log('Image file to be uploaded:', image);
-  } else {
-    console.log('No image file selected');
-  }
+    const formData = new FormData();
+    formData.append('request', new Blob([JSON.stringify(requestPayload)], { type: 'application/json' }));
+    if (image) {
+      formData.append('image', image);
+      console.log('Image file to be uploaded:', image);
+    } else {
+      console.log('No image file selected');
+    }
 
-  try {
-    const response = await axios.post(
-      `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${(session as SessionData).accessToken}`,
-          'Content-Type': 'multipart/form-data',
-        }, 
-      }
-    );
-
-    if (response.data.success) {
-      const newCommentObj: CommentType = {
-        id: response.data.result.postCommentId,
-        writer: { nickname: author },
-        createdAt: getCurrentDateTime(),
-        content: content,
-        image: image ? URL.createObjectURL(image) : undefined,
-        replies: [],
-        parentId: parentId,
-        postId: postId,
-        updatedAt: ''
-      };
-
-      // If an image was uploaded, set the imageUrl field of the newCommentObj
-      if (image) {
-        newCommentObj.imageUrl = response.data.result.imageUrl; // Assuming the imageUrl is returned in the response
-      }
-
-      setComments(prevComments => {
-        const parentComment = prevComments.find(comment => comment.id === parentId);
-        if (parentComment) {
-          parentComment.replies = [...parentComment.replies, newCommentObj];
-          return [...prevComments, newCommentObj];
-        } else {
-          return [...prevComments, newCommentObj];
+    try {
+      const response = await axios.post(
+        `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${(session as SessionData).accessToken}`,
+            'Content-Type': 'multipart/form-data',
+          }, 
         }
-      });
+      );
 
-      setNewComment('');
-      setCharCount(0);
-      setImage(null);
-    } else {
-      console.error('Failed to add comment:', response.data.message);
-    }
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      console.error('Error adding comment:', error.response?.data);
-    } else {
-      console.error('Error adding comment:', error);
-    }
-  }
-};
+      if (response.data.success) {
+        const newCommentObj: CommentType = {
+          id: response.data.result.postCommentId,
+          writer: { nickname: author },
+          createdAt: getCurrentDateTime(),
+          content: content,
+          image: image ? URL.createObjectURL(image) : undefined,
+          replies: [],
+          parentId: parentId,
+          postId: postId,
+          updatedAt: ''
+        };
 
+        // Set imageUrl if an image was uploaded and the response contains imageUrl
+        if (image && response.data.result.imageUrl) {
+          newCommentObj.imageUrl = response.data.result.imageUrl;
+        }
+
+        // Use a temporary comments state to update the UI
+        setComments(prevComments => {
+          const parentComment = prevComments.find(comment => comment.id === parentId);
+          if (parentComment) {
+            parentComment.replies = [...parentComment.replies, newCommentObj];
+            return [...prevComments];
+          } else {
+            return [...prevComments, newCommentObj];
+          }
+        });
+
+        setNewComment('');
+        setCharCount(0);
+        setImage(null);
+      } else {
+        console.error('Failed to add comment:', response.data.message);
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error adding comment:', error.response?.data);
+      } else {
+        console.error('Error adding comment:', error);
+      }
+    }
+  };
 
   // 댓글 편집 핸들러
   const handleEditComment = (id: number, parentId: number | null) => {
@@ -253,7 +254,7 @@ const handleAddComment = async (parentId: number | null = null, content: string 
   };
 
   return (
-    <div className='my-5'>
+    <div className='my-5 mb-10'>
       {showModal && (
         <Modal
           text="정말로 삭제하시겠습니까?"
@@ -276,12 +277,16 @@ const handleAddComment = async (parentId: number | null = null, content: string 
           onReply={handleAddComment}
           onUpdate={handleUpdateComment}
         />
-        {/* <Pagination
-          current={currentPage}
-          total={totalCount} // 총 항목 수 전달
-          pageSize={10} // 페이지당 항목 수 설정
-          onChange={handlePageChange}
-        /> */}
+        
+          <div className="flex justify-center mt-4">
+            <Pagination
+              current={currentPage}
+              total={totalCount} // 총 항목 수 전달
+              pageSize={10} // 페이지당 항목 수 설정
+              onChange={handlePageChange}
+            />
+          </div>
+        
       </div>
       <CommentForm
         author={author}

@@ -1,10 +1,11 @@
 "use client";
-import ComUserPost from "../../board/_component/ComUserPost";
+import POSTSPost from "../../board/_component/POSTSPost";
 import axios from "axios";
-import { useSession } from "next-auth/react"; 
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Comment from "@/components/comment/Comment";
+import { useRouter, usePathname } from "next/navigation";
 
 // Interface definitions
 interface Post {
@@ -40,6 +41,12 @@ interface Post {
     };
   };
 }
+interface PostFileInfo {
+  id: number;
+  name: string;
+  path: string;
+  size: number;
+}
 
 interface SessionData {
   user: {
@@ -52,7 +59,11 @@ interface SessionData {
 const DetailPage = () => {
   const { slug } = useParams();
   const [post, setPost] = useState<Post | null>(null);
+  const [fileInfoList, setFileInfoList] = useState<PostFileInfo[]>([]);
   const { data: session } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname.split("/")[1]; // 첫 번째 경로를 추출
 
   useEffect(() => {
     if (session && session.accessToken) {
@@ -75,6 +86,7 @@ const DetailPage = () => {
       console.log(response.data.result.post);
       const postData = response.data.result.post;
       setPost(postData);
+      setFileInfoList(response.data.result.qnaFileInfoList || []);
     } catch (err) {
       console.log("err", err);
     }
@@ -82,6 +94,18 @@ const DetailPage = () => {
 
   const handleReaction = async (reactionType: string) => {
     if (!post || !session || !session.accessToken) return;
+
+    console.log(post.id);
+    console.log("Reaction type:", reactionType);
+
+        // reactionType을 기반으로 매핑
+        const reactedKey =
+        `reacted${reactionType.charAt(0).toUpperCase()}${reactionType.slice(1).toLowerCase()}` as keyof typeof post.emoji.emojiReaction;
+      const countKey =
+        `${reactionType.toLowerCase()}Count` as keyof typeof post.emoji.emojiCount;
+  
+      const reacted = post.emoji.emojiReaction[reactedKey];
+      const method = reacted ? "delete" : "post";
 
     try {
       const response = await axios.post(
@@ -98,27 +122,10 @@ const DetailPage = () => {
       );
       console.log(response.data);
 
-      // Update emoji counts based on the reaction
+      // Update emoji counts and reaction status based on the reaction
       const newPost = { ...post };
-      switch (reactionType) {
-        case "LIKE":
-          newPost.emoji.emojiCount.likeCount++;
-          break;
-        case "EMPATHY":
-          newPost.emoji.emojiCount.empathyCount++;
-          break;
-        case "FUN":
-          newPost.emoji.emojiCount.funCount++;
-          break;
-        case "AMAZING":
-          newPost.emoji.emojiCount.amazingCount++;
-          break;
-        case "SAD":
-          newPost.emoji.emojiCount.sadCount++;
-          break;
-        default:
-          break;
-      }
+      newPost.emoji.emojiCount[countKey] += reacted ? -1 : 1;
+      newPost.emoji.emojiReaction[reactedKey] = !reacted;
       setPost(newPost);
     } catch (error) {
       console.error("Error sending reaction:", error);
@@ -129,7 +136,7 @@ const DetailPage = () => {
     if (!post || !session || !session.accessToken) return;
 
     try {
-      await axios.delete(
+      const response = await axios.delete(
         `https://aptner.site/v1/api/posts/RO000/${post.id}`,
         {
           headers: {
@@ -137,7 +144,8 @@ const DetailPage = () => {
           },
         }
       );
-      // Redirect or handle post deletion UI changes here
+      console.log(response);
+      router.push(`/${basePath}`);
     } catch (error) {
       console.error("Error deleting post:", error);
     }
@@ -149,12 +157,19 @@ const DetailPage = () => {
   const nickname = post?.writer?.nickname || "";
   const content = post?.content || "";
   const createdAt = post?.createdAt || "";
-  const emojiCounts = post?.emoji?.emojiCount || {
+  const emojiCounts = post?.emoji.emojiCount || {
     likeCount: 0,
     empathyCount: 0,
     funCount: 0,
     amazingCount: 0,
     sadCount: 0,
+  };
+  const emojiReactions = post?.emoji.emojiReaction || {
+    reactedAmazing: false,
+    reactedEmpathy: false,
+    reactedFun: false,
+    reactedLike: false,
+    reactedSad: false,
   };
 
   return (
@@ -164,7 +179,7 @@ const DetailPage = () => {
           <p className="text-[24px] font-semibold leading-[27px] mb-[40px]">
             소통공간
           </p>
-          <ComUserPost
+          <POSTSPost
             id={post.id}
             category={category}
             nickname={nickname}
@@ -173,7 +188,9 @@ const DetailPage = () => {
             createdAt={createdAt}
             onReaction={handleReaction}
             emojiCounts={emojiCounts}
-            handleDelete={handleDelete}
+            emojiReactions={emojiReactions}
+            handleDelete={handleDelete} 
+            fileInfoList={fileInfoList}
           />
           <Comment
             initialComments={[]} 

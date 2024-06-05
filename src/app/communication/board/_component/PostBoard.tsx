@@ -152,15 +152,12 @@ export default function PostBoard({ options }: BoardProps) {
 
   useEffect(() => {
     const queryParams = searchParams;
-
-    if (queryParams) {
-      const id = queryParams.get("id");
-      const category = queryParams.get("category");
-      const title = queryParams.get("title");
-      const content = queryParams.get("content");
-      const fileInfoList = queryParams.get("fileInfoList");
-
-      if (id && category && title && content) {
+    const id = queryParams.get("id");
+    if (id) {
+      const editPostData = sessionStorage.getItem("editPostData");
+      if (editPostData) {
+        const { category, title, content, isPrivate, fileInfoList } =
+          JSON.parse(editPostData);
         setIsEdit(true);
         setPostId(id);
         setValue("categoryCode", category);
@@ -169,9 +166,10 @@ export default function PostBoard({ options }: BoardProps) {
         setEditorContent(content);
 
         if (fileInfoList) {
-          const parsedFileInfoList: FileInfo[] = JSON.parse(fileInfoList);
-          setFiles(parsedFileInfoList);
+          setFiles(fileInfoList);
         }
+
+        sessionStorage.removeItem("editPostData");
       }
     }
   }, [searchParams, setValue]);
@@ -188,7 +186,7 @@ export default function PostBoard({ options }: BoardProps) {
       content: editorContent
     };
   
-    formData.append(
+    formData.append( 
       "request",
       new Blob([JSON.stringify(jsonPayload)], { type: "application/json" })
     );
@@ -202,7 +200,7 @@ export default function PostBoard({ options }: BoardProps) {
         const response = await axios.get(imageUrl, {
           responseType: 'arraybuffer'
         });
-        const imageBlob = new Blob([response.data]);
+        const imageBlob = new Blob([response.data], { type: 'image/jpeg' });
         formData.append("image", imageBlob, "image.jpg");
         console.log('Image file to be uploaded:', imageBlob);
       } catch (error) {
@@ -249,7 +247,6 @@ export default function PostBoard({ options }: BoardProps) {
       console.error("Error submitting form:", error);
     }
   };
-  
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

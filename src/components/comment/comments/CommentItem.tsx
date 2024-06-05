@@ -93,11 +93,11 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
           <>
             <div className="flex items-center gap-3">
               <p className="w-10 h-10 flex justify-center items-center rounded-[5px] bg-[#D9F2FE]">UI</p>
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-1">
-                  <p>{comment.writer.nickname}</p>
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-2">
+                  <p className='font-semibold'>{comment.writer.nickname}</p>
                   <div className="w-[1px] bg-[#A3A3A3]"></div>
-                  <p>{formatDate(comment.updatedAt || comment.createdAt)}</p>
+                  <p className=''>{formatDate(comment.updatedAt || comment.createdAt)}</p>
                 </div>
               </div>
             </div>
@@ -109,6 +109,15 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
                   <AiOutlineDownload className="ml-2 text-xl" />
                 </a>
               </div>
+            )}
+            {comment.imageUrl && (
+              <div className="ml-[50px] mt-2 max-w-xs flex items-center">
+                <img src={comment.imageUrl} alt="Attached" className="max-w-xs" />
+                <a href={comment.imageUrl} download>
+                  <AiOutlineDownload className="ml-2 text-xl" />
+                </a>
+              </div>
+              
             )}
             <div className="mt-5 ml-[45px]">
               <ButtonGroup 
@@ -136,7 +145,7 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
         )}
       </div> 
       {(comment.replies && comment.replies.length > 0) && (
-        <div className='ml-[50px] mt-6 px-4 py-1 rounded-xl bg-gray-50 '>
+        <div className='ml-[50px] mt-6 px-4 py-1 rounded-2xl bg-gray-50 '>
           <ReplyList
             replies={comment.replies}
             author={author}

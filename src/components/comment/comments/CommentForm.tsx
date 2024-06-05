@@ -11,9 +11,23 @@ interface CommentFormProps {
   onRemoveImage: () => void;
   onAddComment: (parentId?: number | null, content?: string, image?: File | null) => void;
   parentId?: number;
+  prefix?: string;
 }
 
-const CommentForm = ({ author, newComment, charCount, image, onTextareaChange, onFileChange, onRemoveImage, onAddComment, parentId }: CommentFormProps) => {
+const CommentForm = (props: CommentFormProps) => {
+  const {
+    author,
+    newComment,
+    charCount,
+    image,
+    onTextareaChange,
+    onFileChange,
+    onRemoveImage,
+    onAddComment,
+    parentId,
+    prefix
+  } = props;
+
   return (
     <div>
       <div className="flex items-center gap-3 p-2 rounded-[5px] mt-5">
@@ -32,6 +46,7 @@ const CommentForm = ({ author, newComment, charCount, image, onTextareaChange, o
         onFileChange={onFileChange}
         onRemoveImage={onRemoveImage}
         onSave={() => onAddComment(parentId, newComment, image)}
+        prefix={prefix}
       />
     </div>
   );
