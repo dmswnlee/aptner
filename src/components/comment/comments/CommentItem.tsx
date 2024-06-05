@@ -1,37 +1,33 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import { AiOutlineDownload } from "react-icons/ai";
 import ButtonGroup from '../CommentButtonGroup';
 import CommentForm from './CommentForm';
 import ReplyList from '../replies/ReplyList';
-
-interface CommentType {
-  id: number;
-  author: string;
-  date: string;
-  content: string;
-  image?: string;
-  imageName?: string;
-  replies: CommentType[];
-}
+import { CommentType } from '@/interfaces/Comment';
 
 interface CommentItemProps {
   comment: CommentType;
   author: string;
-  onEdit: (id: number) => void;
+  onEdit: (id: number, parentId: number | null) => void;
   onDelete: (id: number) => void;
-  onReply: (parentId: number, content: string, image?: string) => void;
-  onReplyToReply: (parentId: number, content: string, image?: string) => void;
-  onUpdate: (id: number, content: string, date: string, image?: string) => void;
+  onReply: (parentId: number | null, content: string, image: File | null) => Promise<void>;
+  onUpdate: (id: number, content: string, parentId: number | null, image?: File | null) => Promise<void>;
 }
 
-const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onReplyToReply, onUpdate }: CommentItemProps) => {
+const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: CommentItemProps) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
-  const [replyContent, setReplyContent] = useState<string>('');
+  const [replyContent, setReplyContent] = useState<string>(`@${comment.writer.nickname} `);
   const [replyImage, setReplyImage] = useState<File | null>(null);
-  const [charCount, setCharCount] = useState<number>(0);
+  const [charCount, setCharCount] = useState<number>(replyContent.length);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editContent, setEditContent] = useState<string>(comment.content);
   const [editImage, setEditImage] = useState<File | null>(null);
+  const [replies, setReplies] = useState<CommentType[]>(comment.replies || []);
+
+  useEffect(() => {
+    // Update replies when comment.replies change
+    setReplies(comment.replies || []);
+  }, [comment.replies]);
 
   const handleReplyChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setReplyContent(e.target.value);
@@ -54,18 +50,27 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onReplyToRepl
     }
   };
 
-  const handleReplySubmit = () => {
-    onReply(comment.id, replyContent, replyImage ? URL.createObjectURL(replyImage) : undefined);
-    setReplyContent('');
+  const handleReplySubmit = async () => {
+    await onReply(comment.id, replyContent, replyImage);
+    // Reset reply form after submission
+    setReplyContent(`@${comment.writer.nickname} `);
     setIsReplying(false);
     setReplyImage(null);
     setCharCount(0);
   };
 
-  const handleUpdateSubmit = () => {
-    const updatedDate = new Date().toISOString();
-    onUpdate(comment.id, editContent, updatedDate, editImage ? URL.createObjectURL(editImage) : undefined);
+  const handleUpdateSubmit = async () => {
+    await onUpdate(comment.id, editContent, comment.parentId, editImage);
     setIsEditing(false);
+    comment.updatedAt = new Date().toISOString();
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day} ${date.toLocaleTimeString('ko-KR')}`;
   };
 
   return (
@@ -90,9 +95,9 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onReplyToRepl
               <p className="w-10 h-10 flex justify-center items-center rounded-[5px] bg-[#D9F2FE]">UI</p>
               <div className="flex flex-col gap-2">
                 <div className="flex gap-1">
-                  <p>{comment.author}</p>
+                  <p>{comment.writer.nickname}</p>
                   <div className="w-[1px] bg-[#A3A3A3]"></div>
-                  <p>{comment.date}</p>
+                  <p>{formatDate(comment.updatedAt || comment.createdAt)}</p>
                 </div>
               </div>
             </div>
@@ -126,18 +131,22 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onReplyToRepl
             onFileChange={handleReplyFileChange} 
             onRemoveImage={() => setReplyImage(null)} 
             onAddComment={handleReplySubmit} 
+            parentId={comment.id}
           />
         )}
       </div>
-      <div className='mt-6'>
-        <ReplyList
-          replies={comment.replies}
-          author={author}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          onReply={onReplyToReply}
-        />
-      </div>
+      {(comment.replies && comment.replies.length > 0) && (
+        <div className='ml-[50px] mt-6 px-4 py-1 rounded-xl bg-gray-50 '>
+          <ReplyList
+            replies={comment.replies}
+            author={author}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onReply={onReply} 
+            onUpdate={onUpdate}
+          />
+        </div>
+      )}
     </div>
   );
 };

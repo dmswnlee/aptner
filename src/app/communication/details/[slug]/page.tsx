@@ -1,7 +1,7 @@
 "use client";
-import UserPost from "@/components/board/UserPost";
+import ComUserPost from "../../board/_component/ComUserPost";
 import axios from "axios";
-import { useSession } from "next-auth/react";
+import { useSession } from "next-auth/react"; 
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Comment from "@/components/comment/Comment";
@@ -125,6 +125,24 @@ const DetailPage = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!post || !session || !session.accessToken) return;
+
+    try {
+      await axios.delete(
+        `https://aptner.site/v1/api/posts/RO000/${post.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${(session as SessionData).accessToken}`,
+          },
+        }
+      );
+      // Redirect or handle post deletion UI changes here
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  };
+
   const category = post?.category?.name || "";
   const categoryCode = post?.category?.code || ""; // Extract the category code
   const title = post?.title || "";
@@ -146,7 +164,8 @@ const DetailPage = () => {
           <p className="text-[24px] font-semibold leading-[27px] mb-[40px]">
             소통공간
           </p>
-          <UserPost
+          <ComUserPost
+            id={post.id}
             category={category}
             nickname={nickname}
             title={title}
@@ -154,6 +173,7 @@ const DetailPage = () => {
             createdAt={createdAt}
             onReaction={handleReaction}
             emojiCounts={emojiCounts}
+            handleDelete={handleDelete}
           />
           <Comment
             initialComments={[]} 

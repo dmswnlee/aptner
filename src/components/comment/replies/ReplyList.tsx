@@ -1,33 +1,29 @@
 import React from 'react';
 import ReplyItem from './ReplyItem';
+import { CommentType } from '@/interfaces/Comment';
 
-interface CommentType {
-  id: number;
-  author: string;
-  date: string;
-  content: string;
-  replies: CommentType[];
-}
-
+// ReplyList 컴포넌트
 interface ReplyListProps {
   replies: CommentType[];
   author: string;
-  onEdit: (id: number) => void;
+  onEdit: (id: number, parentId: number | null) => void;
   onDelete: (id: number) => void;
-  onReply: (parentId: number, content: string) => void;
+  onReply: (parentId: number | null, content: string, image: File | null) => Promise<void>;
+  onUpdate: (id: number, content: string, parentId: number | null, image?: File | null) => Promise<void>;
 }
 
-const ReplyList = ({ replies, author, onEdit, onDelete, onReply }: ReplyListProps) => {
+const ReplyList = ({ replies, author, onEdit, onDelete, onReply, onUpdate }: ReplyListProps) => {
   return (
     <div>
       {replies.map(reply => (
-        <ReplyItem
+        <ReplyItem  
           key={reply.id}
           reply={reply}
           author={author}
           onEdit={onEdit}
           onDelete={onDelete}
           onReply={onReply}
+          onUpdate={onUpdate}
         />
       ))}
     </div>

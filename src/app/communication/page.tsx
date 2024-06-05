@@ -36,6 +36,7 @@ interface Communication {
   title: string;
   viewCount: number;
   status: string;
+  thumbnailPath: string;
 }
 interface SessionData {
   user: {
@@ -57,7 +58,7 @@ export default function CommunicationPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const { data: session } = useSession();
-  const [selectedOption, setSelectedOption] = useState<Option>({ value: "", label: "" });
+  const [selectedOption, setSelectedOption] = useState<Option>({ value: "TITLE_AND_CONTENT", label: "제목 + 내용" });
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const categoryTabs: Tab[] = [
@@ -67,6 +68,7 @@ export default function CommunicationPage() {
     { name: "hobby", label: "취미게시판", code: "PT003" },
     { name: "recommendations", label: "주변 추천", code: "PT004" },
     { name: "lost-and-found", label: "분실물", code: "PT005" },
+    { name: "interior", label: "인테리어", code: "PT006" },
   ];
   const tabs = [
     { name: "Posts", icon: <RiListUnordered /> },
@@ -158,7 +160,7 @@ export default function CommunicationPage() {
             currentPage={currentPage}
             total={totalCount}
             pageSize={16}
-            onPageChange={handlePageChange}
+            onPageChange={handlePageChange} 
           />
         )}
         <div className="flex justify-center p-5 mb-[100px] gap-3">
