@@ -3,6 +3,7 @@ import { AiOutlinePicture } from "react-icons/ai";
 import GrayButton from '@/components/buttons/GrayButton';
 import ImagePreviewModal from './ImagePreviewModal';
 
+// CommentTextarea 컴포넌트
 interface CommentTextareaProps {
   value: string;
   charCount: number;
@@ -14,13 +15,15 @@ interface CommentTextareaProps {
 }
 
 const CommentTextarea = ({ value, charCount, image, onTextareaChange, onFileChange, onRemoveImage, onSave }: CommentTextareaProps) => {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // 이미지 미리보기 모달 상태
 
+  // 이미지 클릭 핸들러
   const handleImageClick = (event: React.MouseEvent<HTMLSpanElement>) => {
     event.preventDefault();
     setIsModalOpen(true);
   };
 
+  // 모달 닫기 핸들러
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
