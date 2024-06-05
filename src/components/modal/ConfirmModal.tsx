@@ -7,7 +7,7 @@ interface ModalProps {
   onConfirm?: () => void;
 }
 
-const ConfirmModal = ({ text, onClose, onConfirm }: ModalProps) => {
+const ConfirmModal: React.FC<ModalProps> = ({ text, onClose, onConfirm }) => {
   // 'Confirm' 버튼 클릭 핸들러
   const handleConfirm = () => {
     if (onConfirm) {
@@ -29,17 +29,27 @@ const ConfirmModal = ({ text, onClose, onConfirm }: ModalProps) => {
 
   return (
     <div
-      className="w-full h-full flex justify-center items-center z-40 fixed top-0 left-0 bg-black bg-opacity-50"
+      className="w-full h-full flex justify-center items-center z-50 fixed top-0 left-0 bg-black bg-opacity-50"
       onClick={handleBackgroundClick}
     >
       <div
-        className="relative w-[598px] h-[335px] bg-white rounded-[5px] p-[45px] flex flex-col justify-between items-center"
+        className="relative w-[736px] h-[240px] bg-white rounded-[5px] px-[45px] flex flex-col items-center"
         onClick={stopPropagation}
       >
-        <div className="mt-[75px]">{text}</div>
+        <div className="mt-[75px] mb-[48px] font-semibold">{text}</div>
         <div className="flex gap-4">
-          <ColorButton text="Cancel" size="md" onClick={onClose} />
-          <ColorButton text="Confirm" size="md" onClick={handleConfirm} />
+          <button
+            onClick={onClose}
+            className="w-[214px] h-[56px] bg-[#EEE] text-black_100 rounded-[5px]"
+          >
+            취소
+          </button>
+          <button
+            onClick={handleConfirm}
+            className="w-[214px] h-[56px] bg-blue_05 text-white rounded-[5px]"
+          >
+            확인
+          </button>
         </div>
         <div className="absolute top-5 right-5" onClick={onClose}>
           <IoClose className="text-2xl" />
