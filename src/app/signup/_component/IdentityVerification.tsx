@@ -49,17 +49,37 @@ const IdentityVerification = () => {
 	const carrierValue = watch("carrier");
 
 	useEffect(() => {
-		if (phoneNumberValue && !carrierValue) {
-			setCarrierError("통신사를 선택해주세요.");
-			setError("carrier", {
+		if (phoneNumberValue) {
+			if (!carrierValue) {
+				setCarrierError("통신사를 선택해주세요.");
+				setError("carrier", {
+					type: "manual",
+					message: "통신사를 선택해주세요.",
+				});
+			} else {
+				clearErrors("carrier");
+				setCarrierError("");
+			}
+
+			if (!gender) {
+				setError("gender", {
+					type: "manual",
+					message: "성별은 필수 입력 항목입니다.",
+				});
+			}
+		}
+	}, [phoneNumberValue, carrierValue, gender, setError, clearErrors]);
+
+	useEffect(() => {
+		if (carrierValue && !gender) {
+			setError("gender", {
 				type: "manual",
-				message: "통신사를 선택해주세요.",
+				message: "성별은 필수 입력 항목입니다.",
 			});
 		} else {
-			clearErrors("carrier");
-			setCarrierError("");
+			clearErrors("gender");
 		}
-	}, [phoneNumberValue, carrierValue, setError, clearErrors]);
+	}, [carrierValue, gender, setError, clearErrors]);
 
 	useEffect(() => {
 		if (isVerified) {
