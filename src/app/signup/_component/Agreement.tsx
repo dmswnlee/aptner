@@ -8,9 +8,7 @@ import { fetchTermsStart, nextStep, setTermsAgreements } from "@/stores/slice/re
 
 const Agreement = () => {
 	const dispatch = useDispatch();
-	const { termsInfoList, error, loading } = useSelector(
-		(state: RootState) => state.registration.termsState,
-	);
+	const { termsInfoList, error, loading } = useSelector((state: RootState) => state.registration.termsState);
 	const { control, handleSubmit, setValue, watch } = useForm({
 		mode: "onChange",
 		defaultValues: {
@@ -49,7 +47,7 @@ const Agreement = () => {
 		];
 		dispatch(setTermsAgreements(termsAgreements));
 		dispatch(nextStep());
-    console.log(data);
+		console.log(data);
 	};
 
 	return (
@@ -67,6 +65,7 @@ const Agreement = () => {
 							rules={{ required: "필수 항목입니다." }}
 							render={({ field }) => (
 								<input
+									id="service"
 									type="checkbox"
 									checked={field.value}
 									onChange={field.onChange}
@@ -74,9 +73,9 @@ const Agreement = () => {
 								/>
 							)}
 						/>
-						<p>
+						<label htmlFor="service">
 							<span className="text-blue_05 font-semibold">(필수)</span> 서비스 이용약관 동의
-						</p>
+						</label>
 					</div>
 					{personalInfoTerms && <TermsBox title={personalInfoTerms.title} content={personalInfoTerms.content} />}
 					<div className="flex items-center gap-[10px]">
@@ -86,6 +85,7 @@ const Agreement = () => {
 							rules={{ required: "필수 항목입니다." }}
 							render={({ field }) => (
 								<input
+									id="personalInfo"
 									type="checkbox"
 									checked={field.value}
 									onChange={field.onChange}
@@ -93,9 +93,9 @@ const Agreement = () => {
 								/>
 							)}
 						/>
-						<p>
+						<label htmlFor="personalInfo">
 							<span className="text-blue_05 font-semibold">(필수)</span> 개인정보 수집 동의
-						</p>
+						</label>
 					</div>
 					{marketingTerms && <TermsBox title={marketingTerms.title} content={marketingTerms.content} />}
 					<div className="flex items-center gap-[10px]">
@@ -104,6 +104,7 @@ const Agreement = () => {
 							control={control}
 							render={({ field }) => (
 								<input
+									id="marketing"
 									type="checkbox"
 									checked={field.value}
 									onChange={field.onChange}
@@ -111,9 +112,9 @@ const Agreement = () => {
 								/>
 							)}
 						/>
-						<p>
+						<label htmlFor="marketing">
 							<span className="text-gray_07 font-semibold">(선택)</span> 마케팅 수신 동의
-						</p>
+						</label>
 					</div>
 					<div className="w-full h-[1px] bg-gray_04"></div>
 					<div className="flex items-center gap-[10px]">
@@ -122,6 +123,7 @@ const Agreement = () => {
 							control={control}
 							render={({ field }) => (
 								<input
+									id="allChecked"
 									type="checkbox"
 									checked={field.value}
 									onChange={e => {
@@ -135,7 +137,9 @@ const Agreement = () => {
 								/>
 							)}
 						/>
-						<p className="text-blue_05">전체 약관 동의</p>
+						<label htmlFor="allChecked" className="text-blue_05">
+							전체 약관 동의
+						</label>
 					</div>
 					{error && <p className="text-red-500">{error}</p>}
 					<div className="flex justify-center">
