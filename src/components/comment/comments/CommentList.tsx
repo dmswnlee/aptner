@@ -1,40 +1,55 @@
 import React from 'react';
 import CommentItem from './CommentItem';
+import { CommentType } from '@/interfaces/Comment';
 
-interface CommentType {
-  id: number;
-  author: string;
-  date: string;
-  content: string;
-  image?: string;
-  replies: CommentType[];
-}
-
+// CommentList 컴포넌트
 interface CommentListProps {
   comments: CommentType[];
   author: string;
-  onEdit: (id: number) => void;
+  onEdit: (id: number, parentId: number | null) => void;
   onDelete: (id: number) => void;
-  onReply: (parentId: number, content: string, image?: string) => void;
-  onReplyToReply: (parentId: number, content: string, image?: string) => void;
-  onUpdate: (id: number, content: string, date: string, image?: string) => void;
+  onReply: (parentId: number | null, content: string, image: File | null) => Promise<void>;
+  onUpdate: (id: number, content: string, parentId: number | null, image?: File | null) => Promise<void>;
 }
 
-const CommentList = ({ comments, author, onEdit, onDelete, onReply, onReplyToReply, onUpdate }: CommentListProps) => {
+const CommentList = ({ comments, author, onEdit, onDelete, onReply, onUpdate }: CommentListProps) => {
+  // 중첩된 댓글 구조를 빌드하는 함수
+  const buildNestedComments = (comments: CommentType[]) => {
+    const commentMap = new Map<number, CommentType>();
+    const nestedComments: CommentType[] = [];
+
+    comments.forEach(comment => {
+      comment.replies = [];
+      commentMap.set(comment.id, comment);
+    });
+
+    comments.forEach(comment => {
+      if (comment.parentId) {
+        const parent = commentMap.get(comment.parentId);
+        parent?.replies.push(comment);
+      } else {
+        nestedComments.push(comment);
+      }
+    });
+
+    return nestedComments;
+  };
+
+  const nestedComments = buildNestedComments(comments);
+
   return (
     <>
-      {comments.map(comment => (
+      {nestedComments.map(comment => (
         <CommentItem
           key={comment.id}
           comment={comment}
-          author={author} 
+          author={author}
           onEdit={onEdit}
           onDelete={onDelete}
           onReply={onReply}
-          onReplyToReply={onReplyToReply}
           onUpdate={onUpdate}
         />
-      ))}
+      ))} 
     </>
   );
 };
