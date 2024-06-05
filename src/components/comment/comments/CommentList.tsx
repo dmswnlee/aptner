@@ -46,7 +46,7 @@ const CommentList = ({ comments, author, onEdit, onDelete, onReply, onUpdate }: 
           author={author}
           onEdit={onEdit}
           onDelete={onDelete}
-          onReply={onReply}
+          onReply={onReply} 
           onUpdate={onUpdate}
         />
       ))} 

@@ -9,7 +9,7 @@ import { CommentType, CommentProps, SessionData } from '@/interfaces/Comment';
 import { Pagination } from 'antd';
 
 // Comment 컴포넌트
-const Comment = ({ initialComments, author, postId, page, categoryCode }: CommentProps) => {
+const Comment = ({ initialComments, author, postId, pageType, categoryCode }: CommentProps) => {
   const [comments, setComments] = useState<CommentType[]>(initialComments || []); // 댓글 목록 상태
   const [newComment, setNewComment] = useState<string>(''); // 새로운 댓글 내용 상태
   const [charCount, setCharCount] = useState<number>(0); // 댓글 글자 수 상태
@@ -57,7 +57,7 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
     if (!session) return;
     try {
       const response = await axios.get(
-        `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments`, {
+        `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments`, {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
           },
@@ -104,13 +104,13 @@ const handleAddComment = async (parentId: number | null = null, content: string 
 
   try {
     const response = await axios.post(
-      `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments`,
+      `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments`,
       formData,
       {
         headers: {
           Authorization: `Bearer ${(session as SessionData).accessToken}`,
           'Content-Type': 'multipart/form-data',
-        },
+        }, 
       }
     );
 
@@ -179,7 +179,7 @@ const handleAddComment = async (parentId: number | null = null, content: string 
 
     try {
       const response = await axios.patch(
-        `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments/${id}`,
+        `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments/${id}`,
         formData,
         {
           headers: {
@@ -221,7 +221,7 @@ const handleAddComment = async (parentId: number | null = null, content: string 
     if (!session || !session.accessToken) return;
     try {
       const response = await axios.delete(
-        `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments/${id}`,
+        `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments/${id}`,
         {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,

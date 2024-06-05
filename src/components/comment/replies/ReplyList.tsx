@@ -18,7 +18,7 @@ const ReplyList = ({ replies, author, onEdit, onDelete, onReply, onUpdate }: Rep
       {replies.map(reply => (
         <ReplyItem  
           key={reply.id}
-          reply={reply}
+          reply={reply} 
           author={author}
           onEdit={onEdit}
           onDelete={onDelete}

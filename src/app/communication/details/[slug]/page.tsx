@@ -179,7 +179,7 @@ const DetailPage = () => {
             initialComments={[]} 
             author={nickname} 
             postId={post.id} 
-            page={'posts'} 
+            pageType={'posts'} 
             categoryCode={categoryCode} // Pass the category code to the Comment component
           />
         </>

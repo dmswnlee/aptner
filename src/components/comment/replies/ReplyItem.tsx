@@ -114,7 +114,7 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
       <div className="ml-[50px]">
         {isReplying && (
           <CommentForm
-            author={author}
+            author={author} 
             newComment={replyContent}
             charCount={charCount}
             image={replyImage}
