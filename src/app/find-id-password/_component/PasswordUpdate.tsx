@@ -1,10 +1,21 @@
 import { inputStyle } from "@/app/signup/_component/IdentityVerification";
 import ColorButton from "@/components/buttons/ColorButton";
 import Modal from "@/components/modal/Modal";
-import { useState } from "react";
+import { clearMessages, updatePasswordRequest } from "@/stores/slice/passwordSlice";
+import { RootState } from "@/stores/store";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 
-const PasswordUpdate = () => {
+interface PasswordUpdateProps {
+	email: string;
+	name: string;
+	phone: string;
+	verificationCode: string;
+}
+
+const PasswordUpdate = ({ email, name, phone, verificationCode }: PasswordUpdateProps) => {
 	const {
 		register,
 		handleSubmit,
@@ -14,6 +25,9 @@ const PasswordUpdate = () => {
 	} = useForm();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [modalMessage, setModalMessage] = useState("");
+	const dispatch = useDispatch();
+	const router = useRouter();
+	const { error, successMessage } = useSelector((state: RootState) => state.findPassword);
 
 	const validatePassword = (pwd: string) => {
 		const hasLetter = /[a-zA-Z]/.test(pwd);
@@ -27,7 +41,7 @@ const PasswordUpdate = () => {
 	};
 
 	const password = watch("password", "");
-	const newPassword = watch("newPassword", "");
+	const confirmPassword = watch("confirmPassword", "");
 
 	const onSubmit = () => {
 		if (!password) {
@@ -35,27 +49,50 @@ const PasswordUpdate = () => {
 			setIsModalOpen(true);
 			return;
 		}
-		if (!newPassword) {
+		if (!confirmPassword) {
 			setModalMessage("새 비밀번호를 입력해 주세요.");
 			setIsModalOpen(true);
 			return;
 		}
-		if (password !== newPassword) {
+		if (password !== confirmPassword) {
 			setModalMessage("비밀번호가 일치하지 않습니다.");
 			setIsModalOpen(true);
 			return;
 		}
-		if (!validatePassword(password) || !validatePassword(newPassword)) {
+		if (!validatePassword(password) || !validatePassword(confirmPassword)) {
 			setModalMessage("올바른 비밀번호가 아닙니다.");
 			setIsModalOpen(true);
 			return;
 		}
+		dispatch(updatePasswordRequest({ email, name, phone, verificationCode, password, confirmPassword }));
 	};
+
+	useEffect(() => {
+		if (error) {
+			setModalMessage(error);
+			setIsModalOpen(true);
+			dispatch(clearMessages());
+		}
+		if (successMessage) {
+			setModalMessage("비밀번호 변경을 완료하였습니다.");
+			setIsModalOpen(true);
+			dispatch(clearMessages());
+		}
+	}, [error, successMessage, dispatch]);
 
 	const closeModal = () => {
 		setIsModalOpen(false);
 		clearErrors();
 	};
+
+	// if (successMessage) {
+	// 	router.push("/login");
+	// }
+	useEffect(() => {
+		if (successMessage) {
+			router.push("/login");
+		}
+	}, [successMessage, router]);
 
 	return (
 		<form className="flex flex-col gap-[10px] mt-[80px]" onSubmit={handleSubmit(onSubmit)}>
@@ -77,7 +114,7 @@ const PasswordUpdate = () => {
 						type="text"
 						placeholder="새 비밀번호 입력"
 						className={`${inputStyle} px-[30px] w-[420px] h-[48px]`}
-						{...register("newPassword")}
+						{...register("confirmPassword")}
 					/>
 				</div>
 			</div>
