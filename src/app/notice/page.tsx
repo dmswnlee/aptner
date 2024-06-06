@@ -21,7 +21,7 @@ const Notice = () => {
 	const tabs: Tab[] = [
 		{ name: "all", label: "전체", code: "" },
 		{ name: "sharing", label: "공동생활", code: "NT001" },
-		{ name: "construction", label: "공사안내", code: "NT002" },
+		{ name: "construction", label: "공사안내", code: "NT002" }, 
 		{ name: "management", label: "관리사무소", code: "NT003" },
 		{ name: "representative", label: "입대위", code: "NT004" },
 		{ name: "election-commission", label: "선관위", code: "NT005" },

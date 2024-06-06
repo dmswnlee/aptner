@@ -125,7 +125,7 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
                 onDelete={() => onDelete(comment.id)} 
                 onReply={() => setIsReplying(!isReplying)} 
               />
-            </div>
+            </div> 
           </>
         )}
       </div>

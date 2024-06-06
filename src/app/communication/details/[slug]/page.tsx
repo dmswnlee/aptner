@@ -6,54 +6,13 @@ import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Comment from "@/components/comment/Comment";
 import { useRouter, usePathname } from "next/navigation";
+import { Post, SessionData } from "@/interfaces/board";
 
-// Interface definitions
-interface Post {
-  id: number;
-  category: {
-    id: number;
-    type: string;
-    code: string;
-    name: string;
-  };
-  content: string;
-  createdAt: string;
-  title: string;
-  writer: {
-    id: number;
-    name: string;
-    nickname: string;
-  };
-  emoji: {
-    emojiCount: {
-      likeCount: number;
-      empathyCount: number;
-      funCount: number;
-      amazingCount: number;
-      sadCount: number;
-    };
-    emojiReaction: {
-      reactedLike: boolean;
-      reactedEmpathy: boolean;
-      reactedFun: boolean;
-      reactedAmazing: boolean;
-      reactedSad: boolean;
-    };
-  };
-}
 interface PostFileInfo {
   id: number;
   name: string;
   path: string;
   size: number;
-}
-
-interface SessionData {
-  user: {
-    name: string;
-    email: string;
-  };
-  accessToken: string;
 }
 
 const DetailPage = () => {
@@ -62,7 +21,7 @@ const DetailPage = () => {
   const [fileInfoList, setFileInfoList] = useState<PostFileInfo[]>([]);
   const { data: session } = useSession();
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = usePathname(); 
   const basePath = pathname.split("/")[1]; // 첫 번째 경로를 추출
 
   useEffect(() => {
@@ -86,7 +45,7 @@ const DetailPage = () => {
       console.log(response.data.result.post);
       const postData = response.data.result.post;
       setPost(postData);
-      setFileInfoList(response.data.result.qnaFileInfoList || []);
+      setFileInfoList(response.data.result.postFileInfoList || []);
     } catch (err) {
       console.log("err", err);
     }

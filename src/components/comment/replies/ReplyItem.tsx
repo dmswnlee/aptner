@@ -87,16 +87,6 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
 
   return (
     <div className="mt-5">
-      <div className="flex items-center gap-3">
-        <p className="w-10 h-10 flex justify-center items-center rounded-[5px] bg-[#D9F2FE]">UI</p>
-        <div className="flex flex-col gap-3">
-          <div className="flex gap-1">
-            <p className='font-semibold'>{reply.writer.nickname}</p>
-            <div className="w-[1px] bg-[#A3A3A3]"></div>
-            <p>{formatDate(reply.updatedAt || reply.createdAt)}</p>
-          </div>
-        </div>
-      </div>
       <div>
         {isEditing ? (
           <CommentForm
@@ -111,6 +101,16 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
           />
         ) : (
           <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              <p className="w-10 h-10 flex justify-center items-center rounded-[5px] bg-[#D9F2FE]">UI</p>
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-1">
+                  <p className='font-semibold'>{reply.writer.nickname}</p>
+                  <div className="w-[1px] bg-[#A3A3A3]"></div>
+                  <p>{formatDate(reply.updatedAt || reply.createdAt)}</p>
+                </div>
+              </div>
+            </div>
             <p className="ml-[50px] mb-5">
               {renderReplyContent(reply.content)}
             </p>

@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface ImagePreviewModalProps {
-  image: File | null;
+  image: File | null | undefined;
   onClose: () => void;
 }
 

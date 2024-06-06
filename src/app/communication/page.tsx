@@ -5,6 +5,7 @@ import axios from "axios";
 import PostList from "./_component/PostList";
 import Gallery from "./_component/Gallery";
 import GalleryTab from "./_component/GalleryTab";
+import InteriorTab from "./_component/InteriorTab"; // Import the new component
 import { RiListUnordered, RiGalleryView2 } from "react-icons/ri";
 import Tabs from "@/components/noticeboard/Tabs";
 import DropdownSearch from "@/components/DropdownSearch";
@@ -54,6 +55,7 @@ interface Option {
 export default function CommunicationPage() {
   const [activeTab, setActiveTab] = useState<string>("Posts");
   const [category, setCategory] = useState<string>("all");
+  const [interiorCategory, setInteriorCategory] = useState<string>("all");
   const [communications, setCommunications] = useState<Communication[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -88,6 +90,11 @@ export default function CommunicationPage() {
     }
   };
 
+  const handleInteriorTabChange = (tabName: string) => {
+    setInteriorCategory(tabName);
+    setCurrentPage(1);
+  };
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -115,8 +122,9 @@ export default function CommunicationPage() {
           sort: "LATEST",
           search: searchQuery || null,
           type: selectedOption.value || null,
-          categoryCode: category === "all" ? null : category
-        },
+          categoryCode: category === "all" ? null : category,
+          interiorCategory: category === "PT006" ? interiorCategory : null
+        }, 
       });
       console.log(response.data.result)
       setCommunications(response.data.result.result.posts);
@@ -131,7 +139,7 @@ export default function CommunicationPage() {
     if (session) {
       fetchCommunications(currentPage);
     }
-  }, [session, currentPage, activeTab, category, searchQuery, selectedOption]);
+  }, [session, currentPage, activeTab, category, searchQuery, selectedOption, interiorCategory]);
 
   return (
     <div className="mt-[70px] w-[1080px] mx-auto">
@@ -139,7 +147,12 @@ export default function CommunicationPage() {
         소통공간
       </p>
       <Tabs tabs={categoryTabs} onTabChange={handleCategoryTabChange} />
-      <GalleryTab tabs={tabs} onTabChange={handleTabChange} />
+      <div className="flex justify-between items-center mb-6">
+        {category === "PT006" && (
+          <InteriorTab onTabChange={handleInteriorTabChange} />
+        )}
+        <GalleryTab tabs={tabs} onTabChange={handleTabChange} />
+      </div>
       <div className="w-[1080px] mx-auto">
         {activeTab === "Posts" ? (
           <PostList

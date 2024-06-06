@@ -86,3 +86,10 @@ export interface Post {
 		};
 	};
 }
+
+export interface PostFileInfo {
+  id: number;
+  name: string;
+  path: string;
+  size: number;
+}

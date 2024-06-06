@@ -8,8 +8,7 @@ import axios from 'axios';
 import { CommentType, CommentProps, SessionData } from '@/interfaces/Comment';
 import { Pagination } from 'antd';
 
-// Comment 컴포넌트
-const Comment = ({ initialComments, author, postId, pageType, categoryCode }: CommentProps) => {
+const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentProps) => {
   const [comments, setComments] = useState<CommentType[]>(initialComments || []); // 댓글 목록 상태
   const [newComment, setNewComment] = useState<string>(''); // 새로운 댓글 내용 상태
   const [charCount, setCharCount] = useState<number>(0); // 댓글 글자 수 상태
@@ -23,6 +22,7 @@ const Comment = ({ initialComments, author, postId, pageType, categoryCode }: Co
   const [commentToDelete, setCommentToDelete] = useState<number | null>(null); // 삭제할 댓글 ID 상태
   const { data: session } = useSession(); // 세션 데이터
   const apartCode = "RO000";
+  const author = session?.user.nickname || 'Anonymous'; // Use the nickname from the session
 
   // 세션이나 현재 페이지가 변경될 때마다 댓글을 가져옴
   useEffect(() => {
@@ -138,7 +138,7 @@ const Comment = ({ initialComments, author, postId, pageType, categoryCode }: Co
           const parentComment = prevComments.find(comment => comment.id === parentId);
           if (parentComment) {
             parentComment.replies = [...parentComment.replies, newCommentObj];
-            return [...prevComments];
+            return [...prevComments, newCommentObj];
           } else {
             return [...prevComments, newCommentObj];
           }
@@ -166,6 +166,7 @@ const Comment = ({ initialComments, author, postId, pageType, categoryCode }: Co
       setEditingCommentId(id);
       setEditingContent(comment.content);
       setEditingParentId(parentId);
+      setImage(null); // Reset image state
     }
   };
 
@@ -176,7 +177,12 @@ const Comment = ({ initialComments, author, postId, pageType, categoryCode }: Co
     const requestPayload = { parentId: parentId, content: content };
     const formData = new FormData();
     formData.append('request', new Blob([JSON.stringify(requestPayload)], { type: 'application/json' }));
-    if (image) formData.append('image', image);
+    if (image) {
+      formData.append('image', image);
+    } else {
+      // This ensures that we send the same structure as the POST request
+      formData.append('image', new Blob());
+    }
 
     try {
       const response = await axios.patch(
@@ -191,17 +197,21 @@ const Comment = ({ initialComments, author, postId, pageType, categoryCode }: Co
       );
 
       if (response.data.success) {
-        setComments(comments.map(comment => {
-          if (comment.id === id) {
-            return { 
-              ...comment, 
-              content: content, 
-              image: image ? URL.createObjectURL(image) : comment.image,
-              updatedAt: new Date().toISOString() // updatedAt 즉시 업데이트
-            };
-          }
-          return comment;
-        }));
+        const updatedCommentObj: CommentType = {
+          ...comments.find(comment => comment.id === id)!,
+          content: content,
+          image: image ? URL.createObjectURL(image) : undefined,
+          updatedAt: new Date().toISOString()
+        };
+
+        // Set imageUrl if an image was uploaded and the response contains imageUrl
+        if (image && response.data.result.imageUrl) {
+          updatedCommentObj.imageUrl = response.data.result.imageUrl;
+        }
+
+        setComments(comments.map(comment => 
+          comment.id === id ? updatedCommentObj : comment
+        ));
         setEditingCommentId(null);
         setEditingContent('');
         setEditingParentId(null);
