@@ -4,7 +4,6 @@ import Tab from "./Tab";
 import IdForm from "./IdForm";
 import PasswordForm from "./PasswordForm";
 import { useRouter, useSearchParams } from "next/navigation";
-import PasswordUpdate from './PasswordUpdate';
 
 const FindIdPassword = () => {
 	const [activeTab, setActiveTab] = useState<"id" | "password">("id");
@@ -36,7 +35,7 @@ const FindIdPassword = () => {
 						<Tab activeTab={activeTab} setActiveTab={handleTabClick} />
 						<div className="mt-20">
 							{activeTab === "id" && <IdForm />}
-							{activeTab === "password" && <PasswordUpdate />}
+							{activeTab === "password" && <PasswordForm />}
 						</div>
 					</div>
 				</div>
