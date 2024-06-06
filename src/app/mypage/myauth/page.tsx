@@ -1,38 +1,61 @@
 "use client";
-import React, { useRef } from "react";
-import Button from "@/components/buttons/Button";
-import Input from "@/components/Input";
+import React, { useState } from "react";
 import UserEdit from "../_component/UserEdit";
+import AuthModal from "../_component/AuthModal";
 
 export default function MyAuth() {
-	const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-	const handleClick = () => {
-		if (fileInputRef.current) {
-			fileInputRef.current.click();
-		}
-	};
-	return (
-		<>
-			<div className="flex flex-col items-center relative">
-				<div className="absolute left-0">
-					<UserEdit />
-				</div>
-				<div className="w-[586px]  relative">
-					<Input id="username" label="이름" type="text" placeholder="홍길동" />
+  const openAuthModal = () => {
+    setIsAuthModalOpen(true);
+  };
 
-					<Input id="phoneNumber" label="휴대폰 번호" type="text" placeholder="010-1234-5678" />
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+  };
 
-					<Button
-						text="탈퇴하기"
-						className="absolute right-0 underline underline-offset-2 border-none text-gray_07 font-normal mt-[19px]"
-					/>
-				</div>
-			</div>
+  return (
+    <>
+      <div className="flex flex-col items-center relative">
+        <div className="absolute left-0 top-[-30px]">
+          <UserEdit />
+        </div>
+        <div className="w-[586px] relative">
+          <div className="flex justify-between items-center h-12 mt-[30px] text-normal">
+            <label>이름</label>
+            <div className="flex flex-col h-[56px]">
+              <input
+                type="text"
+                placeholder="패스트캠퍼스"
+                className="border bg-[#fcfcfc] rounded-[5px] w-[428px] pl-[30px] pr-[60px] py-[15px] outline-none"
+                disabled
+              />
+            </div>
+          </div>
 
-			<div className="flex justify-center pt-4 mt-[88px] mb-[76px]">
-				<Button text="수정하기" className="py-3 px-4 border-blue_05 text-blue_05" />
-			</div>
-		</>
-	);
+          <div className="flex justify-between items-center h-12 mt-[30px] text-normal">
+            <label>휴대폰 번호</label>
+            <div className="flex flex-col h-[56px]">
+              <input
+                type="text"
+                placeholder="패스트캠퍼스"
+                className="border bg-[#fcfcfc] rounded-[5px] w-[428px] pl-[30px] pr-[60px] py-[15px] outline-none"
+                disabled
+              />
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-center pt-4 mt-[88px] mb-[76px]">
+          <button
+            type="button"
+            className="py-4 px-5 w-[430px] rounded-[5px] bg-blue_05 text-white cursor-pointer"
+            onClick={openAuthModal}
+          >
+            변경하기
+          </button>
+        </div>
+      </div>
+      {isAuthModalOpen && <AuthModal onClose={closeAuthModal} />}
+    </>
+  );
 }
