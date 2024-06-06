@@ -1,53 +1,101 @@
 "use client";
-import List from "@/components/List";
-import { notices } from "@/mocks/data/notice";
 import Tabs from "@/components/noticeboard/Tabs";
-import type { PaginationProps } from "antd";
-import { Pagination } from "antd";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/stores/store';
-import { fetchNotices } from '@/stores/slice/noticesSlice';
+import { Notices, Option, SessionData, Tab } from "@/interfaces/board";
+import DropdownSearch from "@/components/DropdownSearch";
+import SearchBoard from "@/components/SearchBoard";
+import { useSession } from "next-auth/react";
+import axios from "axios";
+import List from "./_component/List";
 
 const Notice = () => {
-	const tabs = [
-		{ name: "all", label: "전체" },
-		{ name: "sharing", label: "공동생활" },
-		{ name: "construction", label: "공사안내" },
-		{ name: "management", label: "관리사무소" },
-		{ name: "representative", label: "입대위" },
-		{ name: "election-commission", label: "선관위" }, 
-		{ name: "result", label: "회의 결과" },
+	const [category, setCategory] = useState<string>("all");
+	const [currentPage, setCurrentPage] = useState(1);
+	const [selectedOption, setSelectedOption] = useState<Option>({ value: "TITLE_AND_CONTENT", label: "제목 + 내용" });
+	const [searchQuery, setSearchQuery] = useState<string>("");
+	const [loading, setLoading] = useState(true);
+	const { data: session } = useSession();
+	const [notices, setNotices] = useState<Notices[]>([]);
+	const [totalCount, setTotalCount] = useState(0);
+
+	const tabs: Tab[] = [
+		{ name: "all", label: "전체", code: "" },
+		{ name: "sharing", label: "공동생활", code: "NT001" },
+		{ name: "construction", label: "공사안내", code: "NT002" },
+		{ name: "management", label: "관리사무소", code: "NT003" },
+		{ name: "representative", label: "입대위", code: "NT004" },
+		{ name: "election-commission", label: "선관위", code: "NT005" },
+		{ name: "result", label: "회의 결과", code: "NT006" },
 	];
 
-	const ListTitle = [
-		{ key: "category", header: "분류", width: "w-[112px]" },
-		{ key: "title", header: "글 제목", width: "w-[629px]" },
-		{ key: "author", header: "글쓴이", width: "w-[96px]" },
-		{ key: "views", header: "조회수", width: "w-[120px]" },
-		{ key: "date", header: "등록일", width: "w-[123px]" },
-	];
-
-	const [current, setCurrent] = useState(1);
-	const handleChange: PaginationProps["onChange"] = page => {
-		console.log(page);
+	const handleCategoryTabChange = (tabName: string) => {
+		const selectedCategory = tabs.find(tab => tab.name === tabName);
+		if (selectedCategory) {
+			setCategory(selectedCategory.code);
+			setCurrentPage(1);
+		}
 	};
-	
-	const dispatch = useDispatch();
-  const notices = useSelector((state: RootState) => state.notices.notices);
 
-  useEffect(() => {
-    dispatch(fetchNotices());
-  }, [dispatch]); 
+	const handlePageChange = (page: number) => {
+		setCurrentPage(page);
+	};
+
+	const handleSearchOptionSelect = (option: Option) => {
+		setSelectedOption(option);
+	};
+
+	const handleSearch = (query: string) => {
+		setSearchQuery(query);
+		setCurrentPage(1);
+	};
+
+	const fetchNotices = async (page: number) => {
+		if (!session) return;
+		try {
+			const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/notices/RO000`, {
+				headers: {
+					Authorization: `Bearer ${(session as SessionData).accessToken}`,
+				},
+				params: {
+					page: page,
+					size: 15,
+					sort: "LATEST",
+					search: searchQuery || null,
+					type: selectedOption.value || null,
+					categoryCode: category === "all" ? null : category,
+				},
+			});
+			console.log(response.data.result);
+			setNotices(response.data.result.result.noticeInfoList);
+			setTotalCount(response.data.result.totalCount);
+			setLoading(false);
+		} catch (err) {
+			console.log("err", err);
+		}
+	};
+
+	useEffect(() => {
+		if (session) {
+			fetchNotices(currentPage);
+		}
+	}, [session, currentPage, category, searchQuery, selectedOption]);
 
 	return (
-		<div className="mt-12 flex justify-center">
-			<div className="w-[1080px] flex flex-col gap-10">
-				<h2 className="text-2xl">공지사항</h2>
-				<Tabs tabs={tabs} />
-				<List ListTitle={ListTitle} data={notices} detailPath="/detail" />
-				<div className="flex justify-center p-5">
-					<Pagination current={current} onChange={handleChange} total={50} />
+		<div className="mt-[70px] w-[1080px] mx-auto">
+			<p className="text-2xl font-semibold leading-[27px] mb-10">공지사항</p>
+			<Tabs tabs={tabs} onTabChange={handleCategoryTabChange} />
+			<div className="w-[1080px] mx-auto">
+				<List
+					data={notices}
+					loading={loading}
+					currentPage={currentPage}
+					total={totalCount}
+					onPageChange={handlePageChange}
+					searchQuery={searchQuery}
+				/>
+				<div className="flex justify-center p-5 mb-[100px] gap-3">
+					<DropdownSearch onSelect={handleSearchOptionSelect} selectedOption={selectedOption} />
+					<SearchBoard selectedOption={selectedOption} onSearch={handleSearch} />
 				</div>
 			</div>
 		</div>

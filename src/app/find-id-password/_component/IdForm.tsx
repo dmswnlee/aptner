@@ -1,8 +1,12 @@
 import { useForm } from "react-hook-form";
 import ColorButton from "@/components/buttons/ColorButton";
 import Modal from "@/components/modal/Modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { inputStyle } from "@/app/signup/_component/IdentityVerification";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchIdRequest, resetIdState } from "@/stores/slice/idSlice";
+import IdFound from "./IdFound";
+import { RootState } from "@/stores/store";
 
 const phoneNumberRegex = /^\d{1,11}$/;
 
@@ -16,9 +20,17 @@ const IdForm = () => {
 	} = useForm();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [modalMessage, setModalMessage] = useState("");
+	const dispatch = useDispatch();
+
+	const email = useSelector((state: RootState) => state.findId.email);
+	const error = useSelector((state: RootState) => state.findId.error);
 
 	const name = watch("name", "");
 	const phone = watch("phone", "");
+
+	useEffect(() => {
+		dispatch(resetIdState());
+	}, [dispatch]);
 
 	const onSubmit = () => {
 		if (!name) {
@@ -27,23 +39,33 @@ const IdForm = () => {
 			return;
 		}
 		if (!phone) {
-			setModalMessage("핸드폰 번호를 입력해주세요");
+			setModalMessage("휴대폰 번호를 입력해주세요");
 			setIsModalOpen(true);
 			return;
 		}
 		if (!phoneNumberRegex.test(phone)) {
-			setModalMessage("핸드폰 번호 형식이 올바르지 않습니다.");
+			setModalMessage("휴대폰 번호 형식이 올바르지 않습니다.");
 			setIsModalOpen(true);
 			return;
 		}
+		dispatch(fetchIdRequest({ name, phone }));
 	};
+
+	useEffect(() => {
+		if (error) {
+			setModalMessage(error);
+			setIsModalOpen(true);
+		}
+	}, [error]);
 
 	const closeModal = () => {
 		setIsModalOpen(false);
 		clearErrors();
 	};
 
-	return (
+	return email ? (
+		<IdFound email={email} />
+	) : (
 		<form className="flex flex-col gap-[10px] mt-[80px]" onSubmit={handleSubmit(onSubmit)}>
 			<div className="flex gap-[10px]">
 				<p className="w-[120px] p-[10px]">이름</p>
@@ -57,7 +79,7 @@ const IdForm = () => {
 				</div>
 			</div>
 			<div className="flex gap-[10px]">
-				<p className="w-[120px] p-[10px]">핸드폰 번호</p>
+				<p className="w-[120px] p-[10px]">휴대폰 번호</p>
 				<div className="flex flex-col gap-2">
 					<input
 						type="text"
