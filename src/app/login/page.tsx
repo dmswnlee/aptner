@@ -8,7 +8,24 @@ import { AiTwotoneNotification } from "react-icons/ai";
 import Modal from "@/components/modal/Modal";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { Checkbox } from "antd";
+import { Checkbox, Tooltip } from "antd";
+
+const text = (
+	<div className="flex gap-[5px] w-[292px] p-[10px] bg-white shadow-lg rounded-[5px] mt-4">
+		<AiTwotoneNotification />
+		<div className="flex flex-col gap-[5px] text-gray_07">
+			<p className="text-[12px]">
+				자동로그인을 사용하시면 다음부터 회원아이디와
+				<br />
+				비밀번호를 입력하실 필요가 없습니다.
+				<br />
+				공공장소에서는 개인정보가 유출될 수 있으니 사용
+				<br />을 자제하여 주십시오.
+			</p>
+			<p className="font-semibold">자동로그인을 사용하시겠습니까?</p>
+		</div>
+	</div>
+);
 
 const Login = () => {
 	const { register, handleSubmit, watch, clearErrors } = useForm();
@@ -120,11 +137,22 @@ const Login = () => {
 					</div>
 					<div className="w-full mt-5  text-gray_400">
 						<div className="flex justify-between">
-							<div className="flex items-center gap-[15px]">
+							<div className="flex items-center gap-3">
 								<Checkbox id="check" checked={isChecked} onChange={handleChangeCheck} />
-								<label htmlFor="check" className={`${isChecked ? "text-blue_300" : "text-gray_400"}`}>
-									자동로그인
-								</label>
+								<Tooltip
+									placement="bottom"
+									title={text}
+									color="white"
+									overlayInnerStyle={{
+										padding: 0,
+										borderRadius: "5px",
+										boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
+									}}
+									arrow={false}>
+									<label htmlFor="check" className={`${isChecked ? "text-blue_300" : "text-gray_400"} cursor-pointer`}>
+										자동로그인
+									</label>
+								</Tooltip>
 							</div>
 							<div className="flex gap-[10px]">
 								<Link href="/find-id-password?tab=id">아이디 찾기</Link>
@@ -132,22 +160,6 @@ const Login = () => {
 								<Link href="/find-id-password?tab=password">비밀번호 찾기</Link>
 							</div>
 						</div>
-						{isChecked && (
-							<div className="flex gap-[5px] w-[292px] p-[10px] bg-white shadow-lg rounded-[5px] mt-4">
-								<AiTwotoneNotification />
-								<div className="flex flex-col gap-[5px] text-gray_07">
-									<p className="text-[12px]">
-										자동로그인을 사용하시면 다음부터 회원아이디와
-										<br />
-										비밀번호를 입력하실 필요가 없습니다.
-										<br />
-										공공장소에서는 개인정보가 유출될 수 있으니 사용
-										<br />을 자제하여 주십시오.
-									</p>
-									<p className="font-semibold">자동로그인을 사용하시겠습니까?</p>
-								</div>
-							</div>
-						)}
 					</div>
 					<div className="mt-[50px]">
 						<p className="text-gray_400">회원이 아니시라면?</p>
