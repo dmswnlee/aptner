@@ -1,9 +1,5 @@
+import { IdState } from '@/interfaces/FindIdPassword';
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-interface IdState {
-	email: string;
-	error: string | null;
-}
 
 const initialState: IdState = {
 	email: "",
