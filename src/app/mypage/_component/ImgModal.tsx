@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import Button from "@/components/buttons/Button";
+import User from "../../../assets/images/emoji/user.png";
 
 interface ImgModalProps {
   onClose: () => void;
@@ -23,6 +24,23 @@ const ImgModal: React.FC<ImgModalProps> = ({ onClose, onImageSelect }) => {
       console.log("Selected file in ImgModal:", file); // 콘솔에 파일 출력
       onImageSelect(file); // 파일을 부모 컴포넌트로 전달
     }
+  };
+
+  const handleDelete = () => {
+    setSelectedImage("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
+    // 기본 이미지 파일을 Blob으로 생성하여 전달
+    fetch(User.src)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const defaultFile = new File([blob], "default_profile.png", {
+          type: "image/png",
+        });
+        onImageSelect(defaultFile); // 기본 이미지 파일을 부모 컴포넌트로 전달
+      });
   };
 
   return (
@@ -70,10 +88,7 @@ const ImgModal: React.FC<ImgModalProps> = ({ onClose, onImageSelect }) => {
               className="w-[76px] h-[38px] text-[16px] leading-[18px] py-[6px] bg-[#fafafa] text-[#5f5f5f]"
               onClick={(e) => {
                 e.preventDefault();
-                setSelectedImage(null);
-                if (fileInputRef.current) {
-                  fileInputRef.current.value = "";
-                }
+                handleDelete();
               }}
             />
           </div>

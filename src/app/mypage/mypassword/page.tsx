@@ -54,6 +54,7 @@ export default function MyPassword() {
       console.log(err);
     } finally {
       setIsConfirmModalOpen(false);
+      window.location.reload();
     }
   };
 
@@ -127,7 +128,7 @@ export default function MyPassword() {
                   },
                 })}
                 id="newPassword"
-                type="text"
+                type="password"
                 autoComplete="off"
                 onBlur={() => trigger("newPassword")}
                 className={`border bg-[#fcfcfc] rounded-[5px] w-[428px] pl-[30px] pr-[60px] py-[15px] outline-none ${
@@ -155,7 +156,7 @@ export default function MyPassword() {
                     value === newPassword || "비밀번호가 일치하지 않습니다.",
                 })}
                 id="confirmNewPassword"
-                type="text"
+                type="password"
                 autoComplete="off"
                 onBlur={() => trigger("confirmNewPassword")}
                 className={`border bg-[#fcfcfc] rounded-[5px] w-[428px] pl-[30px] pr-[60px] py-[15px] outline-none ${

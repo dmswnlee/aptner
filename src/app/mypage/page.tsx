@@ -18,7 +18,7 @@ export default function MyPage() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const user = session?.user;
 
   const {
@@ -70,9 +70,10 @@ export default function MyPage() {
     );
 
     if (selectedFile) {
-      formData.append("profileImage", selectedFile);
+      formData.append("image", selectedFile);
     }
-    //콘솔 데이터 로그임
+
+    // 콘솔 데이터 로그
     for (let pair of formData.entries()) {
       if (pair[1] instanceof File) {
         console.log(pair[0] + ": " + (pair[1] as File).name);
@@ -100,6 +101,37 @@ export default function MyPage() {
     }
   };
 
+  // 프로필 GET
+
+  interface Profile {
+    profileImage: string;
+    nickname: string;
+  }
+  const [profile, setProfile] = useState<Profile | null>(null);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      handleProfile();
+    }
+  }, [status]);
+
+  const handleProfile = async () => {
+    try {
+      const response = await axios.get(
+        "https://aptner.site/v1/api/members/RO000/my-pages/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        }
+      );
+      console.log(response.data);
+      setProfile(response.data.result);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit(openConfirmModal)}>
       <div className="flex flex-col items-center relative">
@@ -112,16 +144,16 @@ export default function MyPage() {
               <img
                 src={preview}
                 alt="Profile Preview"
-                className="rounded-full border-2 cursor-pointer w-[80px] h-[80px] object-cover"
+                className="rounded-full border cursor-pointer w-[80px] h-[80px] object-cover"
                 onClick={openImgModal}
               />
             ) : (
-              <div
-                className="w-[80px] h-[80px] rounded-full border-2 cursor-pointer flex items-center justify-center"
+              <img
+                src={profile?.profileImage}
+                alt=""
                 onClick={openImgModal}
-              >
-                <div className="text-gray-500">사진 선택</div>
-              </div>
+                className="rounded-full border cursor-pointer w-[80px] h-[80px] object-cover"
+              />
             )}
             <Button
               text="사진 변경하기"

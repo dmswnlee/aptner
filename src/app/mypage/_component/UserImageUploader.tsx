@@ -1,33 +1,59 @@
 "use client";
-import React, { useRef } from "react";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
+
+interface Profile {
+  profileImage: string;
+  nickname: string;
+}
 
 const UserImageUploader: React.FC = () => {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { data: session, status } = useSession();
+  const [profile, setProfile] = useState<Profile | null>(null);
 
-  const handleClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+  useEffect(() => {
+    if (status === "authenticated") {
+      handleProfile();
+    }
+  }, [status]);
+
+  const handleProfile = async () => {
+    try {
+      const response = await axios.get(
+        "https://aptner.site/v1/api/members/RO000/my-pages/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        }
+      );
+      console.log(response.data);
+      setProfile(response.data.result);
+    } catch (err) {
+      console.log(err);
     }
   };
 
   return (
     <div className="border-[1px] rounded-lg h-[118px]">
       <div className="h-[62px] mt-6 mx-6 flex">
-        <input
-          ref={fileInputRef}
-          className="hidden"
-          id="userImage"
-          type="file"
-          accept="image/*"
-        />
-
-        <div
-          onClick={handleClick}
-          className="w-[60px] h-[60px] rounded-full border-2 cursor-pointer"
-        ></div>
-
+        {profile && (
+          <Image
+            src={profile.profileImage}
+            alt="USER"
+            width={60}
+            height={60}
+            className="rounded-full"
+          />
+        )}
         <div className="ml-3 text-[20px]">
-          <p className="font-bold">Apartner UI 회원등급</p>
+          <div className="flex font-bold">
+            <p className="font-bold">{profile?.nickname}</p>
+            <p className="font-thin mx-2"> | </p>
+            <p>인증 회원</p>
+          </div>
           <p>아크로리버뷰신반포</p>
         </div>
       </div>
