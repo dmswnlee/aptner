@@ -24,11 +24,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 			<body className={`flex flex-col min-h-screen ${pretendard.className}`}>
 				<MSWComponent />
 				<AuthSession>
-					<Header />
+					<Suspense fallback={<div>Loading...</div>}>
+						<Header />
+					</Suspense>
 					<ReduxProvider>
-						<Suspense fallback={<div>Loading...</div>}>
-							<main className="flex-1">{children}</main>
-						</Suspense>
+						<main className="flex-1">{children}</main>
 					</ReduxProvider>
 					<Footer />
 					{/* <QuickMenu /> */}
