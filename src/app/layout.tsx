@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import QuickMenu from "@/components/quickmenu/QuickMenu";
 import AuthSession from "./_component/AuthSession";
 import localFont from "next/font/local";
+import { Suspense } from "react";
 
 export const metadata = {
 	title: "아파트너",
@@ -25,7 +26,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 				<AuthSession>
 					<Header />
 					<ReduxProvider>
-						<main className="flex-1">{children}</main>
+						<Suspense fallback={<div>Loading...</div>}>
+							<main className="flex-1">{children}</main>
+						</Suspense>
 					</ReduxProvider>
 					<Footer />
 					{/* <QuickMenu /> */}
