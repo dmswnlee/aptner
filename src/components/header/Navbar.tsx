@@ -21,7 +21,7 @@ const Navbar = () => {
 
 	const handleCloseModal = () => {
 		setShowModal(false);
-		router.push("/");
+		router.push("/login");
 	};
 
 	const toggleModal = () => {
