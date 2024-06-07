@@ -3,7 +3,7 @@ import Navbar from "@/components/header/Navbar";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/images/logo.png";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -59,7 +59,9 @@ const Header = () => {
           )}
         </div>
       </div>
-      <Navbar />
+      <Suspense fallback={<div>Loading...</div>}>
+        <Navbar />
+      </Suspense>
     </div>
   );
 };
