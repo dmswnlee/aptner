@@ -89,7 +89,7 @@ export default function MyPassword() {
                 id="currentPassword"
                 type="password"
                 autoComplete="off"
-                placeholder=" "
+                placeholder="현재 비밀번호"
                 onBlur={() => trigger("currentPassword")}
                 className={`border bg-[#fcfcfc] rounded-[5px] w-[428px] pl-[30px] pr-[60px] py-[15px] outline-none ${
                   errors.currentPassword ? "border-red" : "border-gray-300"
@@ -129,6 +129,7 @@ export default function MyPassword() {
                 })}
                 id="newPassword"
                 type="password"
+                placeholder="새 비밀번호"
                 autoComplete="off"
                 onBlur={() => trigger("newPassword")}
                 className={`border bg-[#fcfcfc] rounded-[5px] w-[428px] pl-[30px] pr-[60px] py-[15px] outline-none ${
@@ -157,6 +158,7 @@ export default function MyPassword() {
                 })}
                 id="confirmNewPassword"
                 type="password"
+                placeholder="새 비밀번호 확인"
                 autoComplete="off"
                 onBlur={() => trigger("confirmNewPassword")}
                 className={`border bg-[#fcfcfc] rounded-[5px] w-[428px] pl-[30px] pr-[60px] py-[15px] outline-none ${

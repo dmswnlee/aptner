@@ -8,6 +8,7 @@ import UserEdit from "./_component/UserEdit";
 import ImgModal from "./_component/ImgModal";
 import ConfirmModal from "../../components/modal/ConfirmModal";
 import { IoClose } from "react-icons/io5";
+import User from "../../assets/images/emoji/user.png";
 
 interface FormData {
   nickname: string;
@@ -132,6 +133,8 @@ export default function MyPage() {
     }
   };
 
+  const profileImage = profile?.profileImage;
+
   return (
     <form onSubmit={handleSubmit(openConfirmModal)}>
       <div className="flex flex-col items-center relative">
@@ -149,7 +152,7 @@ export default function MyPage() {
               />
             ) : (
               <img
-                src={profile?.profileImage}
+                src={profile?.profileImage || User.src}
                 alt=""
                 onClick={openImgModal}
                 className="rounded-full border cursor-pointer w-[80px] h-[80px] object-cover"
@@ -231,7 +234,11 @@ export default function MyPage() {
         </button>
       </div>
       {isImgModalOpen && (
-        <ImgModal onClose={closeImgModal} onImageSelect={handleImageSelect} />
+        <ImgModal
+          onClose={closeImgModal}
+          onImageSelect={handleImageSelect}
+          profileImage={profileImage}
+        />
       )}
       {isConfirmModalOpen && (
         <ConfirmModal

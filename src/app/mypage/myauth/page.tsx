@@ -1,9 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UserEdit from "../_component/UserEdit";
-import AuthModal from "../_component/AuthModal";
+import VerificationModal from "../../../components/modal/VerificationModal";
+import { useSession } from "next-auth/react";
+import axios from "axios";
 
 export default function MyAuth() {
+  const { data: session, status } = useSession();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const openAuthModal = () => {
@@ -12,6 +15,35 @@ export default function MyAuth() {
 
   const closeAuthModal = () => {
     setIsAuthModalOpen(false);
+  };
+
+  interface Profile {
+    name: string;
+    phone: string;
+  }
+  const [profile, setProfile] = useState<Profile | null>(null);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      handleProfile();
+    }
+  }, [status]);
+
+  const handleProfile = async () => {
+    try {
+      const response = await axios.get(
+        "https://aptner.site/v1/api/members/RO000/my-pages/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        }
+      );
+      console.log(response.data);
+      setProfile(response.data.result);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -26,7 +58,7 @@ export default function MyAuth() {
             <div className="flex flex-col h-[56px]">
               <input
                 type="text"
-                placeholder="패스트캠퍼스"
+                placeholder={profile?.name}
                 className="border bg-[#fcfcfc] rounded-[5px] w-[428px] pl-[30px] pr-[60px] py-[15px] outline-none"
                 disabled
               />
@@ -38,7 +70,7 @@ export default function MyAuth() {
             <div className="flex flex-col h-[56px]">
               <input
                 type="text"
-                placeholder="패스트캠퍼스"
+                placeholder={profile?.phone}
                 className="border bg-[#fcfcfc] rounded-[5px] w-[428px] pl-[30px] pr-[60px] py-[15px] outline-none"
                 disabled
               />
@@ -55,7 +87,7 @@ export default function MyAuth() {
           </button>
         </div>
       </div>
-      {isAuthModalOpen && <AuthModal onClose={closeAuthModal} />}
+      {isAuthModalOpen && <VerificationModal onClose={closeAuthModal} />}
     </>
   );
 }

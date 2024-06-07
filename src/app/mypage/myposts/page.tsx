@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Pagination } from "antd";
+import ConfirmModal from "@/components/modal/ConfirmModal";
 
 interface Category {
   id: number;
@@ -29,6 +30,7 @@ export default function MyPostsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [allSelected, setAllSelected] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -42,6 +44,7 @@ export default function MyPostsPage() {
 
   const getPosts = async (page: number) => {
     try {
+      setPosts([]);
       const response = await axios.get(
         "https://aptner.site/v1/api/members/RO000/posts",
         {
@@ -55,7 +58,7 @@ export default function MyPostsPage() {
           },
         }
       );
-      console.log(response.data); // 응답을 로깅하여 데이터 구조를 확인합니다.
+      console.log(response.data);
       const postsData = response.data?.result?.result.myArticleList;
       if (postsData) {
         setPosts(postsData);
@@ -117,6 +120,8 @@ export default function MyPostsPage() {
       console.log(response);
     } catch (err) {
       console.log(err);
+    } finally {
+      setOpenModal(false);
     }
   };
 
@@ -125,7 +130,6 @@ export default function MyPostsPage() {
       <div className="w-full flex flex-col items-center mb-[100px]">
         <div className="max-h-[1021px] mb-5 border-t border-b border-t-[#2a3f6d] relative">
           <div className="grid grid-cols-[112px,732px,118px,118px]">
-            {/* Header */}
             <div className="border-b border-b-[#2a3f6d] py-4 bg-[#f9f9f9] text-center">
               선택
             </div>
@@ -138,8 +142,6 @@ export default function MyPostsPage() {
             <div className="border-b border-b-[#2a3f6d] py-4 bg-[#f9f9f9] text-center">
               등록일
             </div>
-
-            {/* Data */}
             {posts.length > 0 ? (
               posts.map((post) => (
                 <div key={post.id} className="contents">
@@ -156,12 +158,16 @@ export default function MyPostsPage() {
                     />
                   </div>
                   <Link
-                    href={`/complaints/detail/${post.id}`}
+                    href={
+                      post.category.type === "QNA"
+                        ? `/complaints/detail/${post.id}`
+                        : `/communication/details/${post.id}`
+                    }
                     className="border-b py-4 pl-3 gap-[3px] flex items-center"
                   >
                     {post.title}
                   </Link>
-                  <div className="border-b py-4 flex justify-center">
+                  <div className="border-b h-[60px] px-5 flex justify-center items-center">
                     {post.category.name}
                   </div>
                   <div className="border-b py-4 flex justify-center">
@@ -191,7 +197,7 @@ export default function MyPostsPage() {
           </div>
 
           <button
-            onClick={handleDelete}
+            onClick={() => setOpenModal(true)}
             className="flex justify-center items-center gap-[2px] right-0 bg-[#3ABEFF] rounded-[5px] text-white w-[78px] h-[36px] text-[14px]"
           >
             삭제
@@ -204,6 +210,13 @@ export default function MyPostsPage() {
           onChange={handlePageChange}
         />
       </div>
+      {openModal && (
+        <ConfirmModal
+          text="정말 삭제하시겠습니까?"
+          onClose={() => setOpenModal(false)}
+          onConfirm={handleDelete}
+        />
+      )}
     </div>
   );
 }

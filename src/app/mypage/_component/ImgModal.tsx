@@ -5,9 +5,14 @@ import User from "../../../assets/images/emoji/user.png";
 interface ImgModalProps {
   onClose: () => void;
   onImageSelect: (file: File) => void;
+  profileImage: string | undefined;
 }
 
-const ImgModal: React.FC<ImgModalProps> = ({ onClose, onImageSelect }) => {
+const ImgModal: React.FC<ImgModalProps> = ({
+  onClose,
+  onImageSelect,
+  profileImage,
+}) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -65,19 +70,23 @@ const ImgModal: React.FC<ImgModalProps> = ({ onClose, onImageSelect }) => {
           <div className="w-[80px] h-[80px] mb-10 rounded-full border-2 flex items-center justify-center">
             {selectedImage ? (
               <img
-                src={selectedImage}
+                src={selectedImage || profileImage || User.src}
                 alt="Selected"
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (
-              <div className="text-gray-500">사진 선택</div>
+              <img
+                src={profileImage || User.src}
+                alt="Selected"
+                className="w-full h-full rounded-full object-cover"
+              />
             )}
           </div>
 
           <div className="flex gap-[13px] mb-[34px]">
             <Button
               text="사진 선택"
-              className="w-[76px] h-[38px] text-[16px] leading-[18px] py-[6px] bg-[#fafafa] text-[#5f5f5f]"
+              className="w-[76px] h-[38px] text-[16px] leading-[18px] py-[6px] bg-[#fafafa] text-[#5f5f5f] hover:text-[#00A8FF] hover:bg-[#EBF7FF]"
               onClick={(e) => {
                 e.preventDefault();
                 handleClick();
@@ -85,7 +94,7 @@ const ImgModal: React.FC<ImgModalProps> = ({ onClose, onImageSelect }) => {
             />
             <Button
               text="사진 삭제"
-              className="w-[76px] h-[38px] text-[16px] leading-[18px] py-[6px] bg-[#fafafa] text-[#5f5f5f]"
+              className="w-[76px] h-[38px] text-[16px] leading-[18px] py-[6px] bg-[#fafafa] text-[#5f5f5f] hover:text-[#00A8FF] hover:bg-[#EBF7FF]"
               onClick={(e) => {
                 e.preventDefault();
                 handleDelete();
@@ -95,7 +104,7 @@ const ImgModal: React.FC<ImgModalProps> = ({ onClose, onImageSelect }) => {
         </div>
         <Button
           text="사진 적용하기"
-          className="w-[100px] mx-auto h-[32px] text-[16px] leading-[18px] py-[6px] bg-[#EEE] text-black_100"
+          className="w-[100px] mx-auto h-[32px] text-[16px] leading-[18px] py-[6px] bg-[#EEE] text-black_100 hover:text-[#00A8FF] hover:bg-[#EBF7FF]"
           onClick={onClose}
         />
       </div>

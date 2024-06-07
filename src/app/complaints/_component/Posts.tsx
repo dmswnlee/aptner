@@ -184,13 +184,13 @@ const Posts = () => {
                   {qna.writer.nickname}
                 </div>
                 <div className="border-b py-4 flex justify-center">
-                  {qna.viewCount}-
+                  {qna.viewCount}
                 </div>
                 <div className="border-b py-4 flex justify-center">
                   {formatDate(qna.createdAt)}
                 </div>
                 <div className="border-b py-4 flex justify-center">
-                  {qna.status}-
+                  {qna.status}
                 </div>
               </div>
             ))}

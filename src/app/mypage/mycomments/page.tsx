@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Pagination } from "antd";
+import ConfirmModal from "@/components/modal/ConfirmModal";
 
 interface Article {
   id: number;
@@ -34,6 +35,7 @@ export default function MyCommentsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [allSelected, setAllSelected] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -47,6 +49,7 @@ export default function MyCommentsPage() {
 
   const getComments = async (page: number) => {
     try {
+      setComments([]);
       const response = await axios.get(
         "https://aptner.site/v1/api/members/RO000/comments",
         {
@@ -60,7 +63,7 @@ export default function MyCommentsPage() {
           },
         }
       );
-      console.log(response.data); // 응답을 로깅하여 데이터 구조를 확인합니다.
+      console.log(response.data);
       const commentsData = response.data?.result?.result.myCommentList;
       if (commentsData) {
         setComments(commentsData);
@@ -96,12 +99,29 @@ export default function MyCommentsPage() {
   };
 
   const handleDelete = async () => {
+    const postCommentIds = comments
+      .filter(
+        (comment) =>
+          selectedComments.includes(comment.id) &&
+          comment.article.category.type === "POST"
+      )
+      .map((comment) => comment.id);
+
+    const qnaCommentIds = comments
+      .filter(
+        (comment) =>
+          selectedComments.includes(comment.id) &&
+          comment.article.category.type === "QNA"
+      )
+      .map((comment) => comment.id);
+
     try {
       const response = await axios.delete(
         "https://aptner.site/v1/api/members/RO000/comments",
         {
           data: {
-            commentIds: selectedComments,
+            postCommentIds,
+            qnaCommentIds,
           },
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,
@@ -113,6 +133,8 @@ export default function MyCommentsPage() {
       console.log(response);
     } catch (err) {
       console.log(err);
+    } finally {
+      setOpenModal(false);
     }
   };
 
@@ -121,14 +143,8 @@ export default function MyCommentsPage() {
       <div className="w-full flex flex-col items-center mb-[100px]">
         <div className="max-h-[1021px] mb-5 border-t border-b border-t-[#2a3f6d] relative">
           <div className="grid grid-cols-[112px,732px,118px,118px]">
-            {/* Header */}
             <div className="border-b border-b-[#2a3f6d] py-4 bg-[#f9f9f9] text-center">
-              <input
-                type="checkbox"
-                className="w-5 h-5"
-                checked={allSelected}
-                onChange={handleSelectAll}
-              />
+              선택
             </div>
             <div className="border-b border-b-[#2a3f6d] py-4 bg-[#f9f9f9] text-center">
               글 제목
@@ -140,7 +156,6 @@ export default function MyCommentsPage() {
               등록일
             </div>
 
-            {/* Data */}
             {comments.length > 0 ? (
               comments.map((comment) => (
                 <div key={comment.id} className="contents">
@@ -153,7 +168,11 @@ export default function MyCommentsPage() {
                     />
                   </div>
                   <Link
-                    href={`/complaints/detail/${comment.article.id}`}
+                    href={
+                      comment.article.category.type === "QNA"
+                        ? `/complaints/detail/${comment.article.id}`
+                        : `/communication/details/${comment.article.id}`
+                    }
                     className="border-b py-4 pl-3 gap-[3px] flex items-center"
                   >
                     {comment.content}
@@ -188,7 +207,7 @@ export default function MyCommentsPage() {
           </div>
 
           <button
-            onClick={handleDelete}
+            onClick={() => setOpenModal(true)}
             className="flex justify-center items-center gap-[2px] right-0 bg-[#3ABEFF] rounded-[5px] text-white w-[78px] h-[36px] text-[14px]"
           >
             삭제
@@ -201,6 +220,13 @@ export default function MyCommentsPage() {
           onChange={handlePageChange}
         />
       </div>
+      {openModal && (
+        <ConfirmModal
+          text="정말 삭제하시겠습니까?"
+          onClose={() => setOpenModal(false)}
+          onConfirm={handleDelete}
+        />
+      )}
     </div>
   );
 }

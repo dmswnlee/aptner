@@ -3,6 +3,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import User from "../../../assets/images/emoji/user.png";
 
 interface Profile {
   profileImage: string;
@@ -39,15 +40,13 @@ const UserImageUploader: React.FC = () => {
   return (
     <div className="border-[1px] rounded-lg h-[118px]">
       <div className="h-[62px] mt-6 mx-6 flex">
-        {profile && (
-          <Image
-            src={profile.profileImage}
-            alt="USER"
-            width={60}
-            height={60}
-            className="rounded-full"
-          />
-        )}
+        <Image
+          src={profile?.profileImage || User.src}
+          alt="USER"
+          width={60}
+          height={60}
+          className="rounded-full"
+        />
         <div className="ml-3 text-[20px]">
           <div className="flex font-bold">
             <p className="font-bold">{profile?.nickname}</p>
