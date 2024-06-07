@@ -3,7 +3,12 @@ import { useEffect, useState } from "react";
 import ColorButton from "@/components/buttons/ColorButton";
 import SmallBorderButton from "@/components/buttons/SmallBorderButton";
 import Modal from "@/components/modal/Modal";
-import { getErrorMessage, inputStyle } from "@/app/signup/_component/IdentityVerification";
+import { inputStyle } from "@/app/signup/_component/IdentityVerification";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/stores/store";
+import { clearMessages, fetchPasswordRequest, fetchUserInfoRequest } from "@/stores/slice/passwordSlice";
+import PasswordUpdate from "./PasswordUpdate";
+import { sendVerificationRequest, setVerificationExpired, verifyCodeRequest } from "@/stores/slice/verificationSlice";
 
 const phoneNumberRegex = /^\d{1,11}$/;
 const verificationCodeRegex = /^\d{6}$/;
@@ -21,12 +26,35 @@ const PasswordForm = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [modalMessage, setModalMessage] = useState("");
 	const [isDisabled, setIsDisabled] = useState(false);
-	const [isExpired, setIsExpired] = useState(false);
+	const dispatch = useDispatch();
+	const [showUpdatePassword, setShowUpdatePassword] = useState(false);
+	const { error, successMessage } = useSelector((state: RootState) => state.findPassword);
+	const {
+		isVerified,
+		verificationCode,
+		error: verificationError,
+	} = useSelector((state: RootState) => state.verification);
 
-	const id = watch("id", "");
+	const email = watch("email", "");
 	const name = watch("name", "");
 	const phone = watch("phone", "");
-	const code = watch("code", "");
+	const code = watch("verificationCode", "");
+	const phoneNumber = watch("phone");
+
+	useEffect(() => {
+		if (isVerified) {
+			setShowVerificationInput(false);
+			setModalMessage("인증이 완료되었습니다.");
+			setIsModalOpen(true);
+		}
+	}, [isVerified]);
+
+	useEffect(() => {
+		if (verificationError) {
+			setModalMessage("인증번호가 다릅니다.");
+			setIsModalOpen(true);
+		}
+	}, [verificationError]);
 
 	useEffect(() => {
 		let timer: NodeJS.Timeout;
@@ -36,30 +64,20 @@ const PasswordForm = () => {
 					if (prevTime !== null && prevTime > 0) {
 						return prevTime - 1;
 					} else {
-						setIsExpired(true);
+						dispatch(setVerificationExpired());
 						clearInterval(timer);
+						setModalMessage("인증시간을 초과하였습니다.");
+						setIsModalOpen(true);
 						return 0;
 					}
 				});
 			}, 1000);
 		}
 		return () => clearInterval(timer);
-	}, [timeLeft]);
-
-	const handleClickRequest = () => {
-		if (!phoneNumberRegex.test(phone)) {
-			setModalMessage("핸드폰 번호 형식이 올바르지 않습니다.");
-			setIsModalOpen(true);
-			return;
-		}
-
-		setTimeLeft(179);
-		setShowVerificationInput(true);
-		setIsDisabled(true);
-	};
+	}, [timeLeft, dispatch]);
 
 	const onSubmit = () => {
-		if (!id) {
+		if (!email) {
 			setModalMessage("아이디를 입력해주세요");
 			setIsModalOpen(true);
 			return;
@@ -74,16 +92,52 @@ const PasswordForm = () => {
 			setIsModalOpen(true);
 			return;
 		}
+		if (!code && showVerificationInput) {
+			setModalMessage("인증을 완료해 주세요");
+			setIsModalOpen(true);
+			return;
+		}
+		dispatch(fetchUserInfoRequest({ email, name, phone }));
+
+		// if (successMessage) {
+		// 	setShowUpdatePassword(true);
+		// }
+	};
+
+	useEffect(() => {
+		if (successMessage === "회원정보가 확인되었습니다.") {
+			setShowUpdatePassword(true);
+		}
+	}, [successMessage]);
+
+	const handleClickRequest = () => {
 		if (!phoneNumberRegex.test(phone)) {
 			setModalMessage("핸드폰 번호 형식이 올바르지 않습니다.");
 			setIsModalOpen(true);
 			return;
 		}
+
+		if (phoneNumber) {
+			dispatch(sendVerificationRequest({ phoneNumber }));
+			setTimeLeft(179);
+			setShowVerificationInput(true);
+			setIsDisabled(true);
+		}
+	};
+
+	const handleVerifyCode = () => {
 		if (!code) {
 			setModalMessage("인증을 완료해 주세요");
 			setIsModalOpen(true);
 			return;
 		}
+
+		const verificationData = {
+			phoneNumber: phone,
+			code,
+		};
+
+		dispatch(verifyCodeRequest(verificationData));
 	};
 
 	const closeModal = () => {
@@ -91,12 +145,29 @@ const PasswordForm = () => {
 		clearErrors();
 	};
 
+	useEffect(() => {
+		if (error) {
+			setModalMessage(error);
+			setIsModalOpen(true);
+			dispatch(clearMessages());
+		}
+		if (successMessage) {
+			setModalMessage(successMessage);
+			setIsModalOpen(true);
+			dispatch(clearMessages());
+		}
+	}, [error, successMessage, dispatch]);
+
 	const formatTime = (seconds: number | null) => {
 		if (seconds === null) return "00:00";
 		const minutes = Math.floor(seconds / 60);
 		const remainingSeconds = seconds % 60;
 		return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
 	};
+
+	if (showUpdatePassword) {
+		return <PasswordUpdate email={email} name={name} phone={phone} verificationCode={code} />;
+	}
 
 	return (
 		<>
@@ -108,7 +179,7 @@ const PasswordForm = () => {
 							type="text"
 							placeholder="아이디 입력"
 							className={`${inputStyle} px-[30px] w-[430px] h-[48px]`}
-							{...register("id")}
+							{...register("email")}
 							disabled={isDisabled}
 						/>
 					</div>
@@ -151,17 +222,17 @@ const PasswordForm = () => {
 								<input
 									type="text"
 									placeholder="인증번호를 입력하세요"
-									className={`${inputStyle} w-[359px] h-[48px] px-[30px]`}
+									className={`${inputStyle} w-[358px] h-[48px] px-[30px]`}
+									{...register("verificationCode")}
 								/>
 								<span
-									className={`absolute right-4 top-1/2 transform -translate-y-1/2 ${
-										timeLeft === 0 ? "text-red" : "text-gray-500"
-									}`}>
+									className={`absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500
+									`}>
 									{formatTime(timeLeft)}
 								</span>
 							</div>
 						</div>
-						<SmallBorderButton text="확인" size="sm" />
+						<SmallBorderButton text="확인" size="sm" onClick={handleSubmit(handleVerifyCode)} />
 					</div>
 				)}
 				<div className="flex justify-center mt-[56px]">
