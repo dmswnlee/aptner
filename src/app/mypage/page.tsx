@@ -155,7 +155,7 @@ export default function MyPage() {
                 src={profile?.profileImage || User.src}
                 alt=""
                 onClick={openImgModal}
-                className="rounded-full border cursor-pointer w-[80px] h-[80px] object-cover"
+                className="rounded-full w-[80px] h-[80px] object-cover border cursor-pointer "
               />
             )}
             <Button

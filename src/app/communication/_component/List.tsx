@@ -1,12 +1,12 @@
 "use client";
 import Link from "next/link";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
 import { Pagination } from "antd";
 import { highlightText } from "@/utils/highlightText";
-
+import Block from "../../../components/board/Block";
 
 // Communication 타입 정의
 interface Writer {
@@ -45,13 +45,60 @@ interface ListProps {
   currentPage: number;
   total: number;
   onPageChange: (page: number) => void;
-  searchQuery: string; // Add searchQuery prop 
+  searchQuery: string; // Add searchQuery prop
 }
 
-const List = ({ data, loading, currentPage, total, onPageChange, searchQuery }: ListProps) => {
+interface Tooltip {
+  nickname: string;
+  userId: number;
+  postId: number;
+}
+
+const List = ({
+  data,
+  loading,
+  currentPage,
+  total,
+  onPageChange,
+  searchQuery,
+}: ListProps) => {
   if (loading) {
     return <div>Loading...</div>;
   }
+
+  const [tooltip, setTooltip] = useState<Tooltip | null>(null);
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        tooltipRef.current &&
+        !tooltipRef.current.contains(event.target as Node)
+      ) {
+        setTooltip(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleWriterClick = (
+    e: React.MouseEvent,
+    nickname: string,
+    userId: number,
+    postId: number
+  ) => {
+    e.preventDefault();
+    const rect = (e.target as HTMLElement).getBoundingClientRect();
+    setTooltip({
+      nickname,
+      userId,
+      postId,
+    });
+  };
 
   return (
     <div className="w-full flex flex-col items-center mb-[30px]">
@@ -85,15 +132,38 @@ const List = ({ data, loading, currentPage, total, onPageChange, searchQuery }: 
               >
                 {highlightText(posts.title, searchQuery)}
               </Link>
-              <div className="border-b py-4 text-center">
-                {posts.writer.nickname}
+
+              <div className="border-b py-4 flex justify-center relative">
+                <span
+                  className="cursor-pointer"
+                  onClick={(e) =>
+                    handleWriterClick(
+                      e,
+                      posts.writer.nickname,
+                      posts.writer.id,
+                      posts.id
+                    )
+                  }
+                >
+                  {posts.writer.nickname}
+                </span>
+                {tooltip && tooltip.postId === posts.id && (
+                  <div ref={tooltipRef} className="absolute top-0 z-10 w-full">
+                    <Block
+                      nickname={tooltip.nickname}
+                      userId={tooltip.userId}
+                      onClose={() => setTooltip(null)}
+                    />
+                  </div>
+                )}
               </div>
+
               <div className="border-b py-4 text-center">{posts.viewCount}</div>
               <div className="border-b py-4 text-center">
                 {new Date(posts.createdAt).toLocaleDateString("ko-KR", {
                   year: "numeric",
                   month: "2-digit",
-                  day: "2-digit"
+                  day: "2-digit",
                 })}
               </div>
             </div>
