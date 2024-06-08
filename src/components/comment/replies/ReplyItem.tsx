@@ -98,6 +98,7 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
             onFileChange={handleEditFileChange}
             onRemoveImage={() => setEditImage(null)}
             onAddComment={handleUpdateSubmit}
+            isEditing={true}
           />
         ) : (
           <div className="flex flex-col gap-2">
@@ -144,6 +145,7 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
             onRemoveImage={() => setReplyImage(null)}
             onAddComment={handleReplySubmit}
             parentId={reply.id}
+            isEditing={false}
             prefix={`@${reply.writer.nickname} `}
           />
         )}

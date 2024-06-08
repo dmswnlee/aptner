@@ -307,6 +307,7 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
         onFileChange={handleFileChange}
         onRemoveImage={handleRemoveImage}
         onAddComment={() => handleAddComment(null, newComment, image)}
+        isEditing={false}
       />
     </div>
   );

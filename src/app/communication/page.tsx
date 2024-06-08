@@ -12,50 +12,12 @@ import DropdownSearch from "@/components/DropdownSearch";
 import SearchBoard from "@/components/SearchBoard";
 import { Pagination } from "antd";
 
-interface Tab {
-  name: string;
-  label: string;
-  code: string;
-}
-interface Writer {
-  id: number;
-  name: string;
-  nickname: string;
-}
-interface Category {
-  id: number;
-  type: string;
-  code: string;
-  name: string;
-}
-interface Communication {
-  id: number;
-  category: Category;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  writer: Writer;
-  title: string;
-  viewCount: number;
-  status: string;
-  thumbnailPath: string;
-}
-interface SessionData {
-  user: {
-    name: string;
-    email: string;
-  };
-  accessToken: string;
-} 
-interface Option {
-  value: string;
-  label: string;
-}
+import { Tab, Writer, Category, Communication, SessionData, Option } from "@/interfaces/Post"; 
 
 export default function CommunicationPage() {
   const [activeTab, setActiveTab] = useState<string>("Posts");
   const [category, setCategory] = useState<string>("all");
-  const [interiorCategory, setInteriorCategory] = useState<string>("all");
+  const [interiorCategory, setInteriorCategory] = useState<number>(0);
   const [communications, setCommunications] = useState<Communication[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -90,8 +52,8 @@ export default function CommunicationPage() {
     }
   };
 
-  const handleInteriorTabChange = (tabName: string) => {
-    setInteriorCategory(tabName);
+  const handleInteriorTabChange = (tabName: string, categoryCode: number) => {
+    setInteriorCategory(categoryCode);
     setCurrentPage(1);
   };
 
@@ -138,7 +100,7 @@ export default function CommunicationPage() {
   useEffect(() => {
     if (session) {
       fetchCommunications(currentPage);
-    }
+    } 
   }, [session, currentPage, activeTab, category, searchQuery, selectedOption, interiorCategory]);
 
   return (

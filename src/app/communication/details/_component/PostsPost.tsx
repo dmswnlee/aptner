@@ -10,53 +10,25 @@ import emoji5 from "@/assets/images/emoji/emoji5.png";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import Modal from "@/components/modal/Modal";
+import { PostsPostProps } from "@/interfaces/Post";
+import SizeDetailsDisplay from "../../board/_component/SizeDetailsDisplay";
 
-// Props 타입 정의
-interface UserPostProps {
-  id: number;
-  category: string;
-  nickname: string;
-  title: string;
-  content: string;
-  createdAt: string;
-  onReaction: (reactionType: string) => void;
-  emojiCounts: {
-    likeCount: number;
-    empathyCount: number;
-    funCount: number;
-    amazingCount: number;
-    sadCount: number;
-  };
-  emojiReactions: {
-    reactedLike: boolean;
-    reactedEmpathy: boolean;
-    reactedFun: boolean;
-    reactedAmazing: boolean;
-    reactedSad: boolean;
-  };
-  handleDelete: () => void;
-  fileInfoList?: {
-    id: number;
-    name: string;
-    path: string;
-    size: number;
-  }[];
-}
+const PostsPost = (props: PostsPostProps) => {
+  const {
+    id,
+    category,
+    nickname,
+    title,
+    content,
+    createdAt,
+    onReaction,
+    emojiCounts,
+    emojiReactions,
+    handleDelete,
+    fileInfoList = [],
+    apartArea, // Destructure apartArea from props
+  } = props;
 
-// UserPost 컴포넌트에 타입 적용
-const POSTSPost: React.FC<UserPostProps> = ({
-  id,
-  category,
-  nickname,
-  title,
-  content,
-  createdAt,
-  onReaction,
-  emojiCounts,
-  emojiReactions,
-  handleDelete,
-  fileInfoList = [],
-}) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -77,7 +49,7 @@ const POSTSPost: React.FC<UserPostProps> = ({
   const confirmDelete = () => {
     handleDelete();
     closeModal();
-    handleListClick()
+    handleListClick();
   };
 
   const handleEdit = () => {
@@ -85,7 +57,7 @@ const POSTSPost: React.FC<UserPostProps> = ({
       console.error("id가 정의되지 않았습니다.");
       return;
     }
-  
+
     sessionStorage.setItem(
       "editPostData",
       JSON.stringify({
@@ -99,9 +71,8 @@ const POSTSPost: React.FC<UserPostProps> = ({
 
     router.push(`/communication/board?id=${id}`);
   };
-  
 
-  const shouldShowEditDeleteButtons = true
+  const shouldShowEditDeleteButtons = true;
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
@@ -112,8 +83,7 @@ const POSTSPost: React.FC<UserPostProps> = ({
   };
 
   const getButtonClass = (reactionType: string) => {
-    const reactionKey =
-      `reacted${reactionType.charAt(0).toUpperCase()}${reactionType.slice(1).toLowerCase()}` as keyof typeof emojiReactions;
+    const reactionKey = `reacted${reactionType.charAt(0).toUpperCase()}${reactionType.slice(1).toLowerCase()}` as keyof typeof emojiReactions;
     return emojiReactions[reactionKey] ? "text-blue-500" : "";
   };
 
@@ -123,7 +93,7 @@ const POSTSPost: React.FC<UserPostProps> = ({
         <h3 className="text-xl mb-10">
           [{category}] {title}
         </h3>
-        <div className="flex justify-between items-center pb-4">
+        <div className="flex justify-between items-center pb-4 border-b">
           <div className="flex gap-3">
             <p className="w-[56px] h-[60px] flex justify-center items-center rounded-[5px] text-2xl bg-[#D9F2FE]">
               UI
@@ -174,8 +144,17 @@ const POSTSPost: React.FC<UserPostProps> = ({
           )}
         </div>
 
- <div
-          className="py-12 min-h-[300px] border-t"
+        {apartArea && (
+          <SizeDetailsDisplay
+            selectedSize={apartArea.id.toString()}
+            sizes={[apartArea]}
+            readOnly
+            
+          />
+        )}
+
+        <div
+          className="py-12 min-h-[300px]"
           dangerouslySetInnerHTML={{ __html: content }}
         ></div>
 
@@ -201,7 +180,7 @@ const POSTSPost: React.FC<UserPostProps> = ({
           </div>
 
           <div
-            className={`w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center ${getButtonClass("FUN")}`}
+            className={`w-[52px] h/[82px] text/[14px] flex flex-col items-center justify-center ${getButtonClass("FUN")}`}
           >
             <button onClick={() => handleReaction("FUN")}>
               <Image src={emoji3} alt="emoji3" width={40} />
@@ -211,7 +190,7 @@ const POSTSPost: React.FC<UserPostProps> = ({
           </div>
 
           <div
-            className={`w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center ${getButtonClass("AMAZING")}`}
+            className={`w-[52px] h/[82px] text/[14px] flex flex-col items-center justify-center ${getButtonClass("AMAZING")}`}
           >
             <button onClick={() => handleReaction("AMAZING")}>
               <Image src={emoji4} alt="emoji4" width={40} />
@@ -221,7 +200,7 @@ const POSTSPost: React.FC<UserPostProps> = ({
           </div>
 
           <div
-            className={`w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center ${getButtonClass("SAD")}`}
+            className={`w/[52px] h/[82px] text/[14px] flex flex-col items-center justify-center ${getButtonClass("SAD")}`}
           >
             <button onClick={() => handleReaction("SAD")}>
               <Image src={emoji5} alt="emoji5" width={40} />
@@ -243,7 +222,7 @@ const POSTSPost: React.FC<UserPostProps> = ({
                 수정
               </button>
               <button
-                className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
+                className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded/[5px]"
                 onClick={openModal}
               >
                 삭제
@@ -253,7 +232,7 @@ const POSTSPost: React.FC<UserPostProps> = ({
         </div>
         <button
           onClick={handleListClick}
-          className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
+          className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded/[5px]"
         >
           목록
         </button>
@@ -269,4 +248,4 @@ const POSTSPost: React.FC<UserPostProps> = ({
   );
 };
 
-export default POSTSPost;
+export default PostsPost;

@@ -1,22 +1,22 @@
 import { useState } from "react";
 
 interface InteriorTabProps {
-  onTabChange: (tabName: string) => void;
+  onTabChange: (tabName: string, categoryCode: number) => void;
 }
 
 const InteriorTab = ({ onTabChange }: InteriorTabProps) => {
   const [activeTab, setActiveTab] = useState<string>("all");
 
-  const handleTabClick = (tabName: string) => {
+  const handleTabClick = (tabName: string, categoryCode: number) => {
     setActiveTab(tabName);
-    onTabChange(tabName);
+    onTabChange(tabName, categoryCode);
   };
 
   const tabs = [
-    { name: "all", label: "전체" },
-    { name: "34", label: "34평" },
-    { name: "35", label: "35평" },
-    { name: "47", label: "47평" },
+    { name: "all", label: "전체", categoryCode: 0 },
+    { name: "28", label: "28평", categoryCode: 1 },
+    { name: "31", label: "31평", categoryCode: 2 },
+    { name: "34", label: "34평", categoryCode: 3 },
   ];
 
   return (
@@ -29,7 +29,7 @@ const InteriorTab = ({ onTabChange }: InteriorTabProps) => {
               ? "bg-[#EBF7FF] text-[#0B8EDB]"
               : "bg-[#EEEEEE] text-[#777777]"
           }`}
-          onClick={() => handleTabClick(tab.name)}
+          onClick={() => handleTabClick(tab.name, tab.categoryCode)}
         >
           {tab.label}
         </div>

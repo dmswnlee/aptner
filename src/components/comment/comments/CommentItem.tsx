@@ -21,7 +21,7 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
   const [charCount, setCharCount] = useState<number>(replyContent.length);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editContent, setEditContent] = useState<string>(comment.content);
-  const [editImage, setEditImage] = useState<File | null>(null);
+  const [editImage, setEditImage] = useState<File | null>(comment.image ? new File([], comment.image) : null);
   const [replies, setReplies] = useState<CommentType[]>(comment.replies || []);
 
   useEffect(() => {
@@ -81,12 +81,13 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
             <CommentForm
               author={author}
               newComment={editContent}
-              charCount={charCount}
+              charCount={editContent.length}
               image={editImage}
               onTextareaChange={handleEditChange}
               onFileChange={handleEditFileChange}
               onRemoveImage={() => setEditImage(null)}
               onAddComment={handleUpdateSubmit}
+              isEditing={true}
             />
           </>
         ) : (
@@ -134,13 +135,15 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
           <CommentForm 
             author={author} 
             newComment={replyContent} 
-            charCount={charCount} 
+            charCount={charCount}  
             image={replyImage} 
             onTextareaChange={handleReplyChange} 
             onFileChange={handleReplyFileChange} 
             onRemoveImage={() => setReplyImage(null)} 
             onAddComment={handleReplySubmit} 
             parentId={comment.id}
+            isEditing={false}
+            prefix={`@${comment.writer.nickname} `}
           />
         )}
       </div> 

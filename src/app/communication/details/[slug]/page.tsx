@@ -1,5 +1,5 @@
 "use client";
-import POSTSPost from "../../board/_component/POSTSPost";
+import PostsPost from "../_component/PostsPost";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import Comment from "@/components/comment/Comment";
 import { useRouter, usePathname } from "next/navigation";
 import { Post, SessionData } from "@/interfaces/board";
+import SizeDetailsDisplay from "../../board/_component/SizeDetailsDisplay";
 
 interface PostFileInfo {
   id: number;
@@ -21,7 +22,7 @@ const DetailPage = () => {
   const [fileInfoList, setFileInfoList] = useState<PostFileInfo[]>([]);
   const { data: session } = useSession();
   const router = useRouter();
-  const pathname = usePathname(); 
+  const pathname = usePathname();
   const basePath = pathname.split("/")[1]; // 첫 번째 경로를 추출
 
   useEffect(() => {
@@ -57,31 +58,27 @@ const DetailPage = () => {
     console.log(post.id);
     console.log("Reaction type:", reactionType);
 
-        // reactionType을 기반으로 매핑
-        const reactedKey =
-        `reacted${reactionType.charAt(0).toUpperCase()}${reactionType.slice(1).toLowerCase()}` as keyof typeof post.emoji.emojiReaction;
-      const countKey =
-        `${reactionType.toLowerCase()}Count` as keyof typeof post.emoji.emojiCount;
-  
-      const reacted = post.emoji.emojiReaction[reactedKey];
-      const method = reacted ? "delete" : "post";
+    const reactedKey =
+      `reacted${reactionType.charAt(0).toUpperCase()}${reactionType.slice(1).toLowerCase()}` as keyof typeof post.emoji.emojiReaction;
+    const countKey =
+      `${reactionType.toLowerCase()}Count` as keyof typeof post.emoji.emojiCount;
+
+    const reacted = post.emoji.emojiReaction[reactedKey];
+    const method = reacted ? "delete" : "post";
 
     try {
-      const response = await axios.post(
-        `https://aptner.site/v1/api/posts/RO000/${post.id}/emoji`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${(session as SessionData).accessToken}`,
-          },
-          params: {
-            type: reactionType,
-          },
-        }
-      );
+      const response = await axios({
+        method,
+        url: `https://aptner.site/v1/api/posts/RO000/${post.id}/emoji`,
+        headers: {
+          Authorization: `Bearer ${(session as SessionData).accessToken}`,
+        },
+        params: {
+          type: reactionType,
+        },
+      });
       console.log(response.data);
 
-      // Update emoji counts and reaction status based on the reaction
       const newPost = { ...post };
       newPost.emoji.emojiCount[countKey] += reacted ? -1 : 1;
       newPost.emoji.emojiReaction[reactedKey] = !reacted;
@@ -111,7 +108,7 @@ const DetailPage = () => {
   };
 
   const category = post?.category?.name || "";
-  const categoryCode = post?.category?.code || ""; // Extract the category code
+  const categoryCode = post?.category?.code || ""; 
   const title = post?.title || "";
   const nickname = post?.writer?.nickname || "";
   const content = post?.content || "";
@@ -127,9 +124,11 @@ const DetailPage = () => {
     reactedAmazing: false,
     reactedEmpathy: false,
     reactedFun: false,
-    reactedLike: false,
+    reactedLike: false, 
     reactedSad: false,
   };
+
+  const apartArea = post?.apartArea;
 
   return (
     <div className="mt-[70px] w-[1080px] mx-auto">
@@ -138,7 +137,7 @@ const DetailPage = () => {
           <p className="text-[24px] font-semibold leading-[27px] mb-[40px]">
             소통공간
           </p>
-          <POSTSPost
+          <PostsPost
             id={post.id}
             category={category}
             nickname={nickname}
@@ -150,13 +149,14 @@ const DetailPage = () => {
             emojiReactions={emojiReactions}
             handleDelete={handleDelete} 
             fileInfoList={fileInfoList}
+            apartArea={apartArea} 
           />
           <Comment
             initialComments={[]} 
             author={nickname} 
             postId={post.id} 
             pageType={'posts'} 
-            categoryCode={categoryCode} // Pass the category code to the Comment component
+            categoryCode={categoryCode}
           />
         </>
       )}

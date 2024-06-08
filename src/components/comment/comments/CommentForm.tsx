@@ -10,6 +10,7 @@ interface CommentFormProps {
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRemoveImage: () => void;
   onAddComment: (parentId?: number | null, content?: string, image?: File | null) => void;
+  isEditing: boolean;
   parentId?: number;
   prefix?: string;
 }
@@ -24,6 +25,7 @@ const CommentForm = (props: CommentFormProps) => {
     onFileChange,
     onRemoveImage,
     onAddComment,
+    isEditing,
     parentId,
     prefix
   } = props;
@@ -47,6 +49,7 @@ const CommentForm = (props: CommentFormProps) => {
         onRemoveImage={onRemoveImage}
         onSave={() => onAddComment(parentId, newComment, image)}
         prefix={prefix}
+        isEditing={isEditing}
       />
     </div>
   );

@@ -1,8 +1,8 @@
 "use client";
-import POSTSPost from "@/app/communication/board/_component/POSTSPost";
+import PostsPost from "@/app/communication/details/_component/PostsPost";
 import Comment from "@/components/comment/Comment";
 import { Post, SessionData, PostFileInfo } from "@/interfaces/board";
-import axios from "axios";
+import axios from "axios"; 
 import { useSession } from "next-auth/react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -125,7 +125,7 @@ const NoticeDetailPage = () => {
 			{post && (
 				<>
 					<p className="text-[24px] font-semibold leading-[27px] mb-[40px]">소통공간</p>
-					<POSTSPost
+					<PostsPost
 						id={post.id}
 						category={category}
 						nickname={nickname}

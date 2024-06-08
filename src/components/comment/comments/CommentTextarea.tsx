@@ -12,9 +12,10 @@ interface CommentTextareaProps {
   onRemoveImage: () => void;
   onSave: () => void;
   prefix?: string;
+  isEditing: boolean;
 }
 
-const CommentTextarea = ({ value, charCount, image, onTextareaChange, onFileChange, onRemoveImage, onSave, prefix }: CommentTextareaProps) => {
+const CommentTextarea = ({ value, charCount, image, onTextareaChange, onFileChange, onRemoveImage, onSave, prefix, isEditing }: CommentTextareaProps) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleImageClick = (event: React.MouseEvent<HTMLSpanElement>) => {
@@ -66,7 +67,7 @@ const CommentTextarea = ({ value, charCount, image, onTextareaChange, onFileChan
         </div>
         <div className="flex items-center gap-[6px]">
           <p className="text-gray_06">{charCount}/300자</p>
-          <GrayButton text="저장" size="mini" onClick={onSave} />
+          <GrayButton text={isEditing ? "수정" : "저장"} size="mini" onClick={onSave} />
         </div>
       </div>
       {isModalOpen && <ImagePreviewModal image={image} onClose={handleCloseModal} />}
