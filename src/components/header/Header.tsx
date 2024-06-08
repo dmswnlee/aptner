@@ -14,8 +14,6 @@ const Header = () => {
 
   useEffect(() => {
     setIsLoggedIn(status === "authenticated");
-    console.log("Session status:", status);
-    console.log("Session data:", session);
   }, [status, session]);
 
   const handleLogout = async () => {
