@@ -8,7 +8,7 @@ import Modal from "../modal/Modal";
 
 const flexStyle = "flex flex-col items-center gap-6";
 const titleStyle = "text-md font-semibold text-[#05A8FF]";
-const menuStyle = "space-y-4 text-[14px] text-[#777777] font-inter font-normal leading-[16.94px] text-center";
+const menuStyle = "space-y-4 text-[14px] text-[#777777] font-inter font-normal leading-[16.94px] text-center cursor-pointer";
 
 const Navbar = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,6 +30,11 @@ const Navbar = () => {
 
 	const toggleModal = () => {
 		setIsModalOpen(!isModalOpen);
+	};
+
+	const handleLinkClick = (href: string) => {
+		toggleModal();
+		router.push(href);
 	};
 
 	return (
@@ -96,13 +101,35 @@ const Navbar = () => {
 											공지사항
 										</Link>
 										<ul className={`${menuStyle}`}>
-											<li>전체보기</li>
-											<li>공동 생활</li>
-											<li>공사 안내</li>
-											<li>관리사무소</li>
-											<li>입대위</li>
-											<li>선관위</li>
-											<li>회의결과</li>
+											<li>
+												<span onClick={() => handleLinkClick("/notice?category=all")}>전체보기</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/notice?category=sharing")}>공동 생활</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/notice?category=construction")}>
+													공사 안내
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/notice?category=management")}>
+													관리사무소
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/notice?category=representative")}>
+													입대위
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/notice?category=election-commission")}>
+													선관위
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/notice?category=result")}>회의결과</span>
+											</li>
 										</ul>
 									</div>
 									<div className={`${flexStyle}`}>
