@@ -1,12 +1,18 @@
-import { Suspense } from 'react'
-import FindIdPassword from './_component/FindIdPassword'
+import { Suspense } from "react";
+import FindIdPassword from "./_component/FindIdPassword";
+import { MoonLoader } from "react-spinners";
 
 const page = () => {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense
+			fallback={
+				<div>
+					<MoonLoader color="#05A8FF" />
+				</div>
+			}>
 			<FindIdPassword />
 		</Suspense>
-	)
-}
+	);
+};
 
-export default page
+export default page;
