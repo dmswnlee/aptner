@@ -8,8 +8,7 @@ import axios from 'axios';
 import { CommentType, CommentProps, SessionData } from '@/interfaces/Comment';
 import { Pagination } from 'antd';
 
-// Comment 컴포넌트
-const Comment = ({ initialComments, author, postId, page, categoryCode }: CommentProps) => {
+const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentProps) => {
   const [comments, setComments] = useState<CommentType[]>(initialComments || []); // 댓글 목록 상태
   const [newComment, setNewComment] = useState<string>(''); // 새로운 댓글 내용 상태
   const [charCount, setCharCount] = useState<number>(0); // 댓글 글자 수 상태
@@ -23,6 +22,7 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
   const [commentToDelete, setCommentToDelete] = useState<number | null>(null); // 삭제할 댓글 ID 상태
   const { data: session } = useSession(); // 세션 데이터
   const apartCode = "RO000";
+  const author = session?.user.nickname || 'Anonymous'; // Use the nickname from the session
 
   // 세션이나 현재 페이지가 변경될 때마다 댓글을 가져옴
   useEffect(() => {
@@ -55,9 +55,10 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
   // 댓글을 가져오는 함수
   const fetchComments = async (page: number) => {
     if (!session) return;
+    
     try {
       const response = await axios.get(
-        `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments`, {
+        `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments`, {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
           },
@@ -85,78 +86,78 @@ const Comment = ({ initialComments, author, postId, page, categoryCode }: Commen
     setCurrentPage(page);
   };
 
-const handleAddComment = async (parentId: number | null = null, content: string = newComment, image: File | null = null): Promise<void> => {
-  if (!session || !session.accessToken || content.trim() === '') return;
+  const handleAddComment = async (parentId: number | null = null, content: string = newComment, image: File | null = null): Promise<void> => {
+    if (!session || !session.accessToken || content.trim() === '') return;
 
-  const requestPayload = {
-    parentId: parentId,
-    content: content,
-  };
+    const requestPayload = {
+      parentId: parentId,
+      content: content,
+    };
 
-  const formData = new FormData();
-  formData.append('request', new Blob([JSON.stringify(requestPayload)], { type: 'application/json' }));
-  if (image) {
-    formData.append('image', image);
-    console.log('Image file to be uploaded:', image);
-  } else {
-    console.log('No image file selected');
-  }
+    const formData = new FormData();
+    formData.append('request', new Blob([JSON.stringify(requestPayload)], { type: 'application/json' }));
+    if (image) {
+      formData.append('image', image);
+      console.log('Image file to be uploaded:', image);
+    } else {
+      console.log('No image file selected');
+    }
 
-  try {
-    const response = await axios.post(
-      `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${(session as SessionData).accessToken}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    );
-
-    if (response.data.success) {
-      const newCommentObj: CommentType = {
-        id: response.data.result.postCommentId,
-        writer: { nickname: author },
-        createdAt: getCurrentDateTime(),
-        content: content,
-        image: image ? URL.createObjectURL(image) : undefined,
-        replies: [],
-        parentId: parentId,
-        postId: postId,
-        updatedAt: ''
-      };
-
-      // If an image was uploaded, set the imageUrl field of the newCommentObj
-      if (image) {
-        newCommentObj.imageUrl = response.data.result.imageUrl; // Assuming the imageUrl is returned in the response
-      }
-
-      setComments(prevComments => {
-        const parentComment = prevComments.find(comment => comment.id === parentId);
-        if (parentComment) {
-          parentComment.replies = [...parentComment.replies, newCommentObj];
-          return [...prevComments, newCommentObj];
-        } else {
-          return [...prevComments, newCommentObj];
+    try {
+      const response = await axios.post(
+        `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${(session as SessionData).accessToken}`,
+            'Content-Type': 'multipart/form-data',
+          }, 
         }
-      });
+      );
 
-      setNewComment('');
-      setCharCount(0);
-      setImage(null);
-    } else {
-      console.error('Failed to add comment:', response.data.message);
-    }
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      console.error('Error adding comment:', error.response?.data);
-    } else {
-      console.error('Error adding comment:', error);
-    }
-  }
-};
+      if (response.data.success) {
+        const newCommentObj: CommentType = {
+          id: response.data.result.postCommentId,
+          writer: { nickname: author },
+          createdAt: getCurrentDateTime(),
+          content: content,
+          image: image ? URL.createObjectURL(image) : undefined,
+          replies: [],
+          parentId: parentId,
+          postId: postId,
+          updatedAt: ''
+        };
 
+        // Set imageUrl if an image was uploaded and the response contains imageUrl
+        if (image && response.data.result.imageUrl) {
+          newCommentObj.imageUrl = response.data.result.imageUrl;
+        }
+
+        // Use a temporary comments state to update the UI
+        setComments(prevComments => {
+          const parentComment = prevComments.find(comment => comment.id === parentId);
+          if (parentComment) {
+            parentComment.replies = [...parentComment.replies, newCommentObj];
+            return [...prevComments, newCommentObj];
+          } else {
+            return [...prevComments, newCommentObj];
+          }
+        });
+
+        setNewComment('');
+        setCharCount(0);
+        setImage(null);
+      } else {
+        console.error('Failed to add comment:', response.data.message);
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error adding comment:', error.response?.data);
+      } else {
+        console.error('Error adding comment:', error);
+      }
+    }
+  };
 
   // 댓글 편집 핸들러
   const handleEditComment = (id: number, parentId: number | null) => {
@@ -165,6 +166,7 @@ const handleAddComment = async (parentId: number | null = null, content: string 
       setEditingCommentId(id);
       setEditingContent(comment.content);
       setEditingParentId(parentId);
+      setImage(null); // Reset image state
     }
   };
 
@@ -175,11 +177,16 @@ const handleAddComment = async (parentId: number | null = null, content: string 
     const requestPayload = { parentId: parentId, content: content };
     const formData = new FormData();
     formData.append('request', new Blob([JSON.stringify(requestPayload)], { type: 'application/json' }));
-    if (image) formData.append('image', image);
+    if (image) {
+      formData.append('image', image);
+    } else {
+      // This ensures that we send the same structure as the POST request
+      formData.append('image', new Blob());
+    }
 
     try {
       const response = await axios.patch(
-        `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments/${id}`,
+        `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments/${id}`,
         formData,
         {
           headers: {
@@ -190,17 +197,21 @@ const handleAddComment = async (parentId: number | null = null, content: string 
       );
 
       if (response.data.success) {
-        setComments(comments.map(comment => {
-          if (comment.id === id) {
-            return { 
-              ...comment, 
-              content: content, 
-              image: image ? URL.createObjectURL(image) : comment.image,
-              updatedAt: new Date().toISOString() // updatedAt 즉시 업데이트
-            };
-          }
-          return comment;
-        }));
+        const updatedCommentObj: CommentType = {
+          ...comments.find(comment => comment.id === id)!,
+          content: content,
+          image: image ? URL.createObjectURL(image) : undefined,
+          updatedAt: new Date().toISOString()
+        };
+
+        // Set imageUrl if an image was uploaded and the response contains imageUrl
+        if (image && response.data.result.imageUrl) {
+          updatedCommentObj.imageUrl = response.data.result.imageUrl;
+        }
+
+        setComments(comments.map(comment => 
+          comment.id === id ? updatedCommentObj : comment
+        ));
         setEditingCommentId(null);
         setEditingContent('');
         setEditingParentId(null);
@@ -221,7 +232,7 @@ const handleAddComment = async (parentId: number | null = null, content: string 
     if (!session || !session.accessToken) return;
     try {
       const response = await axios.delete(
-        `https://aptner.site/v1/api/${page}/${apartCode}/${postId}/comments/${id}`,
+        `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments/${id}`,
         {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
@@ -253,7 +264,7 @@ const handleAddComment = async (parentId: number | null = null, content: string 
   };
 
   return (
-    <div className='my-5'>
+    <div className='my-5 mb-10'>
       {showModal && (
         <Modal
           text="정말로 삭제하시겠습니까?"
@@ -276,12 +287,16 @@ const handleAddComment = async (parentId: number | null = null, content: string 
           onReply={handleAddComment}
           onUpdate={handleUpdateComment}
         />
-        {/* <Pagination
-          current={currentPage}
-          total={totalCount} // 총 항목 수 전달
-          pageSize={10} // 페이지당 항목 수 설정
-          onChange={handlePageChange}
-        /> */}
+        
+          <div className="flex justify-center mt-4">
+            <Pagination
+              current={currentPage}
+              total={totalCount} // 총 항목 수 전달
+              pageSize={10} // 페이지당 항목 수 설정
+              onChange={handlePageChange}
+            />
+          </div>
+        
       </div>
       <CommentForm
         author={author}
@@ -292,6 +307,7 @@ const handleAddComment = async (parentId: number | null = null, content: string 
         onFileChange={handleFileChange}
         onRemoveImage={handleRemoveImage}
         onAddComment={() => handleAddComment(null, newComment, image)}
+        isEditing={false}
       />
     </div>
   );

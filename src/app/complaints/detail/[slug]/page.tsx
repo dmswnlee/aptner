@@ -99,7 +99,7 @@ export default function DailPage() {
     console.log(qna.id);
     console.log("Reaction type:", reactionType);
 
-    // reactionType을 기반으로 매핑
+    // reactionType을 기반으로 매핑 
     const reactedKey =
       `reacted${reactionType.charAt(0).toUpperCase()}${reactionType.slice(1).toLowerCase()}` as keyof typeof qna.emoji.emojiReaction;
     const countKey =
@@ -122,7 +122,7 @@ export default function DailPage() {
       console.log(response.data);
 
       // Update emoji counts and reaction status based on the reaction
-      const newQna = { ...qna };
+      const newQna = { ...qna }; 
       newQna.emoji.emojiCount[countKey] += reacted ? -1 : 1;
       newQna.emoji.emojiReaction[reactedKey] = !reacted;
       setQna(newQna);
@@ -186,7 +186,7 @@ export default function DailPage() {
             onReaction={handleReaction}
             emojiCounts={emojiCounts}
             emojiReactions={emojiReactions}
-            handleDelete={handleDelete}
+            handleDelete={handleDelete} 
             fileInfoList={fileInfoList}
             isPrivate={false} // 비밀글 여부
           />
@@ -194,7 +194,7 @@ export default function DailPage() {
             initialComments={[]}
             author={nickname}
             postId={qna.id}
-            page={"qna"}
+            pageType={"qna"}
             categoryCode={qna.category.code}
           />
         </>

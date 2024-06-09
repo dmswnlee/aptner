@@ -21,7 +21,7 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
   const [charCount, setCharCount] = useState<number>(replyContent.length);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editContent, setEditContent] = useState<string>(comment.content);
-  const [editImage, setEditImage] = useState<File | null>(null);
+  const [editImage, setEditImage] = useState<File | null>(comment.image ? new File([], comment.image) : null);
   const [replies, setReplies] = useState<CommentType[]>(comment.replies || []);
 
   useEffect(() => {
@@ -81,23 +81,24 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
             <CommentForm
               author={author}
               newComment={editContent}
-              charCount={charCount}
+              charCount={editContent.length}
               image={editImage}
               onTextareaChange={handleEditChange}
               onFileChange={handleEditFileChange}
               onRemoveImage={() => setEditImage(null)}
               onAddComment={handleUpdateSubmit}
+              isEditing={true}
             />
           </>
         ) : (
           <>
             <div className="flex items-center gap-3">
               <p className="w-10 h-10 flex justify-center items-center rounded-[5px] bg-[#D9F2FE]">UI</p>
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-1">
-                  <p>{comment.writer.nickname}</p>
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-2">
+                  <p className='font-semibold'>{comment.writer.nickname}</p>
                   <div className="w-[1px] bg-[#A3A3A3]"></div>
-                  <p>{formatDate(comment.updatedAt || comment.createdAt)}</p>
+                  <p className=''>{formatDate(comment.updatedAt || comment.createdAt)}</p>
                 </div>
               </div>
             </div>
@@ -110,13 +111,22 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
                 </a>
               </div>
             )}
+            {comment.imageUrl && (
+              <div className="ml-[50px] mt-2 max-w-xs flex items-center">
+                <img src={comment.imageUrl} alt="Attached" className="max-w-xs" />
+                <a href={comment.imageUrl} download>
+                  <AiOutlineDownload className="ml-2 text-xl" />
+                </a>
+              </div>
+              
+            )}
             <div className="mt-5 ml-[45px]">
               <ButtonGroup 
                 onEdit={() => setIsEditing(true)} 
                 onDelete={() => onDelete(comment.id)} 
                 onReply={() => setIsReplying(!isReplying)} 
               />
-            </div>
+            </div> 
           </>
         )}
       </div>
@@ -125,18 +135,20 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
           <CommentForm 
             author={author} 
             newComment={replyContent} 
-            charCount={charCount} 
+            charCount={charCount}  
             image={replyImage} 
             onTextareaChange={handleReplyChange} 
             onFileChange={handleReplyFileChange} 
             onRemoveImage={() => setReplyImage(null)} 
             onAddComment={handleReplySubmit} 
             parentId={comment.id}
+            isEditing={false}
+            prefix={`@${comment.writer.nickname} `}
           />
         )}
-      </div>
+      </div> 
       {(comment.replies && comment.replies.length > 0) && (
-        <div className='ml-[50px] mt-6 px-4 py-1 rounded-xl bg-gray-50 '>
+        <div className='ml-[50px] mt-6 px-4 py-1 rounded-2xl bg-gray-50 '>
           <ReplyList
             replies={comment.replies}
             author={author}

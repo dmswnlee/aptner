@@ -10,54 +10,32 @@ import emoji5 from "@/assets/images/emoji/emoji5.png";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import Modal from "@/components/modal/Modal";
-import User from "@/assets/images/emoji/user.png";
+import { PostsPostProps } from "@/interfaces/Post";
+import SizeDetailsDisplay from "../../board/_component/SizeDetailsDisplay";
 
-// Props 타입 정의
-interface UserPostProps {
-  id: number; // 추가된 속성
-  category: string;
-  nickname: string;
-  title: string;
-  content: string;
-  createdAt: string;
-  onReaction: (reactionType: string) => void;
-  emojiCounts: {
-    likeCount: number;
-    empathyCount: number;
-    funCount: number;
-    amazingCount: number;
-    sadCount: number;
-  };
-  handleDelete: () => void;
-  fileInfoList?: {
-    id: number;
-    name: string;
-    path: string;
-    size: number;
-  }[];
-}
+const PostsPost = (props: PostsPostProps) => {
+  const {
+    id,
+    category,
+    nickname,
+    title,
+    content,
+    createdAt,
+    onReaction,
+    emojiCounts,
+    emojiReactions,
+    handleDelete,
+    fileInfoList = [],
+    apartArea, // Destructure apartArea from props
+  } = props;
 
-// UserPost 컴포넌트에 타입 적용
-const ComUserPost: React.FC<UserPostProps> = ({
-  id,
-  category,
-  nickname,
-  title,
-  content,
-  createdAt,
-  onReaction,
-  emojiCounts,
-  handleDelete,
-  fileInfoList = [],
-}) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
 
   const handleListClick = () => {
-    const basePath = pathname.split("/")[1]; // 첫 번째 경로를 추출
-    router.push(`/${basePath}`); // 첫 번째 경로로 이동
+    router.push(`/communication`);
   };
 
   const openModal = () => {
@@ -80,23 +58,34 @@ const ComUserPost: React.FC<UserPostProps> = ({
       return;
     }
 
-    const postData = {
-      id,
-      category,
-      title,
-      content,
-      fileInfoList,
-    };
+    sessionStorage.setItem(
+      "editPostData",
+      JSON.stringify({
+        id,
+        category,
+        title,
+        content,
+        fileInfoList,
+      })
+    );
 
-    localStorage.setItem("editPostData", JSON.stringify(postData));
-    router.push(`/communication/board`);
+    router.push(`/communication/board?id=${id}`);
   };
 
-  const shouldShowEditDeleteButtons =
-    pathname.includes("complaints") || pathname.includes("communication");
+  const shouldShowEditDeleteButtons = true;
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleReaction = (reactionType: string) => {
+    onReaction(reactionType);
+  };
+
+  const getButtonClass = (reactionType: string) => {
+    const reactionKey =
+      `reacted${reactionType.charAt(0).toUpperCase()}${reactionType.slice(1).toLowerCase()}` as keyof typeof emojiReactions;
+    return emojiReactions[reactionKey] ? "text-blue-500" : "";
   };
 
   return (
@@ -105,13 +94,11 @@ const ComUserPost: React.FC<UserPostProps> = ({
         <h3 className="text-xl mb-10">
           [{category}] {title}
         </h3>
-        <div className="flex justify-between items-center pb-4">
+        <div className="flex justify-between items-center pb-4 border-b">
           <div className="flex gap-3">
-            <img
-              src={User.src}
-              alt="user"
-              className="rounded-full w-[60px] h-[60px] object-cover border cursor-pointer "
-            />
+            <p className="w-[56px] h-[60px] flex justify-center items-center rounded-[5px] text-2xl bg-[#D9F2FE]">
+              UI
+            </p>
             <div className="flex flex-col gap-2">
               <p>{nickname}</p>
               <div className="flex gap-2">
@@ -158,68 +145,68 @@ const ComUserPost: React.FC<UserPostProps> = ({
           )}
         </div>
 
+        {apartArea && (
+          <SizeDetailsDisplay
+            selectedSize={apartArea.id.toString()}
+            sizes={[apartArea]}
+            readOnly
+          />
+        )}
+
         <div
-          className="py-12 min-h-[300px] border-t"
+          className="py-12 min-h-[300px]"
           dangerouslySetInnerHTML={{ __html: content }}
         ></div>
 
         <div className="flex mb-10 gap-16 justify-center">
-          <div className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
-            <button onClick={() => onReaction("LIKE")}>
+          <div
+            className={`w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center ${getButtonClass("LIKE")}`}
+          >
+            <button onClick={() => handleReaction("LIKE")}>
               <Image src={emoji1} alt="emoji1" width={40} />
               좋아요
             </button>
-            <div>
-              {emojiCounts.likeCount > 0 ? emojiCounts.likeCount : <>&nbsp;</>}
-            </div>
+            <div>{emojiCounts.likeCount}</div>
           </div>
 
-          <div className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
-            <button onClick={() => onReaction("EMPATHY")}>
+          <div
+            className={`w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center ${getButtonClass("EMPATHY")}`}
+          >
+            <button onClick={() => handleReaction("EMPATHY")}>
               <Image src={emoji2} alt="emoji2" width={40} />
               공감돼요
             </button>
-            <div>
-              {emojiCounts.empathyCount > 0 ? (
-                emojiCounts.empathyCount
-              ) : (
-                <>&nbsp;</>
-              )}
-            </div>
+            <div>{emojiCounts.empathyCount}</div>
           </div>
 
-          <div className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
-            <button onClick={() => onReaction("FUN")}>
+          <div
+            className={`w-[52px] h/[82px] text/[14px] flex flex-col items-center justify-center ${getButtonClass("FUN")}`}
+          >
+            <button onClick={() => handleReaction("FUN")}>
               <Image src={emoji3} alt="emoji3" width={40} />
               재밌어요
             </button>
-            <div>
-              {emojiCounts.funCount > 0 ? emojiCounts.funCount : <>&nbsp;</>}
-            </div>
+            <div>{emojiCounts.funCount}</div>
           </div>
 
-          <div className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
-            <button onClick={() => onReaction("AMAZING")}>
+          <div
+            className={`w-[52px] h/[82px] text/[14px] flex flex-col items-center justify-center ${getButtonClass("AMAZING")}`}
+          >
+            <button onClick={() => handleReaction("AMAZING")}>
               <Image src={emoji4} alt="emoji4" width={40} />
               놀라워요
             </button>
-            <div>
-              {emojiCounts.amazingCount > 0 ? (
-                emojiCounts.amazingCount
-              ) : (
-                <>&nbsp;</>
-              )}
-            </div>
+            <div>{emojiCounts.amazingCount}</div>
           </div>
 
-          <div className="w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center">
-            <button onClick={() => onReaction("SAD")}>
+          <div
+            className={`w/[52px] h/[82px] text/[14px] flex flex-col items-center justify-center ${getButtonClass("SAD")}`}
+          >
+            <button onClick={() => handleReaction("SAD")}>
               <Image src={emoji5} alt="emoji5" width={40} />
               슬퍼요
             </button>
-            <div>
-              {emojiCounts.sadCount > 0 ? emojiCounts.sadCount : <>&nbsp;</>}
-            </div>
+            <div>{emojiCounts.sadCount}</div>
           </div>
         </div>
       </div>
@@ -235,7 +222,7 @@ const ComUserPost: React.FC<UserPostProps> = ({
                 수정
               </button>
               <button
-                className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
+                className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded/[5px]"
                 onClick={openModal}
               >
                 삭제
@@ -245,7 +232,7 @@ const ComUserPost: React.FC<UserPostProps> = ({
         </div>
         <button
           onClick={handleListClick}
-          className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
+          className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded/[5px]"
         >
           목록
         </button>
@@ -261,4 +248,4 @@ const ComUserPost: React.FC<UserPostProps> = ({
   );
 };
 
-export default ComUserPost;
+export default PostsPost;

@@ -54,7 +54,7 @@ interface Tooltip {
   postId: number;
 }
 
-const List = ({
+const PostList = ({
   data,
   loading,
   currentPage,
@@ -177,14 +177,14 @@ const List = ({
           <p>글작성</p>
         </Link>
       </div>
-      <Pagination
+      {/* <Pagination
         current={currentPage}
         total={total} // 총 항목 수 전달
         pageSize={15} // 페이지당 항목 수 설정
         onChange={onPageChange}
-      />
+      /> */}
     </div>
   );
 };
 
-export default List;
+export default PostList;

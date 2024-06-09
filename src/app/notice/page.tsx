@@ -7,6 +7,7 @@ import SearchBoard from "@/components/SearchBoard";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import List from "./_component/List";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const Notice = () => {
 	const [category, setCategory] = useState<string>("all");
@@ -17,11 +18,13 @@ const Notice = () => {
 	const { data: session } = useSession();
 	const [notices, setNotices] = useState<Notices[]>([]);
 	const [totalCount, setTotalCount] = useState(0);
+	const router = useRouter();
+	const searchParams = useSearchParams();
 
 	const tabs: Tab[] = [
 		{ name: "all", label: "전체", code: "" },
 		{ name: "sharing", label: "공동생활", code: "NT001" },
-		{ name: "construction", label: "공사안내", code: "NT002" },
+		{ name: "construction", label: "공사안내", code: "NT002" }, 
 		{ name: "management", label: "관리사무소", code: "NT003" },
 		{ name: "representative", label: "입대위", code: "NT004" },
 		{ name: "election-commission", label: "선관위", code: "NT005" },
@@ -33,6 +36,7 @@ const Notice = () => {
 		if (selectedCategory) {
 			setCategory(selectedCategory.code);
 			setCurrentPage(1);
+			router.push(`/notice?category=${tabName}`);
 		}
 	};
 
@@ -73,6 +77,16 @@ const Notice = () => {
 			console.log("err", err);
 		}
 	};
+
+	useEffect(() => {
+		const categoryParam = searchParams.get("category");
+		if (categoryParam) {
+			const selectedCategory = tabs.find(tab => tab.name === categoryParam);
+			if (selectedCategory) {
+				setCategory(selectedCategory.code);
+			}
+		}
+	}, [searchParams]);
 
 	useEffect(() => {
 		if (session) {
