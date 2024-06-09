@@ -62,10 +62,6 @@ const PostList = ({
   onPageChange,
   searchQuery,
 }: ListProps) => {
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
 
@@ -99,6 +95,10 @@ const PostList = ({
       postId,
     });
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="w-full flex flex-col items-center mb-[30px]">
