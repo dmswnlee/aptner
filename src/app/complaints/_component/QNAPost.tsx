@@ -10,6 +10,7 @@ import emoji5 from "../../../assets/images/emoji/emoji5.png";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Modal from "../../../components/modal/Modal";
+import User from "../../../assets/images/emoji/user.png";
 
 interface QNAPostProps {
   id: number;
@@ -123,9 +124,11 @@ const QNAPost: React.FC<QNAPostProps> = ({
         </h3>
         <div className="flex justify-between items-center pb-4">
           <div className="flex gap-3">
-            <p className="w-[56px] h-[60px] flex justify-center items-center rounded-[5px] text-2xl bg-[#D9F2FE]">
-              UI
-            </p>
+            <img
+              src={User.src}
+              alt="user"
+              className="rounded-full w-[60px] h-[60px] object-cover border cursor-pointer "
+            />
             <div className="flex flex-col gap-2">
               <p>{nickname}</p>
               <div className="flex gap-2">

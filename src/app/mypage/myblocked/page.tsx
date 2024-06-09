@@ -1,34 +1,102 @@
+"use client";
+
 import Button from "@/components/buttons/Button";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import { Pagination } from "antd";
+import React, { useState, useEffect } from "react";
+import User from "../../../assets/images/emoji/user.png";
 
 export default function MyBlockedPage() {
+  const { data: session } = useSession();
+  const [blocked, setBlocked] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
+  const fetchBlockedMembers = async (page: number) => {
+    try {
+      const response = await axios.get(
+        "https://aptner.site/v1/api/members/RO000/block",
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+          params: {
+            page: page,
+            size: 10,
+            sort: "LATEST",
+          },
+        }
+      );
+      console.log(response.data);
+      setBlocked(response.data.result.result.blockedMemberList);
+      setTotalCount(response.data.result.totalCount);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    if (session) {
+      fetchBlockedMembers(currentPage);
+    }
+  }, [session, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleUnblock = async (id: number) => {
+    try {
+      const response = await axios.post(
+        "https://aptner.site/v1/api/members/RO000/unblock",
+        { unBlockedMemberId: id },
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        }
+      );
+      console.log(response.data);
+      fetchBlockedMembers(currentPage);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <>
-      <div className="w-[613px] pl-4 gap-3 h-12 pt-5 mx-auto bg-[#FBFBFB] border-b-2 flex items-center">
-        <p className="w-[244px]">차단일시</p>
-        <p className="w-[337px]">닉네임</p>
+      <div className="w-[648px] pl-4 gap-3 h-9 mx-auto bg-[#FBFBFB] flex items-center font-semibold">
+        닉네임
       </div>
 
-      <div className="w-[613px] pl-4 h-9 gap-3 mx-auto flex items-center">
-        <p className="w-[244px]">24.3.2</p>
-        <div className="w-[337px] flex justify-between pr-4">
-          <p>패캠v1</p>
+      {blocked.map((member: any) => (
+        <div
+          key={member.id}
+          className="w-[648px] font-semibold px-4 h-14 gap-3 mx-auto border-b flex justify-between items-center"
+        >
+          <div className="flex items-center gap-2">
+            <img
+              src={member.profileImage || User.src}
+              className="rounded-full w-[40px] h-[40px] object-cover"
+            />
+            {member.nickname}
+          </div>
           <Button
             text="차단해제"
-            className="underline font-normal underline-offset-2 border-none text-gray_07"
+            className="border p-[5px] bg-[#eaeaea] text-black_100 text-[14px] font-semibold"
+            onClick={() => handleUnblock(member.id)}
           />
         </div>
-      </div>
+      ))}
 
-      <div className="w-[613px] pl-4 h-9 gap-3 mx-auto flex items-center">
-        <p className="w-[244px]">24.3.2</p>
-        <div className="w-[337px] flex justify-between pr-4">
-          <p>패캠v1</p>
-          <Button
-            text="차단해제"
-            className="underline font-normal underline-offset-2 border-none text-gray_07"
-          />
-        </div>
-      </div>
+      <Pagination
+        current={currentPage}
+        total={totalCount}
+        pageSize={10}
+        onChange={handlePageChange}
+        className="flex justify-center mt-10"
+      />
     </>
   );
 }
