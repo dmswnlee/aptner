@@ -46,6 +46,8 @@ export default function MyAuth() {
     }
   };
 
+  const phone = profile?.phone;
+
   return (
     <>
       <div className="flex flex-col items-center relative">
@@ -87,7 +89,9 @@ export default function MyAuth() {
           </button>
         </div>
       </div>
-      {isAuthModalOpen && <VerificationModal onClose={closeAuthModal} />}
+      {isAuthModalOpen && phone && (
+        <VerificationModal onClose={closeAuthModal} phone={phone} />
+      )}
     </>
   );
 }

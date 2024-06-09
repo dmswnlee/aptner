@@ -10,6 +10,7 @@ import emoji5 from "@/assets/images/emoji/emoji5.png";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import Modal from "@/components/modal/Modal";
+import User from "@/assets/images/emoji/user.png";
 
 // Props 타입 정의
 interface UserPostProps {
@@ -70,7 +71,7 @@ const ComUserPost: React.FC<UserPostProps> = ({
   const confirmDelete = () => {
     handleDelete();
     closeModal();
-    handleListClick()
+    handleListClick();
   };
 
   const handleEdit = () => {
@@ -78,19 +79,18 @@ const ComUserPost: React.FC<UserPostProps> = ({
       console.error("id가 정의되지 않았습니다.");
       return;
     }
-  
+
     const postData = {
       id,
       category,
       title,
-      content, 
+      content,
       fileInfoList,
     };
-  
-    localStorage.setItem('editPostData', JSON.stringify(postData));
+
+    localStorage.setItem("editPostData", JSON.stringify(postData));
     router.push(`/communication/board`);
   };
-  
 
   const shouldShowEditDeleteButtons =
     pathname.includes("complaints") || pathname.includes("communication");
@@ -107,9 +107,11 @@ const ComUserPost: React.FC<UserPostProps> = ({
         </h3>
         <div className="flex justify-between items-center pb-4">
           <div className="flex gap-3">
-            <p className="w-[56px] h-[60px] flex justify-center items-center rounded-[5px] text-2xl bg-[#D9F2FE]">
-              UI
-            </p>
+            <img
+              src={User.src}
+              alt="user"
+              className="rounded-full w-[60px] h-[60px] object-cover border cursor-pointer "
+            />
             <div className="flex flex-col gap-2">
               <p>{nickname}</p>
               <div className="flex gap-2">
@@ -206,7 +208,7 @@ const ComUserPost: React.FC<UserPostProps> = ({
                 emojiCounts.amazingCount
               ) : (
                 <>&nbsp;</>
-              )} 
+              )}
             </div>
           </div>
 
