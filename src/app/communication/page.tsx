@@ -5,7 +5,7 @@ import axios from "axios";
 import PostList from "./_component/PostList";
 import Gallery from "./_component/Gallery";
 import GalleryTab from "./_component/GalleryTab";
-import InteriorTab from "./_component/InteriorTab"; // Import the new component
+import InteriorTab from "./_component/InteriorTab";
 import { RiListUnordered, RiGalleryView2 } from "react-icons/ri";
 import Tabs from "@/components/noticeboard/Tabs";
 import DropdownSearch from "@/components/DropdownSearch";
@@ -17,7 +17,7 @@ import { Tab, Writer, Category, Communication, SessionData, Option } from "@/int
 export default function CommunicationPage() {
   const [activeTab, setActiveTab] = useState<string>("Posts");
   const [category, setCategory] = useState<string>("all");
-  const [interiorCategory, setInteriorCategory] = useState<number>(0);
+  const [interiorCategory, setInteriorCategory] = useState<number | null>(null);
   const [communications, setCommunications] = useState<Communication[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,10 +49,11 @@ export default function CommunicationPage() {
     const selectedCategory = categoryTabs.find(tab => tab.name === tabName);
     if (selectedCategory) {
       setCategory(selectedCategory.code);
+      setInteriorCategory(null); // Reset interior category if changing main category
     }
   };
 
-  const handleInteriorTabChange = (tabName: string, categoryCode: number) => {
+  const handleInteriorTabChange = (tabName: string, categoryCode: number | null) => {
     setInteriorCategory(categoryCode);
     setCurrentPage(1);
   };
@@ -85,7 +86,7 @@ export default function CommunicationPage() {
           search: searchQuery || null,
           type: selectedOption.value || null,
           categoryCode: category === "all" ? null : category,
-          interiorCategory: category === "PT006" ? interiorCategory : null
+          apartAreaId: category === "PT006" ? interiorCategory : null
         }, 
       });
       console.log(response.data.result)
