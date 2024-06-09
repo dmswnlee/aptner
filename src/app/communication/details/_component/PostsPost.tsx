@@ -83,7 +83,8 @@ const PostsPost = (props: PostsPostProps) => {
   };
 
   const getButtonClass = (reactionType: string) => {
-    const reactionKey = `reacted${reactionType.charAt(0).toUpperCase()}${reactionType.slice(1).toLowerCase()}` as keyof typeof emojiReactions;
+    const reactionKey =
+      `reacted${reactionType.charAt(0).toUpperCase()}${reactionType.slice(1).toLowerCase()}` as keyof typeof emojiReactions;
     return emojiReactions[reactionKey] ? "text-blue-500" : "";
   };
 
@@ -149,7 +150,6 @@ const PostsPost = (props: PostsPostProps) => {
             selectedSize={apartArea.id.toString()}
             sizes={[apartArea]}
             readOnly
-            
           />
         )}
 

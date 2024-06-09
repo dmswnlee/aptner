@@ -1,43 +1,55 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import axios from "axios";
+
+interface Notification {
+  id: number;
+  title: string;
+  createdAt: string;
+}
 
 export default function MyMessagePage() {
+  const { data: session } = useSession();
+  const [messages, setMessages] = useState<Notification[]>([]);
+
+  const fetchMessage = async () => {
+    try {
+      const response = await axios.get(
+        "https://aptner.site/v1/api/members/notification",
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        }
+      );
+      setMessages(response.data.result.result.notificationList);
+      console.log(response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    if (session) {
+      fetchMessage();
+    }
+  }, [session]);
+
   return (
     <div className="w-[680px] mx-auto">
-      <div className="border-b-2 pt-2 h-12 bg-[#FBFBFB] flex items-center pl-4">
-        24.4.30 (화)
-      </div>
-      <div className="h-10 flex items-center pl-4 gap-4">
-        12시 45분
-        <span>민원 처리가 완료되었습니다.</span>
-      </div>
-      <div className="h-10 flex items-center pl-4 gap-4 mb-5">
-        12시 45분
-        <span>민원 접수가 완료되었습니다.</span>
-      </div>
-
-      <div className="border-b-2 pt-2 h-12 bg-[#FBFBFB] flex items-center pl-4">
-        24.4.30 (화)
-      </div>
-      <div className="h-10 flex items-center pl-4 gap-4">
-        12시 45분
-        <span>민원 처리가 완료되었습니다.</span>
-      </div>
-      <div className="h-10 flex items-center pl-4 gap-4 mb-5">
-        12시 45분
-        <span>민원 접수가 완료되었습니다.</span>
-      </div>
-
-      <div className="border-b-2 pt-2 h-12 bg-[#FBFBFB] flex items-center pl-4">
-        24.4.30 (화)
-      </div>
-      <div className="h-10 flex items-center pl-4 gap-4">
-        12시 45분
-        <span>민원 처리가 완료되었습니다.</span>
-      </div>
-      <div className="h-10 flex items-center pl-4 gap-4 mb-5">
-        12시 45분
-        <span>민원 접수가 완료되었습니다.</span>
-      </div>
+      {messages.map((message) => (
+        <div key={message.id}>
+          <div className="h-12 bg-[#FBFBFB] flex items-center pl-4">
+            {message.createdAt}
+          </div>
+          <div className="h-10 flex items-center pl-4 gap-4 border-b-2">
+            {message.createdAt}
+            <span>{message.title}</span>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

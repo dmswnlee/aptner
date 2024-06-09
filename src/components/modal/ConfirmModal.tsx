@@ -1,20 +1,16 @@
 import { IoClose } from "react-icons/io5";
-import ColorButton from "../buttons/ColorButton";
+import Button from "@/components/buttons/Button";
 
 interface ModalProps {
   text: string;
   onClose: () => void;
-  onConfirm?: () => void;
+  onConfirm: () => void;
 }
 
 const ConfirmModal: React.FC<ModalProps> = ({ text, onClose, onConfirm }) => {
   // 'Confirm' 버튼 클릭 핸들러
   const handleConfirm = () => {
-    if (onConfirm) {
-      onConfirm(); // 전달된 함수 실행
-    } else {
-      onClose(); // 전달된 함수가 없으면 모달 닫기
-    }
+    onConfirm(); // 전달된 함수 실행
   };
 
   // 모달 내부 클릭 시 이벤트 전파 방지
@@ -38,18 +34,16 @@ const ConfirmModal: React.FC<ModalProps> = ({ text, onClose, onConfirm }) => {
       >
         <div className="mt-[75px] mb-[48px] font-semibold">{text}</div>
         <div className="flex gap-4">
-          <button
-            onClick={onClose}
+          <Button
+            text="취소"
             className="w-[214px] h-[56px] bg-[#EEE] text-black_100 rounded-[5px]"
-          >
-            취소
-          </button>
-          <button
-            onClick={handleConfirm}
+            onClick={onClose}
+          />
+          <Button
+            text="확인"
             className="w-[214px] h-[56px] bg-blue_05 text-white rounded-[5px]"
-          >
-            확인
-          </button>
+            onClick={handleConfirm}
+          />
         </div>
         <div className="absolute top-5 right-5" onClick={onClose}>
           <IoClose className="text-2xl" />

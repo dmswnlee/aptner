@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
 import { RiImageFill } from "react-icons/ri";
@@ -10,8 +10,8 @@ import New from "../../../assets/images/emoji/new.png";
 import Image from "next/image";
 import { Pagination } from "antd";
 import TabBar from "./TabBar";
+import Block from "../../../components/board/Block";
 
-// Qna 타입 정의
 interface Writer {
   id: number;
   name: string;
@@ -46,6 +46,12 @@ interface SessionData {
   accessToken: string;
 }
 
+interface Tooltip {
+  nickname: string;
+  userId: number;
+  postId: number;
+}
+
 const Posts = () => {
   const [qnas, setQnas] = useState<Qna[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +59,24 @@ const Posts = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const { data: session } = useSession();
+  const [tooltip, setTooltip] = useState<Tooltip | null>(null);
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        tooltipRef.current &&
+        !tooltipRef.current.contains(event.target as Node)
+      ) {
+        setTooltip(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
@@ -121,6 +145,21 @@ const Posts = () => {
     setCurrentPage(1); // 카테고리가 변경되면 페이지를 1로 리셋
   };
 
+  const handleWriterClick = (
+    e: React.MouseEvent,
+    nickname: string,
+    userId: number,
+    postId: number
+  ) => {
+    e.preventDefault();
+    const rect = (e.target as HTMLElement).getBoundingClientRect();
+    setTooltip({
+      nickname,
+      userId,
+      postId,
+    });
+  };
+
   if (loading) {
     return null;
   }
@@ -180,17 +219,42 @@ const Posts = () => {
                   )}
                 </Link>
 
-                <div className="border-b py-4 flex justify-center">
-                  {qna.writer.nickname}
+                <div className="border-b py-4 flex justify-center relative">
+                  <span
+                    className="cursor-pointer"
+                    onClick={(e) =>
+                      handleWriterClick(
+                        e,
+                        qna.writer.nickname,
+                        qna.writer.id,
+                        qna.id
+                      )
+                    }
+                  >
+                    {qna.writer.nickname}
+                  </span>
+                  {tooltip && tooltip.postId === qna.id && (
+                    <div
+                      ref={tooltipRef}
+                      className="absolute top-0 z-10 w-full"
+                    >
+                      <Block
+                        nickname={tooltip.nickname}
+                        userId={tooltip.userId}
+                        onClose={() => setTooltip(null)}
+                      />
+                    </div>
+                  )}
                 </div>
+
                 <div className="border-b py-4 flex justify-center">
-                  {qna.viewCount}-
+                  {qna.viewCount}
                 </div>
                 <div className="border-b py-4 flex justify-center">
                   {formatDate(qna.createdAt)}
                 </div>
                 <div className="border-b py-4 flex justify-center">
-                  {qna.status}-
+                  {qna.status}
                 </div>
               </div>
             ))}
