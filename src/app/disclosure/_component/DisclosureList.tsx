@@ -21,16 +21,16 @@ const DisclosureList = ({ data, loading, currentPage, total, onPageChange, searc
 					<div className={`${headerStyle}`}>조회수</div>
 					<div className={`${headerStyle}`}>등록일</div>
 					{data &&
-						data.map(notices => (
-							<div key={notices.id} className="contents">
-								<div className="border-b py-4 text-center">{notices.category.name}</div>
-								<Link href={`/notice/details/${notices.id}`} className="border-b py-4 ml-[3px] flex px-[5px]">
-									{highlightText(notices.title, searchQuery)}
+						data.map(disclosures => (
+							<div key={disclosures.id} className="contents">
+								<div className="border-b py-4 text-center">{disclosures.category.name}</div>
+								<Link href={`/disclosure/details/${disclosures.id}`} className="border-b py-4 ml-[3px] flex px-[5px]">
+									{highlightText(disclosures.title, searchQuery)}
 								</Link>
-								<div className="border-b py-4 text-center">{notices.writer.nickname}</div>
-								<div className="border-b py-4 text-center">{notices.viewCount}</div>
+								<div className="border-b py-4 text-center">{disclosures.writer.nickname}</div>
+								<div className="border-b py-4 text-center">{disclosures.viewCount}</div>
 								<div className="border-b py-4 text-center">
-									{new Date(notices.createdAt).toLocaleDateString("ko-KR", {
+									{new Date(disclosures.createdAt).toLocaleDateString("ko-KR", {
 										year: "numeric",
 										month: "2-digit",
 										day: "2-digit",

@@ -11,6 +11,9 @@ import Image from "next/image";
 import { Pagination } from "antd";
 import TabBar from "./TabBar";
 import Block from "../../../components/board/Block";
+import DropdownSearch from "@/components/DropdownSearch";
+import SearchBoard from "@/components/SearchBoard";
+import { Tab, Communication, Option } from "@/interfaces/Post"; 
 
 interface Writer {
   id: number;
@@ -57,7 +60,9 @@ const Posts = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [category, setCategory] = useState<string>("all");
+  const [selectedOption, setSelectedOption] = useState<Option>({ value: "TITLE_AND_CONTENT", label: "제목 + 내용" });
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const { data: session } = useSession();
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
@@ -77,6 +82,12 @@ const Posts = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (session) {
+      fetchComplaint(currentPage);
+    } 
+  }, [session, currentPage, category, searchQuery, selectedOption])
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
@@ -100,7 +111,7 @@ const Posts = () => {
     );
   };
 
-  const fetchComplaint = async (page: number, categoryCode: string) => {
+  const fetchComplaint = async (page: number) => {
     if (!session) return;
 
     try {
@@ -112,7 +123,9 @@ const Posts = () => {
           page: page,
           size: 15,
           sort: "LATEST",
-          categoryCode: categoryCode,
+          search: searchQuery || null,
+          type: selectedOption.value || null,
+          categoryCode: category === "all" ? null : category,
         },
       });
       setQnas(response.data.result.result.qnas);
@@ -126,9 +139,9 @@ const Posts = () => {
 
   useEffect(() => {
     if (session) {
-      fetchComplaint(currentPage, selectedCategory);
+      fetchComplaint(currentPage);
     }
-  }, [session, currentPage, selectedCategory]);
+  }, [session, currentPage, category]);
 
   const hasImageOrIframe = (content: string): boolean => {
     const parser = new DOMParser();
@@ -141,7 +154,7 @@ const Posts = () => {
   };
 
   const handleCategorySelect = (categoryCode: string) => {
-    setSelectedCategory(categoryCode);
+    setCategory(categoryCode);
     setCurrentPage(1); // 카테고리가 변경되면 페이지를 1로 리셋
   };
 
@@ -160,6 +173,17 @@ const Posts = () => {
     });
   };
 
+    // 검색 옵션 선택 핸들러
+    const handleSearchOptionSelect = (option: Option) => {
+      setSelectedOption(option);
+    };
+  
+    // 검색 핸들러
+    const handleSearch = (query: string) => {
+      setSearchQuery(query);
+      setCurrentPage(1);
+    };
+
   if (loading) {
     return null;
   }
@@ -168,7 +192,7 @@ const Posts = () => {
     <>
       <TabBar
         onSelectCategory={handleCategorySelect}
-        selectedCategory={selectedCategory}
+        selectedCategory={category}
       />
       <div className="w-full flex flex-col items-center mb-[100px]">
         <div className="max-h-[1021px] mb-[100px] border-t border-b border-t-[#2a3f6d] relative">
@@ -274,6 +298,10 @@ const Posts = () => {
           pageSize={15} // 페이지당 항목 수 설정
           onChange={handlePageChange}
         />
+      </div>
+      <div className="flex justify-center p-5 mb-[100px] gap-3">
+        <DropdownSearch onSelect={handleSearchOptionSelect} selectedOption={selectedOption} />
+        <SearchBoard selectedOption={selectedOption} onSearch={handleSearch} />
       </div>
     </>
   );

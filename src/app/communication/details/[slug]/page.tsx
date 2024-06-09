@@ -49,7 +49,7 @@ const DetailPage = () => {
       setFileInfoList(response.data.result.postFileInfoList || []);
     } catch (err) {
       console.log("err", err);
-    }
+    } 
   };
 
   const handleReaction = async (reactionType: string) => {
@@ -137,7 +137,7 @@ const DetailPage = () => {
           <p className="text-[24px] font-semibold leading-[27px] mb-[40px]">
             소통공간
           </p>
-          <PostsPost
+          <PostsPost 
             id={post.id}
             category={category}
             nickname={nickname}

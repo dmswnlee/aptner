@@ -42,45 +42,38 @@ const NoticeDetailPage = () => {
 	const handleReaction = async (reactionType: string) => {
 		if (!post || !session || !session.accessToken) return;
 
-		try {
-			const response = await axios.post(
-				`${process.env.NEXT_PUBLIC_API_URL}/notices/RO000/${post.id}/emoji`,
-				{},
-				{
-					headers: {
-						Authorization: `Bearer ${(session as SessionData).accessToken}`,
-					},
-					params: {
-						type: reactionType,
-					},
-				},
-			);
+		console.log(post.id);
+    console.log("Reaction type:", reactionType);
 
-			const newPost = { ...post };
-			switch (reactionType) {
-				case "LIKE":
-					newPost.emoji.emojiCount.likeCount++;
-					break;
-				case "EMPATHY":
-					newPost.emoji.emojiCount.empathyCount++;
-					break;
-				case "FUN":
-					newPost.emoji.emojiCount.funCount++;
-					break;
-				case "AMAZING":
-					newPost.emoji.emojiCount.amazingCount++;
-					break;
-				case "SAD":
-					newPost.emoji.emojiCount.sadCount++;
-					break;
-				default:
-					break;
-			}
-			setPost(newPost);
-		} catch (error) {
-			console.error("Error sending reaction:", error);
-		}
-	};
+		const reactedKey =
+      `reacted${reactionType.charAt(0).toUpperCase()}${reactionType.slice(1).toLowerCase()}` as keyof typeof post.emoji.emojiReaction;
+    const countKey =
+      `${reactionType.toLowerCase()}Count` as keyof typeof post.emoji.emojiCount;
+
+    const reacted = post.emoji.emojiReaction[reactedKey];
+    const method = reacted ? "delete" : "post";
+
+		try {
+      const response = await axios({
+        method,
+        url: `https://aptner.site/v1/api/notices/RO000/${post.id}/emoji`,
+        headers: {
+          Authorization: `Bearer ${(session as SessionData).accessToken}`,
+        },
+        params: {
+          type: reactionType,
+        },
+      });
+      console.log(response.data);
+
+      const newPost = { ...post };
+      newPost.emoji.emojiCount[countKey] += reacted ? -1 : 1;
+      newPost.emoji.emojiReaction[reactedKey] = !reacted;
+      setPost(newPost);
+    } catch (error) {
+      console.error("Error sending reaction:", error);
+    }
+  };
 
 	const handleDelete = async () => {
 		if (!post || !session || !session.accessToken) return;
@@ -116,7 +109,7 @@ const NoticeDetailPage = () => {
     reactedAmazing: false,
     reactedEmpathy: false,
     reactedFun: false,
-    reactedLike: false,
+    reactedLike: false, 
     reactedSad: false,
   };
 
@@ -142,7 +135,7 @@ const NoticeDetailPage = () => {
 						initialComments={[]}
 						author={nickname}
 						postId={post.id}
-						pageType={"posts"}
+						pageType={"notices"}
 						categoryCode={categoryCode}
 					/>
 				</>

@@ -190,7 +190,7 @@ export default function DailPage() {
             fileInfoList={fileInfoList}
             isPrivate={false} // 비밀글 여부
           />
-          <Comment
+          <Comment 
             initialComments={[]}
             author={nickname}
             postId={qna.id}

@@ -142,7 +142,7 @@ const PostsPost = (props: PostsPostProps) => {
                 </ul>
               )}
             </div>
-          )}
+          )} 
         </div>
 
         {apartArea && (
@@ -180,17 +180,17 @@ const PostsPost = (props: PostsPostProps) => {
           </div>
 
           <div
-            className={`w-[52px] h/[82px] text/[14px] flex flex-col items-center justify-center ${getButtonClass("FUN")}`}
+            className={`w-[52px] h/[82px] text-[14px] flex flex-col items-center justify-center ${getButtonClass("FUN")}`}
           >
             <button onClick={() => handleReaction("FUN")}>
               <Image src={emoji3} alt="emoji3" width={40} />
               재밌어요
-            </button>
+            </button> 
             <div>{emojiCounts.funCount}</div>
           </div>
 
           <div
-            className={`w-[52px] h/[82px] text/[14px] flex flex-col items-center justify-center ${getButtonClass("AMAZING")}`}
+            className={`w-[52px] h/[82px] text-[14px] flex flex-col items-center justify-center ${getButtonClass("AMAZING")}`}
           >
             <button onClick={() => handleReaction("AMAZING")}>
               <Image src={emoji4} alt="emoji4" width={40} />
@@ -200,7 +200,7 @@ const PostsPost = (props: PostsPostProps) => {
           </div>
 
           <div
-            className={`w/[52px] h/[82px] text/[14px] flex flex-col items-center justify-center ${getButtonClass("SAD")}`}
+            className={`w/[52px] h/[82px] text-[14px] flex flex-col items-center justify-center ${getButtonClass("SAD")}`}
           >
             <button onClick={() => handleReaction("SAD")}>
               <Image src={emoji5} alt="emoji5" width={40} />
