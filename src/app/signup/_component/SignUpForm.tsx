@@ -6,8 +6,7 @@ import ColorButton from "@/components/buttons/ColorButton";
 import SmallBorderButton from "@/components/buttons/SmallBorderButton";
 import { inputErrorStyle, inputStyle } from "./IdentityVerification";
 
-// TODO: 서버 수정 후 다시 활성화
-//const idRegex = /^[a-zA-Z0-9_]+$/;
+const idRegex = /^[a-zA-Z0-9_]+$/;
 
 const inputDefault = "w-[518px] border border-solid border-gray_06 px-[30px] py-[15px] rounded-[5px] bg-[#F7F7F7]";
 
@@ -74,18 +73,17 @@ const SignUpForm = () => {
 									placeholder="아이디를 입력하세요"
 									{...register("email", {
 										required: "아이디는 필수 입력 항목입니다.",
-										// pattern: {
-										// 	value: idRegex,
-										// 	message: "아이디는 영어, 숫자, _만 사용하여 4~20자리여야 합니다.",
-										// },
+										pattern: {
+											value: idRegex,
+											message: "아이디는 영어, 숫자, _만 사용하여 4~20자리여야 합니다.",
+										},
 									})}
 									className={`${inputStyle} ${
 										errors.email ? inputErrorStyle : ""
-									} w-[386px] h-[48px] px-[30px]`}
+									} w-[518px] h-[48px] px-[30px]`}
 								/>
 								{errors.email && <p className="text-red">{getErrorMerge(errors.email)}</p>}
 							</div>
-							<SmallBorderButton text="중복확인" size="sm" />
 						</div>
 						<div className="flex gap-[10px]">
 							<label htmlFor="password" className="w-[120px] p-[10px]">

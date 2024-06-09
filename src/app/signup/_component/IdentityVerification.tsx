@@ -10,15 +10,15 @@ import { RootState } from "@/stores/store";
 import { sendVerificationRequest, setVerificationExpired, verifyCodeRequest } from "@/stores/slice/verificationSlice";
 import Modal from "@/components/modal/Modal";
 
-const buttonStyle = "w-[82px] h-[48px] border border-solid border-gray_06 bg-gray_00 text-gray_06";
-const buttonClickedStyle = "w-[82px] h-[48px] text-gray_06 border border-solid border-gray_06 bg-blue_05 text-white";
+export const buttonStyle = "w-[82px] h-[48px] border border-solid border-gray_06 bg-gray_00 text-gray_06";
+export const buttonClickedStyle = "w-[82px] h-[48px] text-gray_06 border border-solid border-gray_06 bg-blue_05 text-white";
 export const inputStyle =
 	"outline-none border border-solid border-gray_06 py-[15px] rounded-[5px] focus:border-blue_05 focus:text-blue_05 bg-gray_00";
 export const inputErrorStyle = "border-red error";
 
 export const nameRegex = /^[가-힣]{2,6}$/;
-const idNumberRegex = /^\d{1,6}$/;
-const idNumberSuffixRegex = /^\d{1}$/;
+export const idNumberRegex = /^\d{1,6}$/;
+export const idNumberSuffixRegex = /^\d{1}$/;
 export const phoneNumberRegex = /^\d{1,11}$/;
 export const verificationCodeRegex = /^\d{6}$/;
 
