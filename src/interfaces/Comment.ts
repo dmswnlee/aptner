@@ -5,6 +5,7 @@ export interface CommentType {
   id: number;
   writer: {
     nickname: string;
+    id?: string
   };
   createdAt: string;
   updatedAt: string;

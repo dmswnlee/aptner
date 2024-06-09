@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import defaultThumbnail from '@/assets/images/defaultThumbnail.png';
 import { PiPencilSimpleLineLight } from 'react-icons/pi';
+import { highlightText } from '@/utils/highlightText';
 
 interface Post {
   id: number;
@@ -17,16 +18,23 @@ interface Post {
 
 interface GalleryProps {
   data: Post[];
-  pinnedData: Post[]; // Add pinnedData prop
+  pinnedData: Post[];
   detailPath: string;
   loading: boolean;
   currentPage: number;
   total: number;
   pageSize: number;
   onPageChange: (page: number) => void;
+  searchQuery: string; 
+  selectedOption: Option;
 }
 
-const Gallery = ({ data, pinnedData, detailPath, loading, currentPage, total, pageSize, onPageChange }: GalleryProps) => {
+interface Option {
+  value: string;
+  label: string;
+}
+
+const Gallery = ({ data, pinnedData, detailPath, loading, currentPage, total, pageSize, onPageChange, searchQuery, selectedOption }: GalleryProps) => {
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -37,7 +45,7 @@ const Gallery = ({ data, pinnedData, detailPath, loading, currentPage, total, pa
         {/* Pinned Posts */}
         {currentPage === 1 && pinnedData.map(item => (
           <Link href={`${detailPath}/${item.id}`} key={item.id}>
-            <div className="p-2 cursor-pointer overflow-hidden border-2 border-yellow-400">
+            <div className="p-2 cursor-pointer overflow-hidden">
               <div className="relative group w-[248px] h-[180px] overflow-hidden">
                 <img
                   src={item.thumbnailPath || defaultThumbnail.src}
@@ -52,9 +60,15 @@ const Gallery = ({ data, pinnedData, detailPath, loading, currentPage, total, pa
               </div>
               <div className='mt-2'>
                 <h3 className="text-lg font-semibold overflow-hidden whitespace-nowrap overflow-ellipsis">
-                  {item.title}
+                  {selectedOption.value === "TITLE_AND_CONTENT" || selectedOption.value === "TITLE"
+                    ? highlightText(item.title, searchQuery)
+                    : item.title}
                 </h3>
-                <p className="text-gray-500 my-1 text-sm">{item.writer.nickname}</p>
+                <p className="text-gray-500 my-1 text-sm">
+                  {selectedOption.value === "WRITER"
+                    ? highlightText(item.writer.nickname, searchQuery)
+                    : item.writer.nickname}
+                </p>
                 <div className='flex text-xs'>
                   <p className="text-gray-400">{new Date(item.createdAt).toLocaleDateString()}</p>
                   <p className='text-gray-400 mx-[5px]'>|</p>
@@ -82,9 +96,15 @@ const Gallery = ({ data, pinnedData, detailPath, loading, currentPage, total, pa
               </div>
               <div className='mt-2'>
                 <h3 className="text-lg font-semibold overflow-hidden whitespace-nowrap overflow-ellipsis">
-                  {item.title}
+                  {selectedOption.value === "TITLE_AND_CONTENT" || selectedOption.value === "TITLE"
+                    ? highlightText(item.title, searchQuery)
+                    : item.title}
                 </h3>
-                <p className="text-gray-500 my-1 text-sm">{item.writer.nickname}</p>
+                <p className="text-gray-500 my-1 text-sm">
+                  {selectedOption.value === "WRITER"
+                    ? highlightText(item.writer.nickname, searchQuery)
+                    : item.writer.nickname}
+                </p>
                 <div className='flex text-xs'>
                   <p className="text-gray-400">{new Date(item.createdAt).toLocaleDateString()}</p>
                   <p className='text-gray-400 mx-[5px]'>|</p>

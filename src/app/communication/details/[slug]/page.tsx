@@ -150,6 +150,8 @@ const DetailPage = () => {
             handleDelete={handleDelete} 
             fileInfoList={fileInfoList}
             apartArea={apartArea} 
+            userId={session?.user.id.toString()} // Convert user ID to string
+            writerId={post.writer.id.toString()} // Convert writer ID to string
           />
           <Comment
             initialComments={[]} 

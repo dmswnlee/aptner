@@ -40,7 +40,7 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
     setCharCount(e.target.value.length);
   };
 
-  // 파일 변경 핸들러
+  // 파일 변경 핸들러 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImage(e.target.files[0]);
@@ -118,7 +118,7 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
       if (response.data.success) {
         const newCommentObj: CommentType = {
           id: response.data.result.postCommentId,
-          writer: { nickname: author },
+          writer: { nickname: author, id: session.user.id }, // Include the id property here
           createdAt: getCurrentDateTime(),
           content: content,
           image: image ? URL.createObjectURL(image) : undefined,
@@ -282,20 +282,21 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
         <CommentList
           comments={comments}
           author={author}
+          userId={session?.user.id} // Pass the user ID
           onEdit={handleEditComment}
           onDelete={handleDeleteComment}
           onReply={handleAddComment}
           onUpdate={handleUpdateComment}
         />
         
-          <div className="flex justify-center mt-4">
-            <Pagination
-              current={currentPage}
-              total={totalCount} // 총 항목 수 전달
-              pageSize={10} // 페이지당 항목 수 설정
-              onChange={handlePageChange}
-            />
-          </div>
+        <div className="flex justify-center mt-4">
+          <Pagination
+            current={currentPage}
+            total={totalCount} // 총 항목 수 전달
+            pageSize={10} // 페이지당 항목 수 설정
+            onChange={handlePageChange}
+          />
+        </div>
         
       </div>
       <CommentForm

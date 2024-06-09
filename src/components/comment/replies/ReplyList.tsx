@@ -2,17 +2,17 @@ import React from 'react';
 import ReplyItem from './ReplyItem';
 import { CommentType } from '@/interfaces/Comment';
 
-// ReplyList 컴포넌트
 interface ReplyListProps {
   replies: CommentType[];
   author: string;
+  userId: string | undefined; // Add userId prop
   onEdit: (id: number, parentId: number | null) => void;
-  onDelete: (id: number) => void; 
+  onDelete: (id: number) => void;
   onReply: (parentId: number | null, content: string, image: File | null) => Promise<void>;
   onUpdate: (id: number, content: string, parentId: number | null, image?: File | null) => Promise<void>;
 }
 
-const ReplyList = ({ replies, author, onEdit, onDelete, onReply, onUpdate }: ReplyListProps) => {
+const ReplyList = ({ replies, author, userId, onEdit, onDelete, onReply, onUpdate }: ReplyListProps) => {
   return (
     <div>
       {replies.map(reply => (
@@ -20,6 +20,7 @@ const ReplyList = ({ replies, author, onEdit, onDelete, onReply, onUpdate }: Rep
           key={reply.id}
           reply={reply} 
           author={author}
+          userId={userId} // Pass the user ID
           onEdit={onEdit}
           onDelete={onDelete}
           onReply={onReply}

@@ -130,6 +130,8 @@ const DisclosuresDetailPage = () => {
 						emojiReactions={emojiReactions}
             handleDelete={handleDelete} 
             fileInfoList={fileInfoList}
+						userId={session?.user.id.toString()} // Convert user ID to string
+            writerId={post.writer.id.toString()} // Convert writer ID to string
 					/>
 					<Comment
 						initialComments={[]}

@@ -146,6 +146,7 @@ export default function CommunicationPage() {
             total={totalCount}
             onPageChange={handlePageChange}
             searchQuery={searchQuery}
+            selectedOption={selectedOption}
           />
         ) : (
           <Gallery
@@ -157,6 +158,8 @@ export default function CommunicationPage() {
             total={totalCount}
             pageSize={16}
             onPageChange={handlePageChange} 
+            searchQuery={searchQuery} // Pass searchQuery to Gallery
+            selectedOption={selectedOption} // Pass selectedOption to Gallery
           />
         )}
         <div className="flex justify-center my-10">

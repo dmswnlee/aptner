@@ -26,7 +26,9 @@ const PostsPost = (props: PostsPostProps) => {
     emojiReactions,
     handleDelete,
     fileInfoList = [],
-    apartArea, // Destructure apartArea from props
+    apartArea,
+    userId, // Destructure userId from props
+    writerId, // Destructure writerId from props
   } = props;
 
   const router = useRouter();
@@ -72,8 +74,6 @@ const PostsPost = (props: PostsPostProps) => {
     router.push(`/communication/board?id=${id}`);
   };
 
-  const shouldShowEditDeleteButtons = true;
-
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
   };
@@ -105,7 +105,7 @@ const PostsPost = (props: PostsPostProps) => {
                 <p>{createdAt}</p>
                 <div className="w-[1px] bg-[#A3A3A3]"></div>
                 <p>조회 48</p>
-                <div className="w/[1px] bg-[#A3A3A3]"></div>
+                <div className="w-[1px] bg-[#A3A3A3]"></div>
                 <div className="flex items-center gap-1">
                   <FaRegCommentDots />
                   <p>댓글 3</p>
@@ -142,7 +142,7 @@ const PostsPost = (props: PostsPostProps) => {
                 </ul>
               )}
             </div>
-          )} 
+          )}
         </div>
 
         {apartArea && (
@@ -180,17 +180,17 @@ const PostsPost = (props: PostsPostProps) => {
           </div>
 
           <div
-            className={`w-[52px] h/[82px] text-[14px] flex flex-col items-center justify-center ${getButtonClass("FUN")}`}
+            className={`w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center ${getButtonClass("FUN")}`}
           >
             <button onClick={() => handleReaction("FUN")}>
               <Image src={emoji3} alt="emoji3" width={40} />
               재밌어요
-            </button> 
+            </button>
             <div>{emojiCounts.funCount}</div>
           </div>
 
           <div
-            className={`w-[52px] h/[82px] text-[14px] flex flex-col items-center justify-center ${getButtonClass("AMAZING")}`}
+            className={`w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center ${getButtonClass("AMAZING")}`}
           >
             <button onClick={() => handleReaction("AMAZING")}>
               <Image src={emoji4} alt="emoji4" width={40} />
@@ -200,7 +200,7 @@ const PostsPost = (props: PostsPostProps) => {
           </div>
 
           <div
-            className={`w/[52px] h/[82px] text-[14px] flex flex-col items-center justify-center ${getButtonClass("SAD")}`}
+            className={`w-[52px] h-[82px] text-[14px] flex flex-col items-center justify-center ${getButtonClass("SAD")}`}
           >
             <button onClick={() => handleReaction("SAD")}>
               <Image src={emoji5} alt="emoji5" width={40} />
@@ -213,7 +213,7 @@ const PostsPost = (props: PostsPostProps) => {
 
       <div className="flex justify-between border-b pb-14">
         <div className="flex gap-3 text-[14px]">
-          {shouldShowEditDeleteButtons && (
+          {userId === writerId && (
             <>
               <button
                 className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
@@ -222,7 +222,7 @@ const PostsPost = (props: PostsPostProps) => {
                 수정
               </button>
               <button
-                className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded/[5px]"
+                className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
                 onClick={openModal}
               >
                 삭제
@@ -232,7 +232,7 @@ const PostsPost = (props: PostsPostProps) => {
         </div>
         <button
           onClick={handleListClick}
-          className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded/[5px]"
+          className="w-[108px] h-9 text-[14px] bg-gray_04 text-black_100 rounded-[5px]"
         >
           목록
         </button>

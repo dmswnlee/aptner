@@ -1,10 +1,7 @@
 'use client';
 import Link from 'next/link';
-import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
-import { useSession } from 'next-auth/react';
 import { PiPencilSimpleLineLight } from 'react-icons/pi';
-import { Pagination } from 'antd';
 import { highlightText } from '@/utils/highlightText';
 import Block from '../../../components/board/Block';
 
@@ -40,12 +37,18 @@ interface SessionData {
 
 interface ListProps {
   data: Communication[];
-  pinnedData: Communication[]; // Add pinnedData prop
+  pinnedData: Communication[];
   loading: boolean;
   currentPage: number;
   total: number;
   onPageChange: (page: number) => void;
   searchQuery: string;
+  selectedOption: Option;
+}
+
+interface Option {
+  value: string;
+  label: string;
 }
 
 interface Tooltip {
@@ -62,6 +65,7 @@ const PostList = ({
   total,
   onPageChange,
   searchQuery,
+  selectedOption,
 }: ListProps) => {
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
@@ -89,7 +93,6 @@ const PostList = ({
     postId: number
   ) => {
     e.preventDefault();
-    const rect = (e.target as HTMLElement).getBoundingClientRect();
     setTooltip({
       nickname,
       userId,
@@ -123,9 +126,11 @@ const PostList = ({
           </div>
           {/* Pinned Posts */}
           {currentPage === 1 && pinnedData.map((posts) => (
-            <div key={posts.id} className="contents bg-[#FFF7E6]">
+            <div key={posts.id} className="contents bg-[#FFF7E6] relative">
               <div className="border-b py-4 text-center">
-                {posts.category.name}
+                <div className="flex justify-center items-center">
+                  <span className="bg-red text-white text-xs px-2 py-1 rounded">중요글</span>
+                </div>
               </div>
               <Link
                 href={`/communication/details/${posts.id}`}
@@ -179,7 +184,9 @@ const PostList = ({
                 href={`/communication/details/${posts.id}`}
                 className="border-b py-4 ml-[3px] flex px-[5px]"
               >
-                {highlightText(posts.title, searchQuery)}
+                {selectedOption.value === "TITLE_AND_CONTENT" || selectedOption.value === "TITLE"
+                  ? highlightText(posts.title, searchQuery)
+                  : posts.title}
               </Link>
 
               <div className="border-b py-4 flex justify-center relative">
@@ -194,7 +201,9 @@ const PostList = ({
                     )
                   }
                 >
-                  {posts.writer.nickname}
+                  {selectedOption.value === "WRITER"
+                    ? highlightText(posts.writer.nickname, searchQuery)
+                    : posts.writer.nickname}
                 </span>
                 {tooltip && tooltip.postId === posts.id && (
                   <div ref={tooltipRef} className="absolute top-0 z-10 w-full">
