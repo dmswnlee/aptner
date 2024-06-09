@@ -26,11 +26,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 				<AuthSession>
 					<Suspense fallback={<div>Loading...</div>}>
 						<Header />
+						<ReduxProvider>
+							<main className="flex-1">{children}</main>
+						</ReduxProvider>
+						<Footer />
 					</Suspense>
-					<ReduxProvider>
-						<main className="flex-1">{children}</main>
-					</ReduxProvider>
-					<Footer />
 					{/* <QuickMenu /> */}
 				</AuthSession>
 			</body>
