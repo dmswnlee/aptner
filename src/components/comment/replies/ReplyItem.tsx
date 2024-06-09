@@ -24,8 +24,11 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
   const [editImage, setEditImage] = useState<File | null>(null);
 
   const handleReplyChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setReplyContent(e.target.value);
-    setCharCount(e.target.value.length);
+    const value = e.target.value;
+    if (value.startsWith(`@${reply.writer.nickname} `)) {
+      setReplyContent(value);
+      setCharCount(value.length);
+    }
   };
 
   const handleEditChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -45,11 +48,14 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
   };
 
   const handleReplySubmit = async () => {
-    await onReply(reply.id, replyContent, replyImage);
+    const cleanedReplyContent = replyContent.startsWith(`@${reply.writer.nickname} `)
+      ? replyContent
+      : `@${reply.writer.nickname} ${replyContent}`;
+    await onReply(reply.id, cleanedReplyContent, replyImage);
     setReplyContent(`@${reply.writer.nickname} `);
     setIsReplying(false);
     setReplyImage(null);
-    setCharCount(0);
+    setCharCount(replyContent.length);
   };
 
   const handleUpdateSubmit = async () => {
@@ -66,18 +72,21 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
     return `${year}-${month}-${day} ${date.toLocaleTimeString('ko-KR')}`;
   };
 
+  const renderReplyContent = (content: string) => {
+    const prefix = `@${reply.writer.nickname} `;
+    if (content.startsWith(prefix)) {
+      return (
+        <span>
+          <span className="font-semibold text-[#00A8FF]">{prefix}</span>
+          {content.slice(prefix.length)}
+        </span>
+      );
+    }
+    return content;
+  };
+
   return (
-    <div className=" mt-5">
-      <div className="flex items-center gap-3">
-        <p className="w-10 h-10 flex justify-center items-center rounded-[5px] bg-[#D9F2FE]">UI</p>
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-1">
-            <p>{reply.writer.nickname}</p>
-            <div className="w-[1px] bg-[#A3A3A3]"></div>
-            <p>{formatDate(reply.updatedAt || reply.createdAt)}</p>
-          </div>
-        </div>
-      </div>
+    <div className="mt-5">
       <div>
         {isEditing ? (
           <CommentForm
@@ -89,10 +98,23 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
             onFileChange={handleEditFileChange}
             onRemoveImage={() => setEditImage(null)}
             onAddComment={handleUpdateSubmit}
+            isEditing={true}
           />
         ) : (
           <div className="flex flex-col gap-2">
-            <p className="ml-[50px] mb-5">{reply.content}</p>
+            <div className="flex items-center gap-3">
+              <p className="w-10 h-10 flex justify-center items-center rounded-[5px] bg-[#D9F2FE]">UI</p>
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-1">
+                  <p className='font-semibold'>{reply.writer.nickname}</p>
+                  <div className="w-[1px] bg-[#A3A3A3]"></div>
+                  <p>{formatDate(reply.updatedAt || reply.createdAt)}</p>
+                </div>
+              </div>
+            </div>
+            <p className="ml-[50px] mb-5">
+              {renderReplyContent(reply.content)}
+            </p>
             {reply.image && (
               <div className="ml-[50px] mt-2 max-w-xs flex items-center">
                 <img src={reply.image} alt="Attached" className="max-w-xs" />
@@ -123,6 +145,8 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
             onRemoveImage={() => setReplyImage(null)}
             onAddComment={handleReplySubmit}
             parentId={reply.id}
+            isEditing={false}
+            prefix={`@${reply.writer.nickname} `}
           />
         )}
       </div>

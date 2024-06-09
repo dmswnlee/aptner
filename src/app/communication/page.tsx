@@ -2,57 +2,22 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import List from "./_component/List";
+import PostList from "./_component/PostList";
 import Gallery from "./_component/Gallery";
 import GalleryTab from "./_component/GalleryTab";
+import InteriorTab from "./_component/InteriorTab"; // Import the new component
 import { RiListUnordered, RiGalleryView2 } from "react-icons/ri";
 import Tabs from "@/components/noticeboard/Tabs";
 import DropdownSearch from "@/components/DropdownSearch";
 import SearchBoard from "@/components/SearchBoard";
+import { Pagination } from "antd";
 
-interface Tab {
-  name: string;
-  label: string;
-  code: string;
-}
-interface Writer {
-  id: number;
-  name: string;
-  nickname: string;
-}
-interface Category {
-  id: number;
-  type: string;
-  code: string;
-  name: string;
-}
-interface Communication {
-  id: number;
-  category: Category;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  writer: Writer;
-  title: string;
-  viewCount: number;
-  status: string;
-  thumbnailPath: string;
-}
-interface SessionData {
-  user: {
-    name: string;
-    email: string;
-  };
-  accessToken: string;
-} 
-interface Option {
-  value: string;
-  label: string;
-}
+import { Tab, Writer, Category, Communication, SessionData, Option } from "@/interfaces/Post"; 
 
 export default function CommunicationPage() {
   const [activeTab, setActiveTab] = useState<string>("Posts");
   const [category, setCategory] = useState<string>("all");
+  const [interiorCategory, setInteriorCategory] = useState<number>(0);
   const [communications, setCommunications] = useState<Communication[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -87,6 +52,11 @@ export default function CommunicationPage() {
     }
   };
 
+  const handleInteriorTabChange = (tabName: string, categoryCode: number) => {
+    setInteriorCategory(categoryCode);
+    setCurrentPage(1);
+  };
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -100,9 +70,6 @@ export default function CommunicationPage() {
     setCurrentPage(1);
   };
 
-  console.log(searchQuery)
-  console.log(selectedOption.value)
-  
   const fetchCommunications = async (page: number) => {
     if (!session) return;
     try {
@@ -117,8 +84,9 @@ export default function CommunicationPage() {
           sort: "LATEST",
           search: searchQuery || null,
           type: selectedOption.value || null,
-          categoryCode: category === "all" ? null : category
-        },
+          categoryCode: category === "all" ? null : category,
+          interiorCategory: category === "PT006" ? interiorCategory : null
+        }, 
       });
       console.log(response.data.result)
       setCommunications(response.data.result.result.posts);
@@ -132,8 +100,8 @@ export default function CommunicationPage() {
   useEffect(() => {
     if (session) {
       fetchCommunications(currentPage);
-    }
-  }, [session, currentPage, activeTab, category, searchQuery, selectedOption]);
+    } 
+  }, [session, currentPage, activeTab, category, searchQuery, selectedOption, interiorCategory]);
 
   return (
     <div className="mt-[70px] w-[1080px] mx-auto">
@@ -141,10 +109,15 @@ export default function CommunicationPage() {
         소통공간
       </p>
       <Tabs tabs={categoryTabs} onTabChange={handleCategoryTabChange} />
-      <GalleryTab tabs={tabs} onTabChange={handleTabChange} />
+      <div className="flex justify-between items-center mb-6">
+        {category === "PT006" && (
+          <InteriorTab onTabChange={handleInteriorTabChange} />
+        )}
+        <GalleryTab tabs={tabs} onTabChange={handleTabChange} />
+      </div>
       <div className="w-[1080px] mx-auto">
         {activeTab === "Posts" ? (
-          <List
+          <PostList
             data={communications}
             loading={loading}
             currentPage={currentPage}
@@ -163,6 +136,14 @@ export default function CommunicationPage() {
             onPageChange={handlePageChange} 
           />
         )}
+        <div className="flex justify-center my-10">
+          <Pagination
+            current={currentPage}
+            total={totalCount}
+            pageSize={activeTab === "Gallery" ? 16 : 15}
+            onChange={handlePageChange}
+          />
+        </div>
         <div className="flex justify-center p-5 mb-[100px] gap-3">
           <DropdownSearch onSelect={handleSearchOptionSelect} selectedOption={selectedOption} />
           <SearchBoard selectedOption={selectedOption} onSearch={handleSearch} />

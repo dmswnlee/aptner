@@ -48,7 +48,7 @@ interface ListProps {
   searchQuery: string; // Add searchQuery prop 
 }
 
-const List = ({ data, loading, currentPage, total, onPageChange, searchQuery }: ListProps) => {
+const PostList = ({ data, loading, currentPage, total, onPageChange, searchQuery }: ListProps) => {
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -107,14 +107,14 @@ const List = ({ data, loading, currentPage, total, onPageChange, searchQuery }: 
           <p>글작성</p>
         </Link>
       </div>
-      <Pagination
+      {/* <Pagination
         current={currentPage}
         total={total} // 총 항목 수 전달
         pageSize={15} // 페이지당 항목 수 설정
         onChange={onPageChange}
-      />
+      /> */}
     </div>
   );
 };
 
-export default List;
+export default PostList;

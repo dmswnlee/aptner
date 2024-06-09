@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { Pagination } from 'antd';
+import defaultThumbnail from '@/assets/images/defaultThumbnail.png';
+import { PiPencilSimpleLineLight } from 'react-icons/pi';
 
 interface Post {
   id: number;
@@ -25,28 +26,23 @@ interface GalleryProps {
 }
 
 const Gallery = ({ data, detailPath, loading, currentPage, total, pageSize, onPageChange }: GalleryProps) => {
-
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="w-[1080px] mx-auto flex flex-col items-center mb-[100px]">
+    <div className="w-[1080px] mx-auto flex flex-col items-center mb-[100px] relative">
       <div className="grid grid-cols-4 gap-2">
         {data.map(item => (
           <Link href={`${detailPath}/${item.id}`} key={item.id}>
             <div className="p-2 cursor-pointer overflow-hidden">
               <div className="relative group w-[248px] h-[180px] overflow-hidden">
-                {item.thumbnailPath ? ( // Check if thumbnailPath exists
-                  <img
-                    src={item.thumbnailPath} // Use thumbnailPath as src
-                    alt={item.title}
-                    className="mb-2 object-cover rounded-t-lg w-[290px] h-[180px] transition-transform duration-300 ease-in-out group-hover:scale-110"
-                    style={{ maxWidth: '100%', maxHeight: '100%', overflow: 'hidden' }}
-                  />
-                ) : (
-                  <div className="mb-2 object-cover rounded-t-lg w-[290px] h-[180px] transition-transform duration-300 ease-in-out group-hover:scale-110 bg-gray-200"></div>
-                )}
+                <img
+                  src={item.thumbnailPath || defaultThumbnail.src} // Use thumbnailPath if available, otherwise use defaultThumbnail
+                  alt={item.title}
+                  className="mb-2 object-cover rounded-t-lg w-[290px] h-[180px] transition-transform duration-300 ease-in-out group-hover:scale-110"
+                  style={{ maxWidth: '100%', maxHeight: '100%', overflow: 'hidden' }}
+                />
                 <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
                 <div className="absolute inset-0 flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <span className="text-white text-lg font-bold">자세히 보기</span>
@@ -67,13 +63,20 @@ const Gallery = ({ data, detailPath, loading, currentPage, total, pageSize, onPa
           </Link>
         ))}
       </div>
-      <Pagination
+      <Link
+        href="/communication/board"
+        className="absolute bottom-[-60px] right-0 flex justify-center items-center gap-[2px] bg-[#3ABEFF] rounded-[5px] text-white w-[78px] h-[36px] text-[14px]"
+      >
+        <PiPencilSimpleLineLight className="text-2xl" />
+        <p>글작성</p>
+      </Link>
+      {/* <Pagination
         current={currentPage}
         total={total}
         pageSize={pageSize}
         onChange={onPageChange}
         className="mt-4"
-      />
+      /> */}
     </div>
   );
 };

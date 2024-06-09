@@ -18,7 +18,7 @@ export interface CommentProps {
   initialComments: CommentType[];
   author: string;
   postId: number;
-  page: string;
+  pageType: string;
   categoryCode: string;
 }
 

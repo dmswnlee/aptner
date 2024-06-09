@@ -52,6 +52,11 @@ export interface ListProps {
 	onPageChange: (page: number) => void;
 	searchQuery: string;
 }
+interface ApartArea {
+  id: number;
+  area: number;
+  imagePath: string;
+}
 
 export interface Post {
 	id: number;
@@ -85,4 +90,12 @@ export interface Post {
 			reactedSad: boolean;
 		};
 	};
+	apartArea?: ApartArea;
+}
+
+export interface PostFileInfo {
+  id: number;
+  name: string;
+  path: string;
+  size: number;
 }
