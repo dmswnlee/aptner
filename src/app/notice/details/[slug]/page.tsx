@@ -124,7 +124,7 @@ const NoticeDetailPage = () => {
 		<div className="mt-[70px] w-[1080px] mx-auto">
 			{post && (
 				<>
-					<p className="text-[24px] font-semibold leading-[27px] mb-[40px]">소통공간</p>
+					<p className="text-[24px] font-semibold leading-[27px] mb-[40px]">공지사항</p>
 					<PostsPost
 						id={post.id}
 						category={category}

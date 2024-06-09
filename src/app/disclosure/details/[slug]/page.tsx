@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-const NoticeDetailPage = () => {
+const DisclosuresDetailPage = () => {
 	const { slug } = useParams();
 	const [post, setPost] = useState<Post | null>(null);
 	const [fileInfoList, setFileInfoList] = useState<PostFileInfo[]>([]);
@@ -26,12 +26,12 @@ const NoticeDetailPage = () => {
 		if (!session || !session.accessToken) return;
 
 		try {
-			const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/notices/RO000/${slug}`, {
+			const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/disclosures/RO000/${slug}`, {
 				headers: {
 					Authorization: `Bearer ${(session as SessionData).accessToken}`,
 				},
 			});
-			const postData = response.data.result.noticeDetailInfo;
+			const postData = response.data.result.disclosureDetailInfo;
 			setPost(postData);
       setFileInfoList(response.data.result.postFileInfoList || []);
 		} catch (err) {
@@ -44,7 +44,7 @@ const NoticeDetailPage = () => {
 
 		try {
 			const response = await axios.post(
-				`${process.env.NEXT_PUBLIC_API_URL}/notices/RO000/${post.id}/emoji`,
+				`${process.env.NEXT_PUBLIC_API_URL}/disclosures/RO000/${post.id}/emoji`,
 				{},
 				{
 					headers: {
@@ -86,7 +86,7 @@ const NoticeDetailPage = () => {
 		if (!post || !session || !session.accessToken) return;
 
 		try {
-			const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/notices/RO000/${post.id}/emoji`, {
+			const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/disclosures/RO000/${post.id}/emoji`, {
 				headers: {
 					Authorization: `Bearer ${(session as SessionData).accessToken}`,
 				},
@@ -124,7 +124,7 @@ const NoticeDetailPage = () => {
 		<div className="mt-[70px] w-[1080px] mx-auto">
 			{post && (
 				<>
-					<p className="text-[24px] font-semibold leading-[27px] mb-[40px]">소통공간</p>
+					<p className="text-[24px] font-semibold leading-[27px] mb-[40px]">의무공개</p>
 					<PostsPost
 						id={post.id}
 						category={category}
@@ -151,4 +151,4 @@ const NoticeDetailPage = () => {
 	);
 };
 
-export default NoticeDetailPage;
+export default DisclosuresDetailPage;

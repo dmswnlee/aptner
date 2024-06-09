@@ -15,17 +15,17 @@ const Disclosure = () => {
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [loading, setLoading] = useState(true);
 	const { data: session } = useSession();
-	const [notices, setNotices] = useState<Notices[]>([]);
+	const [disclosures, setDisclosures] = useState<Notices[]>([]);
 	const [totalCount, setTotalCount] = useState(0);
 
 	const tabs: Tab[] = [
 		{ name: "all", label: "전체", code: "" },
-		{ name: "sharing", label: "관리비부과내역서", code: "NT001" },
-		{ name: "construction", label: "계약서", code: "NT002" },
-		{ name: "management", label: "관리규약", code: "NT003" },
-		{ name: "representative", label: "장기수선총당금", code: "NT004" },
-		{ name: "election-commission", label: "안전관리계획", code: "NT005" },
-		{ name: "result", label: "입찰정보", code: "NT006" },
+		{ name: "sharing", label: "관리비부과내역서", code: "DC001" },
+		{ name: "construction", label: "계약서", code: "DC002" },
+		{ name: "management", label: "관리규약", code: "DC003" },
+		{ name: "representative", label: "장기수선총당금", code: "DC004" },
+		{ name: "election-commission", label: "안전관리계획", code: "DC005" },
+		{ name: "result", label: "입찰정보", code: "DC006" },
 	];
 
 	const handleCategoryTabChange = (tabName: string) => {
@@ -52,7 +52,7 @@ const Disclosure = () => {
 	const fetchDisclosures = async (page: number) => {
 		if (!session) return;
 		try {
-			const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/notices/RO000`, {
+			const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/disclosures/RO000`, {
 				headers: {
 					Authorization: `Bearer ${(session as SessionData).accessToken}`,
 				},
@@ -66,7 +66,7 @@ const Disclosure = () => {
 				},
 			});
 			console.log(response.data.result);
-			setNotices(response.data.result.result.noticeInfoList);
+			setDisclosures(response.data.result.result.disclosureInfoList);
 			setTotalCount(response.data.result.totalCount);
 			setLoading(false);
 		} catch (err) {
@@ -82,11 +82,11 @@ const Disclosure = () => {
 
 	return (
 		<div className="mt-[70px] w-[1080px] mx-auto">
-			<p className="text-2xl font-semibold leading-[27px] mb-10">공지사항</p>
+			<p className="text-2xl font-semibold leading-[27px] mb-10">의무공개</p>
 			<Tabs tabs={tabs} onTabChange={handleCategoryTabChange} />
 			<div className="w-[1080px] mx-auto">
 				<DisclosureList
-					data={notices}
+					data={disclosures}
 					loading={loading}
 					currentPage={currentPage}
 					total={totalCount}
