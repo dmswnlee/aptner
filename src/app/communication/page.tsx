@@ -16,20 +16,27 @@ import { Tab, Writer, Category, Communication, SessionData, Option } from "@/int
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function CommunicationPage() {
-	// 상태 관리 변수들
-	const [category, setCategory] = useState<string | null>("all");
-	const [currentPage, setCurrentPage] = useState(1);
-	const [selectedOption, setSelectedOption] = useState<Option>({ value: "TITLE_AND_CONTENT", label: "제목 + 내용" });
-	const [searchQuery, setSearchQuery] = useState<string>("");
-	const [loading, setLoading] = useState(true);
-	const { data: session } = useSession();
-	const [communications, setCommunications] = useState<Communication[]>([]);
-	const [totalCount, setTotalCount] = useState(0);
-	const router = useRouter();
-	const searchParams = useSearchParams();
+  // 상태 관리 변수들
+  const [activeTab, setActiveTab] = useState<string>("Posts");
+  const [category, setCategory] = useState<string>("all");
+  const [interiorCategory, setInteriorCategory] = useState<number | null>(null);
+  const [communications, setCommunications] = useState<Communication[]>([]);
+  const [pinnedPosts, setPinnedPosts] = useState<Communication[]>([]);
 	const [activeButton, setActiveButton] = useState<string>("Posts");
-	const [interiorCategory, setInteriorCategory] = useState<number | null>(null);
-	const [pinnedPosts, setPinnedPosts] = useState<Communication[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const { data: session } = useSession();
+  const [selectedOption, setSelectedOption] = useState<Option>({ value: "TITLE_AND_CONTENT", label: "제목 + 내용" });
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get('search') || "";
+	const router = useRouter();
+  
+  useEffect(() => {
+    setSearchQuery(initialQuery);
+  }, [initialQuery]);
+
+  const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
 
 	// 카테고리 탭 정의
 	const categoryTabs: Tab[] = [
@@ -138,7 +145,7 @@ export default function CommunicationPage() {
 	useEffect(() => {
 		if (session && category !== null) {
 			fetchCommunications(category === "" ? "all" : category, currentPage);
-		}
+		} 
 	}, [session, currentPage, activeButton, category, searchQuery, selectedOption, interiorCategory]);
 
 	return (

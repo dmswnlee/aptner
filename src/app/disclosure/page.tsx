@@ -9,17 +9,20 @@ import axios from "axios";
 import DisclosureList from "./_component/DisclosureList";
 import { useRouter, useSearchParams } from "next/navigation";
 
+
 const Disclosure = () => {
 	const [category, setCategory] = useState<string | null>("all");
 	const [currentPage, setCurrentPage] = useState(1);
 	const [selectedOption, setSelectedOption] = useState<Option>({ value: "TITLE_AND_CONTENT", label: "제목 + 내용" });
-	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [loading, setLoading] = useState(true);
 	const { data: session } = useSession();
 	const [disclosures, setDisclosures] = useState<Notices[]>([]);
 	const [totalCount, setTotalCount] = useState(0);
-	const router = useRouter();
 	const searchParams = useSearchParams();
+	const initialQuery = searchParams.get('search') || ""; // 추가
+	const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
+	const router = useRouter();
+
 
 	const tabs: Tab[] = [
 		{ name: "all", label: "전체", code: "" },

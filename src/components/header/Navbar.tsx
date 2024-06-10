@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import Link from "next/link"; 
 import Search from "@/components/Search";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useEffect, useState } from "react";
