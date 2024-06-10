@@ -8,7 +8,8 @@ import Modal from "../modal/Modal";
 
 const flexStyle = "flex flex-col items-center gap-6";
 const titleStyle = "text-md font-semibold text-[#05A8FF]";
-const menuStyle = "space-y-4 text-[14px] text-[#777777] font-inter font-normal leading-[16.94px] text-center cursor-pointer";
+const menuStyle =
+	"space-y-4 text-[14px] text-[#777777] font-inter font-normal leading-[16.94px] text-center cursor-pointer";
 
 const Navbar = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -86,14 +87,32 @@ const Navbar = () => {
 											아파트 소개
 										</Link>
 										<ul className={`${menuStyle}`}>
-											<li>인사말</li>
-											<li>위치 정보</li>
-											<li>단지 전경</li>
-											<li>평형 정보</li>
-											<li>연락처 정보</li>
-											<li>내부 시설</li>
-											<li>커뮤니티 시설</li>
-											<li>주변입지</li>
+											<li>
+												<span onClick={() => handleLinkClick("/apartment")}>인사말</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/apartment/apartmap")}>위치 정보</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/apartment/apartlayout")}>단지 전경</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/apartment/apartunit")}>평형 정보</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/apartment/apartnumber")}>연락처 정보</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/apartment/apartunitdetail")}>내부 시설</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/apartment/apartoverview")}>
+													커뮤니티 시설
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/apartment/apartinfo")}>주변입지</span>
+											</li>
 										</ul>
 									</div>
 									<div className={`${flexStyle}`}>
@@ -101,9 +120,6 @@ const Navbar = () => {
 											공지사항
 										</Link>
 										<ul className={`${menuStyle}`}>
-											<li>
-												<span onClick={() => handleLinkClick("/notice?category=all")}>전체보기</span>
-											</li>
 											<li>
 												<span onClick={() => handleLinkClick("/notice?category=sharing")}>공동 생활</span>
 											</li>
@@ -137,12 +153,34 @@ const Navbar = () => {
 											의무공개
 										</Link>
 										<ul className={`${menuStyle}`}>
-											<li>관리비 부과 내역서</li>
-											<li>계약서</li>
-											<li>관리규약</li>
-											<li>장기수선충당금</li>
-											<li>안전관리계획</li>
-											<li>입찰정보</li>
+											<li>
+												<span onClick={() => handleLinkClick("/disclosure?category=statement")}>
+													관리비 부과 내역서
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/disclosure?category=contract")}>계약서</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/disclosure?category=regulation")}>
+													관리규약
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/disclosure?category=reserve")}>
+													장기수선충당금
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/disclosure?category=safety-plan")}>
+													안전관리계획
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/disclosure?category=bidInfo")}>
+													입찰정보
+												</span>
+											</li>
 										</ul>
 									</div>
 									<div className={`${flexStyle}`}>
@@ -150,11 +188,36 @@ const Navbar = () => {
 											소통공간
 										</Link>
 										<ul className={`${menuStyle}`}>
-											<li>자유게시판</li>
-											<li>나눔장터</li>
-											<li>동호회 모임</li>
-											<li>맛집 추천</li>
-											<li>분실물</li>
+											<li>
+												<span onClick={() => handleLinkClick("/communication?category=freeboard")}>
+													자유게시판
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/communication?category=market")}>
+													나눔장터
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/communication?category=hobby")}>
+													취미게시판
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/communication?category=recommendations")}>
+													주변 추천
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/communication?category=lost-and-found")}>
+													분실물
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/communication?category=interior")}>
+													인테리어
+												</span>
+											</li>
 										</ul>
 									</div>
 									<div className={`${flexStyle}`}>
@@ -162,10 +225,26 @@ const Navbar = () => {
 											민원게시판
 										</Link>
 										<ul className={`${menuStyle}`}>
-											<li>하자/보수</li>
-											<li>관리업체 및 사업자선정</li>
-											<li>시설관리</li>
-											<li>입대위</li>
+											<li>
+												<span onClick={() => handleLinkClick("/complaints?category=repair")}>
+													하자/보수
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/complaints?category=contracting")}>
+													관리업체 <br />및 사업자선정
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/complaints?category=maintenance")}>
+													시설관리
+												</span>
+											</li>
+											<li>
+												<span onClick={() => handleLinkClick("/complaints?category=committee")}>
+													입대위
+												</span>
+											</li>
 										</ul>
 									</div>
 								</div>
