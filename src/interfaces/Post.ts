@@ -92,4 +92,6 @@ export interface PostsPostProps {
     area: number;
     imagePath: string;
   };
+  userId: string; 
+  writerId: string; 
 }

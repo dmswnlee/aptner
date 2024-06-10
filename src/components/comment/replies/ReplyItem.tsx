@@ -1,20 +1,22 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import { AiOutlineDownload } from "react-icons/ai";
 import ButtonGroup from '../CommentButtonGroup';
 import CommentForm from '../comments/CommentForm';
 import ReplyList from '../replies/ReplyList';
 import { CommentType } from '@/interfaces/Comment';
+import Modal from '@/components/modal/Modal';
 
 interface ReplyItemProps {
   reply: CommentType;
   author: string;
+  userId: string | undefined;
   onEdit: (id: number, parentId: number | null) => void;
   onDelete: (id: number) => void;
   onReply: (parentId: number | null, content: string, image: File | null) => Promise<void>;
   onUpdate: (id: number, content: string, parentId: number | null, image?: File | null) => Promise<void>;
 }
 
-const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: ReplyItemProps) => {
+const ReplyItem = ({ reply, author, userId, onEdit, onDelete, onReply, onUpdate }: ReplyItemProps) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [replyContent, setReplyContent] = useState<string>(`@${reply.writer.nickname} `);
   const [replyImage, setReplyImage] = useState<File | null>(null);
@@ -22,6 +24,12 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editContent, setEditContent] = useState<string>(reply.content);
   const [editImage, setEditImage] = useState<File | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    console.log("Reply writer ID:", reply.writer.id, typeof reply.writer.id);
+    console.log("Session user ID:", userId, typeof userId);
+  }, [reply.writer.id, userId]);
 
   const handleReplyChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
@@ -62,6 +70,15 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
     await onUpdate(reply.id, editContent, reply.parentId, editImage);
     setIsEditing(false);
     reply.updatedAt = new Date().toISOString();
+  };
+
+  const handleDelete = () => {
+    setIsModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    onDelete(reply.id);
+    setIsModalOpen(false);
   };
 
   const formatDate = (dateString: string) => {
@@ -127,11 +144,13 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
         )}
       </div>
       <div className="ml-[45px] mt-5">
-        <ButtonGroup
-          onEdit={() => setIsEditing(true)}
-          onDelete={() => onDelete(reply.id)}
-          onReply={() => setIsReplying(!isReplying)}
-        />
+        {reply.writer.id?.toString() === userId && (
+          <ButtonGroup
+            onEdit={() => setIsEditing(true)}
+            onDelete={handleDelete}
+            onReply={() => setIsReplying(!isReplying)}
+          />
+        )}
       </div>
       <div className="ml-[50px]">
         {isReplying && (
@@ -154,12 +173,20 @@ const ReplyItem = ({ reply, author, onEdit, onDelete, onReply, onUpdate }: Reply
         <ReplyList
           replies={reply.replies || []}
           author={author}
+          userId={userId}
           onEdit={onEdit}
           onDelete={onDelete}
           onReply={onReply}
           onUpdate={onUpdate}
         />
       </div>
+      {isModalOpen && (
+        <Modal
+          text="정말 삭제하시겠습니까?"
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={confirmDelete}
+        />
+      )}
     </div>
   );
 };

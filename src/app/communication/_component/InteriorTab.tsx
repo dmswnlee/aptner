@@ -1,15 +1,15 @@
 import { useState } from "react";
 
 interface InteriorTabProps {
-  onTabChange: (tabName: string, categoryCode: number) => void;
+  onTabChange: (tabName: string, categoryCode: number | null) => void;
 }
 
 const InteriorTab = ({ onTabChange }: InteriorTabProps) => {
   const [activeTab, setActiveTab] = useState<string>("all");
 
-  const handleTabClick = (tabName: string, categoryCode: number) => {
+  const handleTabClick = (tabName: string, categoryCode: number | null) => {
     setActiveTab(tabName);
-    onTabChange(tabName, categoryCode);
+    onTabChange(tabName, categoryCode === 0 ? null : categoryCode);
   };
 
   const tabs = [

@@ -4,17 +4,19 @@ import ButtonGroup from '../CommentButtonGroup';
 import CommentForm from './CommentForm';
 import ReplyList from '../replies/ReplyList';
 import { CommentType } from '@/interfaces/Comment';
+import Modal from '@/components/modal/Modal';
 
 interface CommentItemProps {
   comment: CommentType;
   author: string;
+  userId: string | undefined;
   onEdit: (id: number, parentId: number | null) => void;
   onDelete: (id: number) => void;
   onReply: (parentId: number | null, content: string, image: File | null) => Promise<void>;
   onUpdate: (id: number, content: string, parentId: number | null, image?: File | null) => Promise<void>;
 }
 
-const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: CommentItemProps) => {
+const CommentItem = ({ comment, author, userId, onEdit, onDelete, onReply, onUpdate }: CommentItemProps) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [replyContent, setReplyContent] = useState<string>(`@${comment.writer.nickname} `);
   const [replyImage, setReplyImage] = useState<File | null>(null);
@@ -23,11 +25,16 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
   const [editContent, setEditContent] = useState<string>(comment.content);
   const [editImage, setEditImage] = useState<File | null>(comment.image ? new File([], comment.image) : null);
   const [replies, setReplies] = useState<CommentType[]>(comment.replies || []);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    // Update replies when comment.replies change
     setReplies(comment.replies || []);
   }, [comment.replies]);
+
+  useEffect(() => {
+    console.log("Comment writer ID:", comment.writer.id, typeof comment.writer.id);
+    console.log("Session user ID:", userId, typeof userId);
+  }, [comment.writer.id, userId]);
 
   const handleReplyChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setReplyContent(e.target.value);
@@ -52,7 +59,6 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
 
   const handleReplySubmit = async () => {
     await onReply(comment.id, replyContent, replyImage);
-    // Reset reply form after submission
     setReplyContent(`@${comment.writer.nickname} `);
     setIsReplying(false);
     setReplyImage(null);
@@ -63,6 +69,15 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
     await onUpdate(comment.id, editContent, comment.parentId, editImage);
     setIsEditing(false);
     comment.updatedAt = new Date().toISOString();
+  };
+
+  const handleDelete = () => {
+    setIsModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    onDelete(comment.id);
+    setIsModalOpen(false);
   };
 
   const formatDate = (dateString: string) => {
@@ -77,19 +92,17 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
     <div className="mt-7">
       <div className=''>
         {isEditing ? (
-          <>
-            <CommentForm
-              author={author}
-              newComment={editContent}
-              charCount={editContent.length}
-              image={editImage}
-              onTextareaChange={handleEditChange}
-              onFileChange={handleEditFileChange}
-              onRemoveImage={() => setEditImage(null)}
-              onAddComment={handleUpdateSubmit}
-              isEditing={true}
-            />
-          </>
+          <CommentForm
+            author={author}
+            newComment={editContent}
+            charCount={editContent.length}
+            image={editImage}
+            onTextareaChange={handleEditChange}
+            onFileChange={handleEditFileChange}
+            onRemoveImage={() => setEditImage(null)}
+            onAddComment={handleUpdateSubmit}
+            isEditing={true}
+          />
         ) : (
           <>
             <div className="flex items-center gap-3">
@@ -118,46 +131,55 @@ const CommentItem = ({ comment, author, onEdit, onDelete, onReply, onUpdate }: C
                   <AiOutlineDownload className="ml-2 text-xl" />
                 </a>
               </div>
-              
             )}
             <div className="mt-5 ml-[45px]">
-              <ButtonGroup 
-                onEdit={() => setIsEditing(true)} 
-                onDelete={() => onDelete(comment.id)} 
-                onReply={() => setIsReplying(!isReplying)} 
-              />
-            </div> 
+              {comment.writer.id?.toString() === userId && (
+                <ButtonGroup
+                  onEdit={() => setIsEditing(true)}
+                  onDelete={handleDelete}
+                  onReply={() => setIsReplying(!isReplying)}
+                />
+              )}
+            </div>
           </>
         )}
       </div>
       <div className='ml-[50px]'>
         {isReplying && (
-          <CommentForm 
-            author={author} 
-            newComment={replyContent} 
-            charCount={charCount}  
-            image={replyImage} 
-            onTextareaChange={handleReplyChange} 
-            onFileChange={handleReplyFileChange} 
-            onRemoveImage={() => setReplyImage(null)} 
-            onAddComment={handleReplySubmit} 
+          <CommentForm
+            author={author}
+            newComment={replyContent}
+            charCount={charCount}
+            image={replyImage}
+            onTextareaChange={handleReplyChange}
+            onFileChange={handleReplyFileChange}
+            onRemoveImage={() => setReplyImage(null)}
+            onAddComment={handleReplySubmit}
             parentId={comment.id}
             isEditing={false}
             prefix={`@${comment.writer.nickname} `}
           />
         )}
-      </div> 
+      </div>
       {(comment.replies && comment.replies.length > 0) && (
-        <div className='ml-[50px] mt-6 px-4 py-1 rounded-2xl bg-gray-50 '>
+        <div className='ml-[50px] mt-6 px-4 py-1 rounded-2xl bg-gray-50'>
           <ReplyList
             replies={comment.replies}
             author={author}
+            userId={userId}
             onEdit={onEdit}
             onDelete={onDelete}
-            onReply={onReply} 
+            onReply={onReply}
             onUpdate={onUpdate}
           />
         </div>
+      )}
+      {isModalOpen && (
+        <Modal
+          text="정말 삭제하시겠습니까?"
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={confirmDelete}
+        />
       )}
     </div>
   );

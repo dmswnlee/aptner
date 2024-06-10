@@ -1,14 +1,10 @@
-"use client";
-import Link from "next/link";
-import axios from "axios";
-import { useState, useEffect, useRef } from "react";
-import { useSession } from "next-auth/react";
-import { PiPencilSimpleLineLight } from "react-icons/pi";
-import { Pagination } from "antd";
-import { highlightText } from "@/utils/highlightText";
-import Block from "../../../components/board/Block";
+'use client';
+import Link from 'next/link';
+import { useState, useEffect, useRef } from 'react';
+import { PiPencilSimpleLineLight } from 'react-icons/pi';
+import { highlightText } from '@/utils/highlightText';
+import Block from '../../../components/board/Block';
 
-// Communication 타입 정의
 interface Writer {
   id: number;
   name: string;
@@ -41,11 +37,18 @@ interface SessionData {
 
 interface ListProps {
   data: Communication[];
+  pinnedData: Communication[];
   loading: boolean;
   currentPage: number;
   total: number;
   onPageChange: (page: number) => void;
-  searchQuery: string; // Add searchQuery prop
+  searchQuery: string;
+  selectedOption: Option;
+}
+
+interface Option {
+  value: string;
+  label: string;
 }
 
 interface Tooltip {
@@ -56,16 +59,14 @@ interface Tooltip {
 
 const PostList = ({
   data,
+  pinnedData,
   loading,
   currentPage,
   total,
   onPageChange,
   searchQuery,
+  selectedOption,
 }: ListProps) => {
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
 
@@ -79,9 +80,9 @@ const PostList = ({
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
@@ -92,13 +93,16 @@ const PostList = ({
     postId: number
   ) => {
     e.preventDefault();
-    const rect = (e.target as HTMLElement).getBoundingClientRect();
     setTooltip({
       nickname,
       userId,
       postId,
     });
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="w-full flex flex-col items-center mb-[30px]">
@@ -120,11 +124,13 @@ const PostList = ({
           <div className="border-b border-b-[#2A3F6D] py-4 px-2 bg-[#F9F9F9] text-center">
             등록일
           </div>
-          {/* Data */}
-          {data.map((posts) => (
-            <div key={posts.id} className="contents">
+          {/* Pinned Posts */}
+          {currentPage === 1 && pinnedData.map((posts) => (
+            <div key={posts.id} className="contents bg-[#FFF7E6] relative">
               <div className="border-b py-4 text-center">
-                {posts.category.name}
+                <div className="flex justify-center items-center">
+                  <span className="bg-red text-white text-xs px-2 py-1 rounded">중요글</span>
+                </div>
               </div>
               <Link
                 href={`/communication/details/${posts.id}`}
@@ -160,10 +166,62 @@ const PostList = ({
 
               <div className="border-b py-4 text-center">{posts.viewCount}</div>
               <div className="border-b py-4 text-center">
-                {new Date(posts.createdAt).toLocaleDateString("ko-KR", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
+                {new Date(posts.createdAt).toLocaleDateString('ko-KR', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                })}
+              </div>
+            </div>
+          ))}
+          {/* Data */}
+          {data.map((posts) => (
+            <div key={posts.id} className="contents">
+              <div className="border-b py-4 text-center">
+                {posts.category.name}
+              </div>
+              <Link
+                href={`/communication/details/${posts.id}`}
+                className="border-b py-4 ml-[3px] flex px-[5px]"
+              >
+                {selectedOption.value === "TITLE_AND_CONTENT" || selectedOption.value === "TITLE"
+                  ? highlightText(posts.title, searchQuery)
+                  : posts.title}
+              </Link>
+
+              <div className="border-b py-4 flex justify-center relative">
+                <span
+                  className="cursor-pointer"
+                  onClick={(e) =>
+                    handleWriterClick(
+                      e,
+                      posts.writer.nickname,
+                      posts.writer.id,
+                      posts.id
+                    )
+                  }
+                >
+                  {selectedOption.value === "WRITER"
+                    ? highlightText(posts.writer.nickname, searchQuery)
+                    : posts.writer.nickname}
+                </span>
+                {tooltip && tooltip.postId === posts.id && (
+                  <div ref={tooltipRef} className="absolute top-0 z-10 w-full">
+                    <Block
+                      nickname={tooltip.nickname}
+                      userId={tooltip.userId}
+                      onClose={() => setTooltip(null)}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="border-b py-4 text-center">{posts.viewCount}</div>
+              <div className="border-b py-4 text-center">
+                {new Date(posts.createdAt).toLocaleDateString('ko-KR', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
                 })}
               </div>
             </div>
@@ -177,12 +235,6 @@ const PostList = ({
           <p>글작성</p>
         </Link>
       </div>
-      {/* <Pagination
-        current={currentPage}
-        total={total} // 총 항목 수 전달
-        pageSize={15} // 페이지당 항목 수 설정
-        onChange={onPageChange}
-      /> */}
     </div>
   );
 };
