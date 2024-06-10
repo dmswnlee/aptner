@@ -386,7 +386,7 @@ const IdentityVerification = () => {
 						/>
 					</div>
 					{showVerificationInput && (
-						<div className="flex gap-[10px] mt-4 ml-[130px]">
+						<div className="flex gap-[10px] ml-[130px]">
 							<div className="flex flex-col gap-2">
 								<div className="relative">
 									<input

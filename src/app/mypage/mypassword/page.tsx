@@ -178,7 +178,7 @@ export default function MyPassword() {
         </div>
       </div>
 
-      <div className="flex justify-center pt-4 mt-10 mb-[76px]">
+      <div className="flex justify-center pt-4 mt-10 mb-[100px]">
         <button
           type="submit"
           className={`py-4 px-5 w-[430px] rounded-[5px] ${

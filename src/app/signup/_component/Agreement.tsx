@@ -73,7 +73,7 @@ const Agreement = () => {
 								/>
 							)}
 						/>
-						<label htmlFor="service">
+						<label htmlFor="service" className="cursor-pointer">
 							<span className="text-blue_05 font-semibold">(필수)</span> 서비스 이용약관 동의
 						</label>
 					</div>
@@ -93,7 +93,7 @@ const Agreement = () => {
 								/>
 							)}
 						/>
-						<label htmlFor="personalInfo">
+						<label htmlFor="personalInfo" className="cursor-pointer">
 							<span className="text-blue_05 font-semibold">(필수)</span> 개인정보 수집 동의
 						</label>
 					</div>
@@ -112,7 +112,7 @@ const Agreement = () => {
 								/>
 							)}
 						/>
-						<label htmlFor="marketing">
+						<label htmlFor="marketing" className="cursor-pointer">
 							<span className="text-gray_07 font-semibold">(선택)</span> 마케팅 수신 동의
 						</label>
 					</div>
@@ -137,7 +137,7 @@ const Agreement = () => {
 								/>
 							)}
 						/>
-						<label htmlFor="allChecked" className="text-blue_05">
+						<label htmlFor="allChecked" className="text-blue_05 cursor-pointer">
 							전체 약관 동의
 						</label>
 					</div>

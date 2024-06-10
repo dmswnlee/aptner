@@ -1,3 +1,4 @@
+"use client"
 import { MSWComponent } from "./_component/MSWComponent";
 import "./globals.css";
 import Header from "@/components/header/Header";
@@ -7,10 +8,11 @@ import QuickMenu from "@/components/quickmenu/QuickMenu";
 import AuthSession from "./_component/AuthSession";
 import localFont from "next/font/local";
 import { Suspense } from "react";
+import { usePathname } from 'next/navigation';
 
-export const metadata = {
-	title: "아파트너",
-};
+// export const metadata = {
+// 	title: "아파트너",
+// };
 
 const pretendard = localFont({
 	src: "../assets/fonts/PretendardVariable.woff2",
@@ -19,6 +21,8 @@ const pretendard = localFont({
 });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+	const pathname = usePathname();
+
 	return (
 		<html lang="ko" className="h-full">
 			<body className={`flex flex-col min-h-screen ${pretendard.className}`}>
@@ -28,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 						<Header />
 						<ReduxProvider>
 							<main className="flex-1">{children}</main>
+							{pathname !== "/" && <QuickMenu />}
 						</ReduxProvider>
 						<Footer />
 					</Suspense>
