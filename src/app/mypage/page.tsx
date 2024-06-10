@@ -215,10 +215,6 @@ export default function MyPage() {
               )}
             </div>
           </div>
-          <Button
-            text="탈퇴하기"
-            className="absolute right-0 underline underline-offset-2 border-none text-gray_07 font-normal mt-[56px]"
-          />
         </div>
       </div>
       <div className="flex justify-center pt-4 mt-[88px] mb-[76px]">
