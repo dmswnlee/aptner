@@ -11,6 +11,7 @@ interface Section {
   id: string;
   pinnedKey: string;
   listKey: string;
+  countKey: string;
 }
 
 interface Result {
@@ -28,10 +29,10 @@ interface Result {
 }
 
 const sections: Section[] = [
-  { title: '공지사항', id: 'notice', pinnedKey: 'pinnedNoticeList', listKey: 'noticeList' },
-  { title: '의무공개', id: 'disclosure', pinnedKey: 'pinnedDisclosureList', listKey: 'disclosureList' },
-  { title: '소통공간', id: 'communication', pinnedKey: 'pinnedPostList', listKey: 'postList' },
-  { title: '민원게시판', id: 'complaints', pinnedKey: 'pinnedQnaList', listKey: 'qnaList' },
+  { title: '공지사항', id: 'notice', pinnedKey: 'pinnedNoticeList', listKey: 'noticeList', countKey: 'noticeCount' },
+  { title: '의무공개', id: 'disclosure', pinnedKey: 'pinnedDisclosureList', listKey: 'disclosureList', countKey: 'disclosureCount' },
+  { title: '소통공간', id: 'communication', pinnedKey: 'pinnedPostList', listKey: 'postList', countKey: 'postCount' },
+  { title: '민원게시판', id: 'complaints', pinnedKey: 'pinnedQnaList', listKey: 'qnaList', countKey: 'qnaCount' },
 ];
 
 // Function to strip HTML tags and extract text
@@ -61,7 +62,7 @@ export function highlightText(text: string, query: string): React.ReactNode {
   );
 }
 
-const fetchData = async (query: string, token: string): Promise<Record<string, Result[]>> => {
+const fetchData = async (query: string, token: string): Promise<Record<string, any>> => {
   const response = await axios.get(`https://aptner.site/v1/api/search/RO000?keyword=${query}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -94,8 +95,9 @@ const fetchData = async (query: string, token: string): Promise<Record<string, R
         },
       })),
     ];
+    acc[`${section.id}Count`] = data.result[section.countKey];
     return acc;
-  }, {} as Record<string, Result[]>);
+  }, {} as Record<string, any>);
 
   return results;
 };
@@ -105,7 +107,7 @@ const MainSearchPage = () => {
   const searchParams = useSearchParams();
   const query = searchParams.get('keyword');
   const { data: session } = useSession();
-  const [results, setResults] = useState<Record<string, Result[]>>({});
+  const [results, setResults] = useState<Record<string, any>>({});
 
   useEffect(() => {
     if (query && session) {
@@ -118,7 +120,7 @@ const MainSearchPage = () => {
   }
 
   // 총 검색 결과 개수 계산
-  const totalResults = Object.values(results).reduce((acc, sectionResults) => acc + sectionResults.length, 0);
+  const totalResults = sections.reduce((acc, section) => acc + (results[`${section.id}Count`] || 0), 0);
 
   const handleMoreClick = (sectionId: string) => {
     router.push(`/${sectionId}?search=${query}&type=TITLE_AND_CONTENT`);
@@ -133,10 +135,10 @@ const MainSearchPage = () => {
         <div key={section.id} className="mb-20">
           <div className="flex border-b border-black mb-3 items-center">
             <div className="w-[135px] p-2 text-lg font-semibold flex justify-center">{section.title}</div> 
-            <div className="w-[810px] p-2 ml-2">총 <span className="text-[#00a8ff] font-semibold mr-[2px]">{results[section.id]?.length || 0}</span>건</div>
+            <div className="w-[810px] p-2 ml-2">총 <span className="text-[#00a8ff] font-semibold mr-[2px]">{results[`${section.id}Count`] || 0}</span>건</div>
             <button onClick={() => handleMoreClick(section.id)} className="flex text-sm w-[135px] p-2 justify-center items-center text-[#05A8FF]">더보기<IoIosArrowForward /></button>
           </div>
-          {results[section.id]?.map((result, index) => (
+          {results[section.id]?.map((result: Result, index: number) => (
             <div key={index} className="flex border-b border-gray-200">
               <div className="w-[135px] p-3 text-red-500 flex items-center justify-center">{result.category.name}</div> 
               <div className="w-[810px] pl-4 p-3 border-l border-gray-200">
