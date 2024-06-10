@@ -3,12 +3,17 @@ import Link from "next/link";
 import { Pagination } from "antd";
 import { highlightText } from "@/utils/highlightText";
 import { ListProps } from "@/interfaces/board";
+import { MoonLoader } from 'react-spinners';
 
 const headerStyle = "border-b border-b-[#2A3F6D] py-4 px-2 bg-[#F9F9F9] text-center";
 
 const DisclosureList = ({ data, loading, currentPage, total, onPageChange, searchQuery }: ListProps) => {
 	if (loading) {
-		return <div>Loading...</div>;
+		return (
+			<div className="flex justify-center">
+				<MoonLoader color="#05A8FF" size={30} />
+			</div>
+		);
 	}
 
 	return (
