@@ -4,7 +4,7 @@ import UserEdit from "../_component/UserEdit";
 
 export default function MyApartEditPage() {
   return (
-    <div className="w-[1080px] mx-auto relative">
+    <div className="w-[1080px] mx-auto relative mb-[250px]">
       <div className="absolute left-0 top-[-30px]">
         <UserEdit />
       </div>

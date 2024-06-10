@@ -79,7 +79,7 @@ export default function MyAuth() {
             </div>
           </div>
         </div>
-        <div className="flex justify-center pt-4 mt-[88px] mb-[76px]">
+        <div className="flex justify-center pt-4 mt-[88px] mb-[130px]">
           <button
             type="button"
             className="py-4 px-5 w-[430px] rounded-[5px] bg-blue_05 text-white cursor-pointer"

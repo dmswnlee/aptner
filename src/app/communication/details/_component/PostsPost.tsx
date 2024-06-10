@@ -12,6 +12,7 @@ import { useState } from "react";
 import Modal from "@/components/modal/Modal";
 import { PostsPostProps } from "@/interfaces/Post";
 import SizeDetailsDisplay from "../../board/_component/SizeDetailsDisplay";
+import User from "../../../../assets/images/emoji/user.png";
 
 const PostsPost = (props: PostsPostProps) => {
   const {
@@ -96,9 +97,11 @@ const PostsPost = (props: PostsPostProps) => {
         </h3>
         <div className="flex justify-between items-center pb-4 border-b">
           <div className="flex gap-3">
-            <p className="w-[56px] h-[60px] flex justify-center items-center rounded-[5px] text-2xl bg-[#D9F2FE]">
-              UI
-            </p>
+            <img
+              src={User.src}
+              alt="user"
+              className="rounded-full w-[60px] h-[60px] object-cover border cursor-pointer "
+            />
             <div className="flex flex-col gap-2">
               <p>{nickname}</p>
               <div className="flex gap-2">
