@@ -127,9 +127,9 @@ const PostList = ({
           {/* Pinned Posts */}
           {currentPage === 1 && pinnedData.map((posts) => (
             <div key={posts.id} className="contents bg-[#FFF7E6] relative">
-              <div className="border-b py-4 text-center">
-                <div className="flex justify-center items-center">
-                  <span className="bg-red text-white text-xs px-2 py-1 rounded">중요글</span>
+              <div className="border-b flex justify-center items-center">
+                <div className="bg-[#FFF3F3] text-red border border-red w-[62px] px-[10px] py-[8px] h-[30px] rounded flex justify-center items-center">
+                  <span className="text-[14px]">중요글</span>
                 </div>
               </div>
               <Link

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
+import { useSearchParams } from "next/navigation";
 import PostList from "./_component/PostList";
 import Gallery from "./_component/Gallery";
 import GalleryTab from "./_component/GalleryTab";
@@ -26,7 +27,14 @@ export default function CommunicationPage() {
   const [totalCount, setTotalCount] = useState(0);
   const { data: session } = useSession();
   const [selectedOption, setSelectedOption] = useState<Option>({ value: "TITLE_AND_CONTENT", label: "제목 + 내용" });
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get('search') || "";
+  
+  useEffect(() => {
+    setSearchQuery(initialQuery);
+  }, [initialQuery]);
+
+  const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
 
   // 카테고리 탭 정의
   const categoryTabs: Tab[] = [
@@ -103,7 +111,6 @@ export default function CommunicationPage() {
         }, 
       });
 
-      console.log(response.data.result)
       setCommunications(response.data.result.result.posts); // 일반 게시물 설정
       if (page === 1) {
         setPinnedPosts(response.data.result.result.pinnedPosts); // 첫 페이지에서만 중요 게시물 설정

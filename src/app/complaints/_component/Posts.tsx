@@ -14,6 +14,7 @@ import Block from "../../../components/board/Block";
 import DropdownSearch from "@/components/DropdownSearch";
 import SearchBoard from "@/components/SearchBoard";
 import { Tab, Communication, Option } from "@/interfaces/Post"; 
+import { useSearchParams } from "next/navigation"; // 추가
 
 interface Writer {
   id: number;
@@ -62,10 +63,16 @@ const Posts = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [category, setCategory] = useState<string>("all");
   const [selectedOption, setSelectedOption] = useState<Option>({ value: "TITLE_AND_CONTENT", label: "제목 + 내용" });
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const { data: session } = useSession();
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
+  const searchParams = useSearchParams(); // 추가
+  const initialQuery = searchParams.get('search') || ""; // 추가
+  const [searchQuery, setSearchQuery] = useState<string>(initialQuery); // 기존에 초기화하는 부분을 변경
+
+  useEffect(() => {
+    setSearchQuery(initialQuery);
+  }, [initialQuery]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
