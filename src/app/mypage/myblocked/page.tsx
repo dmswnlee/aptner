@@ -65,7 +65,7 @@ export default function MyBlockedPage() {
   };
 
   return (
-    <>
+    <div className="mb-[50px]">
       <div className="w-[648px] pl-4 gap-3 h-9 mx-auto bg-[#FBFBFB] flex items-center font-semibold">
         닉네임
       </div>
@@ -97,6 +97,6 @@ export default function MyBlockedPage() {
         onChange={handlePageChange}
         className="flex justify-center mt-10"
       />
-    </>
+    </div>
   );
 }

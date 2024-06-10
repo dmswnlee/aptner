@@ -32,7 +32,7 @@ interface modalProps {
 
 const VerificationModal = ({ onClose, phone }: modalProps) => {
   const dispatch = useDispatch();
-  const { isVerified, isExpired } = useSelector(
+  const { isVerified, isExpired, verificationCode } = useSelector(
     (state: RootState) => state.verification
   );
   const [gender, setGender] = useState("");
@@ -164,8 +164,8 @@ const VerificationModal = ({ onClose, phone }: modalProps) => {
         "https://aptner.site/v1/api/members/my-pages/phone",
         {
           phone: phone,
-          verificationCode: data.verificationCode,
-          newphone: data.phoneNumber,
+          verificationCode,
+          newPhone: data.phoneNumber,
         },
         {
           headers: {
