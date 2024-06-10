@@ -8,7 +8,6 @@ import { useSession } from "next-auth/react";
 import axios from "axios";
 import DisclosureList from "./_component/DisclosureList";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useSearchParams } from "next/navigation"; // 추가
 
 
 const Disclosure = () => {

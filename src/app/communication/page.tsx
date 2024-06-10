@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import { useSearchParams } from "next/navigation";
 import PostList from "./_component/PostList";
 import Gallery from "./_component/Gallery";
 import GalleryTab from "./_component/GalleryTab";
@@ -23,6 +22,7 @@ export default function CommunicationPage() {
   const [interiorCategory, setInteriorCategory] = useState<number | null>(null);
   const [communications, setCommunications] = useState<Communication[]>([]);
   const [pinnedPosts, setPinnedPosts] = useState<Communication[]>([]);
+	const [activeButton, setActiveButton] = useState<string>("Posts");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -30,6 +30,7 @@ export default function CommunicationPage() {
   const [selectedOption, setSelectedOption] = useState<Option>({ value: "TITLE_AND_CONTENT", label: "제목 + 내용" });
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('search') || "";
+	const router = useRouter();
   
   useEffect(() => {
     setSearchQuery(initialQuery);
@@ -144,7 +145,7 @@ export default function CommunicationPage() {
 	useEffect(() => {
 		if (session && category !== null) {
 			fetchCommunications(category === "" ? "all" : category, currentPage);
-		}
+		} 
 	}, [session, currentPage, activeButton, category, searchQuery, selectedOption, interiorCategory]);
 
 	return (

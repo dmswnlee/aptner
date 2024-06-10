@@ -127,7 +127,7 @@ const MainSearchPage = () => {
   return (
     <div className="container mt-[70px] w-[1080px] mx-auto">
       <h1 className="text-3xl font-semibold mb-20">
-        <span className="text-[#00A8FF]">'{query}'</span>에 대한 <span className="text-[#00A8FF]">{totalResults}</span>건의 검색결과가 있습니다.
+        <span className="text-[#00A8FF]">&apos;{query}&apos;</span>에 대한 <span className="text-[#00A8FF]">{totalResults}</span>건의 검색결과가 있습니다.
       </h1>
       {sections.filter(section => results[section.id]?.length > 0).map((section) => (
         <div key={section.id} className="mb-20">
