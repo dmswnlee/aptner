@@ -5,13 +5,14 @@ import { CommentType } from '@/interfaces/Comment';
 interface CommentListProps {
   comments: CommentType[];
   author: string;
+  userId: string | undefined; // Add userId prop
   onEdit: (id: number, parentId: number | null) => void;
   onDelete: (id: number) => void;
   onReply: (parentId: number | null, content: string, image: File | null) => Promise<void>;
   onUpdate: (id: number, content: string, parentId: number | null, image?: File | null) => Promise<void>;
 }
 
-const CommentList = ({ comments, author, onEdit, onDelete, onReply, onUpdate }: CommentListProps) => {
+const CommentList = ({ comments, author, userId, onEdit, onDelete, onReply, onUpdate }: CommentListProps) => {
   const buildNestedComments = (comments: CommentType[]) => {
     const commentMap = new Map<number, CommentType>();
     const nestedComments: CommentType[] = [];
@@ -42,6 +43,7 @@ const CommentList = ({ comments, author, onEdit, onDelete, onReply, onUpdate }: 
           key={comment.id}
           comment={comment}
           author={author}
+          userId={userId} // Pass the user ID
           onEdit={onEdit}
           onDelete={onDelete}
           onReply={onReply}

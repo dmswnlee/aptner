@@ -16,9 +16,9 @@ const DisclosuresDetailPage = () => {
   const pathname = usePathname(); 
   const basePath = pathname.split("/")[1]; // 첫 번째 경로를 추출
 
-	useEffect(() => {
+	useEffect(() => { 
 		if (session && session.accessToken) {
-			fetchPosts();
+			fetchPosts(); 
 		}
 	}, [session, slug]);
 
@@ -42,45 +42,38 @@ const DisclosuresDetailPage = () => {
 	const handleReaction = async (reactionType: string) => {
 		if (!post || !session || !session.accessToken) return;
 
-		try {
-			const response = await axios.post(
-				`${process.env.NEXT_PUBLIC_API_URL}/disclosures/RO000/${post.id}/emoji`,
-				{},
-				{
-					headers: {
-						Authorization: `Bearer ${(session as SessionData).accessToken}`,
-					},
-					params: {
-						type: reactionType,
-					},
-				},
-			);
+		console.log(post.id);
+    console.log("Reaction type:", reactionType);
 
-			const newPost = { ...post };
-			switch (reactionType) {
-				case "LIKE":
-					newPost.emoji.emojiCount.likeCount++;
-					break;
-				case "EMPATHY":
-					newPost.emoji.emojiCount.empathyCount++;
-					break;
-				case "FUN":
-					newPost.emoji.emojiCount.funCount++;
-					break;
-				case "AMAZING":
-					newPost.emoji.emojiCount.amazingCount++;
-					break;
-				case "SAD":
-					newPost.emoji.emojiCount.sadCount++;
-					break;
-				default:
-					break;
-			}
-			setPost(newPost);
-		} catch (error) {
-			console.error("Error sending reaction:", error);
-		}
-	};
+		const reactedKey =
+      `reacted${reactionType.charAt(0).toUpperCase()}${reactionType.slice(1).toLowerCase()}` as keyof typeof post.emoji.emojiReaction;
+    const countKey =
+      `${reactionType.toLowerCase()}Count` as keyof typeof post.emoji.emojiCount;
+
+    const reacted = post.emoji.emojiReaction[reactedKey];
+    const method = reacted ? "delete" : "post";
+
+		try {
+      const response = await axios({
+        method,
+        url: `https://aptner.site/v1/api/disclosures/RO000/${post.id}/emoji`,
+        headers: {
+          Authorization: `Bearer ${(session as SessionData).accessToken}`,
+        },
+        params: {
+          type: reactionType,
+        },
+      });
+      console.log(response.data);
+
+      const newPost = { ...post };
+      newPost.emoji.emojiCount[countKey] += reacted ? -1 : 1;
+      newPost.emoji.emojiReaction[reactedKey] = !reacted;
+      setPost(newPost);
+    } catch (error) {
+      console.error("Error sending reaction:", error);
+    }
+  };
 
 	const handleDelete = async () => {
 		if (!post || !session || !session.accessToken) return;
@@ -137,12 +130,14 @@ const DisclosuresDetailPage = () => {
 						emojiReactions={emojiReactions}
             handleDelete={handleDelete} 
             fileInfoList={fileInfoList}
+						userId={session?.user.id.toString()} // Convert user ID to string
+            writerId={post.writer.id.toString()} // Convert writer ID to string
 					/>
 					<Comment
 						initialComments={[]}
 						author={nickname}
 						postId={post.id}
-						pageType={"posts"}
+						pageType={"disclosures"}
 						categoryCode={categoryCode}
 					/>
 				</>

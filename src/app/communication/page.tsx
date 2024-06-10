@@ -5,7 +5,7 @@ import axios from "axios";
 import PostList from "./_component/PostList";
 import Gallery from "./_component/Gallery";
 import GalleryTab from "./_component/GalleryTab";
-import InteriorTab from "./_component/InteriorTab"; // Import the new component
+import InteriorTab from "./_component/InteriorTab";
 import { RiListUnordered, RiGalleryView2 } from "react-icons/ri";
 import Tabs from "@/components/noticeboard/Tabs";
 import DropdownSearch from "@/components/DropdownSearch";
@@ -15,10 +15,12 @@ import { Pagination } from "antd";
 import { Tab, Writer, Category, Communication, SessionData, Option } from "@/interfaces/Post"; 
 
 export default function CommunicationPage() {
+  // 상태 관리 변수들
   const [activeTab, setActiveTab] = useState<string>("Posts");
   const [category, setCategory] = useState<string>("all");
-  const [interiorCategory, setInteriorCategory] = useState<number>(0);
+  const [interiorCategory, setInteriorCategory] = useState<number | null>(null);
   const [communications, setCommunications] = useState<Communication[]>([]);
+  const [pinnedPosts, setPinnedPosts] = useState<Communication[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -26,6 +28,7 @@ export default function CommunicationPage() {
   const [selectedOption, setSelectedOption] = useState<Option>({ value: "TITLE_AND_CONTENT", label: "제목 + 내용" });
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+  // 카테고리 탭 정의
   const categoryTabs: Tab[] = [
     { name: "all", label: "전체", code: "" },
     { name: "freeboard", label: "자유게시판", code: "PT001" },
@@ -35,44 +38,55 @@ export default function CommunicationPage() {
     { name: "lost-and-found", label: "분실물", code: "PT005" },
     { name: "interior", label: "인테리어", code: "PT006" },
   ];
+
+  // 상단 탭 정의
   const tabs = [
     { name: "Posts", icon: <RiListUnordered /> },
     { name: "Gallery", icon: <RiGalleryView2 /> }
   ];
 
+  // 탭 변경 핸들러
   const handleTabChange = (tabName: string) => {
     setActiveTab(tabName);
     setCurrentPage(1); 
   };
 
+  // 카테고리 탭 변경 핸들러
   const handleCategoryTabChange = (tabName: string) => {
     const selectedCategory = categoryTabs.find(tab => tab.name === tabName);
     if (selectedCategory) {
       setCategory(selectedCategory.code);
+      setInteriorCategory(null); // 메인 카테고리를 변경할 때 인테리어 카테고리 초기화
     }
   };
 
-  const handleInteriorTabChange = (tabName: string, categoryCode: number) => {
+  // 인테리어 카테고리 탭 변경 핸들러
+  const handleInteriorTabChange = (tabName: string, categoryCode: number | null) => {
     setInteriorCategory(categoryCode);
     setCurrentPage(1);
   };
 
+  // 페이지 변경 핸들러
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
   
+  // 검색 옵션 선택 핸들러
   const handleSearchOptionSelect = (option: Option) => {
     setSelectedOption(option);
   };
 
+  // 검색 핸들러
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setCurrentPage(1);
   };
 
+  // 게시물 데이터를 가져오는 함수
   const fetchCommunications = async (page: number) => {
     if (!session) return;
     try {
+      // 게시물 데이터 API 요청
       const response = await axios.get(
         `https://aptner.site/v1/api/posts/RO000`, {
         headers: {
@@ -80,16 +94,22 @@ export default function CommunicationPage() {
         },
         params: {
           page: page,
-          size: activeTab === "Gallery" ? 16 : 15,
+          size: activeTab === "Gallery" ? 16 : 15, // Gallery와 Post에 따라 페이지 당 가져오는 개수 설정
           sort: "LATEST",
           search: searchQuery || null,
           type: selectedOption.value || null,
           categoryCode: category === "all" ? null : category,
-          interiorCategory: category === "PT006" ? interiorCategory : null
+          apartAreaId: category === "PT006" ? interiorCategory : null
         }, 
       });
+
       console.log(response.data.result)
-      setCommunications(response.data.result.result.posts);
+      setCommunications(response.data.result.result.posts); // 일반 게시물 설정
+      if (page === 1) {
+        setPinnedPosts(response.data.result.result.pinnedPosts); // 첫 페이지에서만 중요 게시물 설정
+      } else {
+        setPinnedPosts([]);
+      }
       setTotalCount(response.data.result.totalCount);
       setLoading(false);
     } catch (err) {
@@ -97,6 +117,7 @@ export default function CommunicationPage() {
     }
   };
 
+  // 세션이나 페이지가 변경될 때마다 데이터 가져오기
   useEffect(() => {
     if (session) {
       fetchCommunications(currentPage);
@@ -119,28 +140,33 @@ export default function CommunicationPage() {
         {activeTab === "Posts" ? (
           <PostList
             data={communications}
+            pinnedData={currentPage === 1 ? pinnedPosts : []} // 첫 페이지에서는 중요 게시물 포함
             loading={loading}
             currentPage={currentPage}
             total={totalCount}
             onPageChange={handlePageChange}
-            searchQuery={searchQuery} // Pass searchQuery as prop
+            searchQuery={searchQuery}
+            selectedOption={selectedOption}
           />
         ) : (
           <Gallery
             data={communications}
+            pinnedData={currentPage === 1 ? pinnedPosts : []} // 첫 페이지에서는 중요 게시물 포함
             detailPath="/communication/details"
             loading={loading}
             currentPage={currentPage}
             total={totalCount}
             pageSize={16}
             onPageChange={handlePageChange} 
+            searchQuery={searchQuery} // Pass searchQuery to Gallery
+            selectedOption={selectedOption} // Pass selectedOption to Gallery
           />
         )}
         <div className="flex justify-center my-10">
           <Pagination
             current={currentPage}
             total={totalCount}
-            pageSize={activeTab === "Gallery" ? 16 : 15}
+            pageSize={activeTab === "Gallery" ? 16 : 15} // 페이지 당 게시물 수 설정
             onChange={handlePageChange}
           />
         </div>
