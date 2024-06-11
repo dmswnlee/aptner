@@ -5,18 +5,22 @@ import CommentForm from './CommentForm';
 import ReplyList from '../replies/ReplyList';
 import { CommentType } from '@/interfaces/Comment';
 import Modal from '@/components/modal/Modal';
+import User from "@/assets/images/emoji/user.png";
+import axios from 'axios';
+import { useSession } from 'next-auth/react';
 
 interface CommentItemProps {
   comment: CommentType;
   author: string;
   userId: string | undefined;
   onEdit: (id: number, parentId: number | null) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: number) => Promise<void>;
   onReply: (parentId: number | null, content: string, image: File | null) => Promise<void>;
   onUpdate: (id: number, content: string, parentId: number | null, image?: File | null) => Promise<void>;
 }
 
 const CommentItem = ({ comment, author, userId, onEdit, onDelete, onReply, onUpdate }: CommentItemProps) => {
+  const [localComment, setLocalComment] = useState<CommentType>(comment);
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [replyContent, setReplyContent] = useState<string>(`@${comment.writer.nickname} `);
   const [replyImage, setReplyImage] = useState<File | null>(null);
@@ -26,15 +30,11 @@ const CommentItem = ({ comment, author, userId, onEdit, onDelete, onReply, onUpd
   const [editImage, setEditImage] = useState<File | null>(comment.image ? new File([], comment.image) : null);
   const [replies, setReplies] = useState<CommentType[]>(comment.replies || []);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     setReplies(comment.replies || []);
   }, [comment.replies]);
-
-  useEffect(() => {
-    console.log("Comment writer ID:", comment.writer.id, typeof comment.writer.id);
-    console.log("Session user ID:", userId, typeof userId);
-  }, [comment.writer.id, userId]);
 
   const handleReplyChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setReplyContent(e.target.value);
@@ -68,82 +68,140 @@ const CommentItem = ({ comment, author, userId, onEdit, onDelete, onReply, onUpd
   const handleUpdateSubmit = async () => {
     await onUpdate(comment.id, editContent, comment.parentId, editImage);
     setIsEditing(false);
-    comment.updatedAt = new Date().toISOString();
+    setLocalComment(prev => ({ ...prev, updatedAt: new Date().toISOString() }));
   };
 
   const handleDelete = () => {
     setIsModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    onDelete(comment.id);
+  const confirmDelete = async () => {
+    await onDelete(comment.id);
+    setLocalComment(prev => ({ ...prev, deletedAt: new Date().toISOString() }));
     setIsModalOpen(false);
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date';
+    }
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day} ${date.toLocaleTimeString('ko-KR')}`;
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
+
+  interface Profile {
+    profileImage: string;
+    nickname: string;
+  }
+  const [profile, setProfile] = useState<Profile | null>(null);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      handleProfile();
+    }
+  }, [status]);
+
+  const handleProfile = async () => {
+    try {
+      const response = await axios.get(
+        "https://aptner.site/v1/api/members/RO000/my-pages/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        }
+      );
+      console.log(response.data);
+      setProfile(response.data.result);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const profileImage = profile?.profileImage;
+
+  const renderCommentContent = () => {
+    if (localComment.deletedAt) {
+      return <p className="p-4 bg-gray-100 text-gray-500 rounded-md">삭제된 댓글입니다</p>;
+    } else {
+      return (
+        <>
+          <p className='ml-[50px] mb-5'>{localComment.content}</p>
+          {localComment.image && (
+            <div className="ml-[50px] mt-2 max-w-xs flex items-center">
+              <img src={localComment.image} alt="Attached" className="max-w-xs" />
+              <a href={localComment.image} download>
+                <AiOutlineDownload className="ml-2 text-xl" />
+              </a>
+            </div>
+          )}
+          {localComment.imageUrl && (
+            <div className="ml-[50px] mt-2 max-w-xs flex items-center">
+              <img src={localComment.imageUrl} alt="Attached" className="max-w-xs" />
+              <a href={localComment.imageUrl} download>
+                <AiOutlineDownload className="ml-2 text-xl" />
+              </a>
+            </div>
+          )}
+        </>
+      );
+    }
   };
 
   return (
     <div className="mt-7">
-      <div className=''>
-        {isEditing ? (
-          <CommentForm
-            author={author}
-            newComment={editContent}
-            charCount={editContent.length}
-            image={editImage}
-            onTextareaChange={handleEditChange}
-            onFileChange={handleEditFileChange}
-            onRemoveImage={() => setEditImage(null)}
-            onAddComment={handleUpdateSubmit}
-            isEditing={true}
-          />
-        ) : (
-          <>
-            <div className="flex items-center gap-3">
-              <p className="w-10 h-10 flex justify-center items-center rounded-[5px] bg-[#D9F2FE]">UI</p>
-              <div className="flex flex-col gap-3">
-                <div className="flex gap-2">
-                  <p className='font-semibold'>{comment.writer.nickname}</p>
-                  <div className="w-[1px] bg-[#A3A3A3]"></div>
-                  <p className=''>{formatDate(comment.updatedAt || comment.createdAt)}</p>
+      {localComment.deletedAt ? (
+        <div className="p-4 bg-gray-100 text-gray-500 rounded-md">삭제된 댓글입니다</div>
+      ) : (
+        <div className=''>
+          {isEditing ? (
+            <CommentForm
+              author={author}
+              newComment={editContent}
+              charCount={editContent.length}
+              image={editImage}
+              onTextareaChange={handleEditChange}
+              onFileChange={handleEditFileChange}
+              onRemoveImage={() => setEditImage(null)}
+              onAddComment={handleUpdateSubmit}
+              isEditing={true}
+            />
+          ) : (
+            <>
+              <div className="flex items-center gap-3">
+                <img
+                  // src={profileImage || User.src}
+                  src={User.src}
+                  alt="user"
+                  className="flex rounded-full w-10 h-10 object-cover border cursor-pointer "
+                />
+                <div className="flex flex-col gap-3">
+                  <div className="flex gap-2">
+                    <p className='font-semibold'>{localComment.writer.nickname}</p>
+                    <div className="w-[1px] bg-[#A3A3A3]"></div>
+                    <p className=''>{formatDate(localComment.updatedAt || localComment.createdAt)}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <p className='ml-[50px] mb-5'>{comment.content}</p>
-            {comment.image && (
-              <div className="ml-[50px] mt-2 max-w-xs flex items-center">
-                <img src={comment.image} alt="Attached" className="max-w-xs" />
-                <a href={comment.image} download>
-                  <AiOutlineDownload className="ml-2 text-xl" />
-                </a>
-              </div>
-            )}
-            {comment.imageUrl && (
-              <div className="ml-[50px] mt-2 max-w-xs flex items-center">
-                <img src={comment.imageUrl} alt="Attached" className="max-w-xs" />
-                <a href={comment.imageUrl} download>
-                  <AiOutlineDownload className="ml-2 text-xl" />
-                </a>
-              </div>
-            )}
-            <div className="mt-5 ml-[45px]">
-              {comment.writer.id?.toString() === userId && (
+              {renderCommentContent()}
+              <div className="mt-5 ml-[45px]">
                 <ButtonGroup
                   onEdit={() => setIsEditing(true)}
                   onDelete={handleDelete}
                   onReply={() => setIsReplying(!isReplying)}
+                  showEditDelete={localComment.writer.id?.toString() === userId}
                 />
-              )}
-            </div>
-          </>
-        )}
-      </div>
+              </div>
+            </>
+          )}
+        </div>
+      )}
       <div className='ml-[50px]'>
         {isReplying && (
           <CommentForm
@@ -155,16 +213,16 @@ const CommentItem = ({ comment, author, userId, onEdit, onDelete, onReply, onUpd
             onFileChange={handleReplyFileChange}
             onRemoveImage={() => setReplyImage(null)}
             onAddComment={handleReplySubmit}
-            parentId={comment.id}
+            parentId={localComment.id}
             isEditing={false}
-            prefix={`@${comment.writer.nickname} `}
+            prefix={`@${localComment.writer.nickname} `}
           />
         )}
       </div>
-      {(comment.replies && comment.replies.length > 0) && (
-        <div className='ml-[50px] mt-6 px-4 py-1 rounded-2xl bg-gray-50'>
+      {(localComment.replies && localComment.replies.length > 0) && (
+        <div className='ml-[50px] mt-6 rounded-2xl'>
           <ReplyList
-            replies={comment.replies}
+            replies={localComment.replies}
             author={author}
             userId={userId}
             onEdit={onEdit}

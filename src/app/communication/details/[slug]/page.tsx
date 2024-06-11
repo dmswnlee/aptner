@@ -7,7 +7,6 @@ import React, { useEffect, useState } from "react";
 import Comment from "@/components/comment/Comment";
 import { useRouter, usePathname } from "next/navigation";
 import { Post, SessionData } from "@/interfaces/board";
-import SizeDetailsDisplay from "../../board/_component/SizeDetailsDisplay";
 
 interface PostFileInfo {
   id: number;

@@ -15,6 +15,7 @@ interface Section {
 }
 
 interface Result {
+  id: number;  // Add the id field
   category: {
     id: number;
     code: string;
@@ -77,6 +78,7 @@ const fetchData = async (query: string, token: string): Promise<Record<string, a
   const results = sections.reduce((acc, section) => {
     acc[section.id] = [
       ...data.result[section.pinnedKey].map((item: any) => ({
+        id: item.category.id,  // Include the post ID here
         category: { name: '중요글' },
         title: item.title,
         content: stripHtmlTags(item.content),
@@ -86,6 +88,7 @@ const fetchData = async (query: string, token: string): Promise<Record<string, a
         },
       })),
       ...data.result[section.listKey].map((item: any) => ({
+        id: item.id,  // Include the post ID here
         category: item.category,
         title: item.title,
         content: stripHtmlTags(item.content),
@@ -139,10 +142,10 @@ const MainSearchPage = () => {
             <button onClick={() => handleMoreClick(section.id)} className="flex text-sm w-[135px] p-2 justify-center items-center text-[#05A8FF]">더보기<IoIosArrowForward /></button>
           </div>
           {results[section.id]?.map((result: Result, index: number) => (
-            <div key={index} className="flex border-b border-gray-200">
+            <div key={result.id} className="flex border-b border-gray-200"> {/* Use result.id as the key */}
               <div className="w-[135px] p-3 text-red-500 flex items-center justify-center">{result.category.name}</div> 
               <div className="w-[810px] pl-4 p-3 border-l border-gray-200">
-                <a href={`/${section.id}/${index}`} className="font-semibold">
+                <a href={`/${section.id}/details/${result.id}`} className="font-semibold"> {/* Use result.id in the URL */}
                   {highlightText(result.title, query || '')}
                 </a>
                 <p className="text-gray-700 mt-1 overflow-hidden whitespace-pre-wrap text-ellipsis max-h-12">{highlightText(result.content, query || '')}</p>
@@ -160,3 +163,4 @@ const MainSearchPage = () => {
 };
 
 export default MainSearchPage;
+

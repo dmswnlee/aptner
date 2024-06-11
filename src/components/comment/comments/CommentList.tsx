@@ -7,7 +7,7 @@ interface CommentListProps {
   author: string;
   userId: string | undefined; // Add userId prop
   onEdit: (id: number, parentId: number | null) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: number) => Promise<void>;
   onReply: (parentId: number | null, content: string, image: File | null) => Promise<void>;
   onUpdate: (id: number, content: string, parentId: number | null, image?: File | null) => Promise<void>;
 }

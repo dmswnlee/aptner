@@ -32,7 +32,7 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
   }, [session, currentPage]);
 
   // 현재 날짜와 시간을 가져오는 함수
-  const getCurrentDateTime = () => new Date().toLocaleString();
+  const getCurrentDateTime = () => new Date().toISOString();
 
   // 텍스트 영역 변경 핸들러
   const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -64,7 +64,7 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
           },
           params: {
             page: page,
-            size: 100,
+            size: 10,
             sort: "LATEST",
           },
         }
@@ -125,15 +125,12 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
           replies: [],
           parentId: parentId,
           postId: postId,
-          updatedAt: ''
+          updatedAt: '',
+          isBlocked: false,
+          deletedAt: null,
+          imageUrl: response.data.result.imageUrl
         };
 
-        // Set imageUrl if an image was uploaded and the response contains imageUrl
-        if (image && response.data.result.imageUrl) {
-          newCommentObj.imageUrl = response.data.result.imageUrl;
-        }
-
-        // Use a temporary comments state to update the UI
         setComments(prevComments => {
           const parentComment = prevComments.find(comment => comment.id === parentId);
           if (parentComment) {
@@ -179,9 +176,6 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
     formData.append('request', new Blob([JSON.stringify(requestPayload)], { type: 'application/json' }));
     if (image) {
       formData.append('image', image);
-    } else {
-      // This ensures that we send the same structure as the POST request
-      formData.append('image', new Blob());
     }
 
     try {
@@ -201,13 +195,11 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
           ...comments.find(comment => comment.id === id)!,
           content: content,
           image: image ? URL.createObjectURL(image) : undefined,
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
+          imageUrl: response.data.result.imageUrl,
+          isBlocked: response.data.result.isBlocked,
+          deletedAt: response.data.result.deletedAt
         };
-
-        // Set imageUrl if an image was uploaded and the response contains imageUrl
-        if (image && response.data.result.imageUrl) {
-          updatedCommentObj.imageUrl = response.data.result.imageUrl;
-        }
 
         setComments(comments.map(comment => 
           comment.id === id ? updatedCommentObj : comment
@@ -241,7 +233,9 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
       );
 
       if (response.data.success) {
-        setComments(comments.filter(comment => comment.id !== id));
+        setComments(comments.map(comment =>
+          comment.id === id ? { ...comment, deletedAt: new Date().toISOString() } : comment
+        ));
       } else {
         console.error('Failed to delete comment:', response.data.message);
       }

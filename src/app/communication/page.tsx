@@ -137,7 +137,7 @@ export default function CommunicationPage() {
 				setCategory("");
 			}
 		} else {
-			setCategory("");
+			setCategory(""); 
 		}
 	}, [searchParams]);
 

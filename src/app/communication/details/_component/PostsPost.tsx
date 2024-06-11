@@ -8,11 +8,13 @@ import emoji3 from "@/assets/images/emoji/emoji3.png";
 import emoji4 from "@/assets/images/emoji/emoji4.png";
 import emoji5 from "@/assets/images/emoji/emoji5.png";
 import { useRouter, usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "@/components/modal/Modal";
 import { PostsPostProps } from "@/interfaces/Post";
 import SizeDetailsDisplay from "../../board/_component/SizeDetailsDisplay";
-import User from "../../../../assets/images/emoji/user.png";
+import User from "@/assets/images/emoji/user.png";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 
 const PostsPost = (props: PostsPostProps) => {
   const {
@@ -36,7 +38,8 @@ const PostsPost = (props: PostsPostProps) => {
   const pathname = usePathname();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
-
+  const { data: session, status } = useSession();
+  
   const handleListClick = () => {
     router.push(`/communication`);
   };
@@ -89,15 +92,46 @@ const PostsPost = (props: PostsPostProps) => {
     return emojiReactions[reactionKey] ? "text-blue-500" : "";
   };
 
+  interface Profile {
+    profileImage: string;
+    nickname: string;
+  }
+  const [profile, setProfile] = useState<Profile | null>(null);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      handleProfile();
+    }
+  }, [status]);
+
+  const handleProfile = async () => {
+    try {
+      const response = await axios.get(
+        "https://aptner.site/v1/api/members/RO000/my-pages/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        }
+      );
+      console.log(response.data);
+      setProfile(response.data.result);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const profileImage = profile?.profileImage;
   return (
     <>
       <div>
         <h3 className="text-xl mb-10">
           [{category}] {title}
-        </h3>
+        </h3> 
         <div className="flex justify-between items-center pb-4 border-b">
           <div className="flex gap-3">
             <img
+              // src={profileImage || User.src}
               src={User.src}
               alt="user"
               className="rounded-full w-[60px] h-[60px] object-cover border cursor-pointer "
