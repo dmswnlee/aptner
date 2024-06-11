@@ -6,4 +6,5 @@ interface Tab {
 export interface TabsProps {
   tabs: Tab[];
   onTabChange: (tabName: string) => void;
+  activeTab: string;
 }

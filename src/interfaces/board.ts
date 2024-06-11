@@ -48,6 +48,7 @@ export interface ListProps {
 	data: Notices[];
 	loading: boolean;
 	currentPage: number;
+	pinnedData: Notices[];
 	total: number;
 	onPageChange: (page: number) => void;
 	searchQuery: string;

@@ -101,6 +101,7 @@ const ReplyItem = ({ reply, author, userId, onEdit, onDelete, onReply, onUpdate 
     const seconds = String(date.getSeconds()).padStart(2, '0');
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   };
+
   interface Profile {
     profileImage: string;
     nickname: string;
@@ -131,7 +132,7 @@ const ReplyItem = ({ reply, author, userId, onEdit, onDelete, onReply, onUpdate 
   };
 
   const profileImage = profile?.profileImage;
-  
+
   const renderReplyContent = (content: string) => {
     const prefix = `@${reply.writer.nickname} `;
     if (content.startsWith(prefix)) {
@@ -167,9 +168,7 @@ const ReplyItem = ({ reply, author, userId, onEdit, onDelete, onReply, onUpdate 
             ) : ( 
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-3">
-                  {/* <p className="w-10 h-10 flex justify-center items-center rounded-[5px] bg-[#D9F2FE]">UI</p> */}
                   <img
-                    // src={profileImage || User.src}
                     src={User.src}
                     alt="user"
                     className="flex rounded-full w-10 h-10 object-cover border cursor-pointer "
@@ -204,14 +203,16 @@ const ReplyItem = ({ reply, author, userId, onEdit, onDelete, onReply, onUpdate 
               </div>
             )}
           </div>
-          <div className="ml-[45px] mt-5">
-            <ButtonGroup
-              onEdit={() => setIsEditing(true)}
-              onDelete={handleDelete}
-              onReply={() => setIsReplying(!isReplying)}
-              showEditDelete={reply.writer.id?.toString() === userId}
-            />
-          </div>
+          {!isEditing && (
+            <div className="ml-[45px] mt-5">
+              <ButtonGroup
+                onEdit={() => setIsEditing(true)}
+                onDelete={handleDelete}
+                onReply={() => setIsReplying(!isReplying)}
+                showEditDelete={reply.writer.id?.toString() === userId}
+              />
+            </div>
+          )}
           <div className="ml-[50px]">
             {isReplying && (
               <CommentForm

@@ -2,11 +2,8 @@ import { useState } from "react";
 
 import { TabsProps } from '@/interfaces/communication/GalleryTab';
 
-const GalleryTab = ({ tabs, onTabChange }: TabsProps) => {
-  const [activeTab, setActiveTab] = useState<string>(tabs[0].name);
-
+const GalleryTab = ({ tabs, onTabChange, activeTab }: TabsProps) => {
   const handleTabClick = (tabName: string) => {
-    setActiveTab(tabName);
     onTabChange(tabName);
   };
 
