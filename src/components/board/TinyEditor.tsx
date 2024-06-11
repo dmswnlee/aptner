@@ -27,7 +27,7 @@ const TinyEditor: React.FC<TinyEditorProps> = ({ initialValue = "", onChange }) 
 				</div>
 			) : (
 				<Editor
-					apiKey={`${process.env.NEXT_TINY_API_KEY}`}
+					apiKey="h8q6q2an2asg9emdpl8b9t4ob8quhhss6z9h3euqsuv8hvvj"
 					initialValue={initialValue}
 					init={{
 						plugins:
