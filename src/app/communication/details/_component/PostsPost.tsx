@@ -35,7 +35,7 @@ const PostsPost = (props: PostsPostProps) => {
     userId, 
     writerId,
     viewCount, 
-    totalCommentCount, // Receive the total comment count
+    totalCommentCount,
   } = props;
 
   const router = useRouter();

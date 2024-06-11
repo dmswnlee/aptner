@@ -3,19 +3,19 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import axios from "axios";
-
 import PostsPost from "@/app/communication/details/_component/PostsPost";
 import Comment from "@/components/comment/Comment";
 import { Post, SessionData, PostFileInfo } from "@/interfaces/board";
 
 const DisclosuresDetailPage = () => {
 	const { slug } = useParams();
-	const [post, setPost] = useState<Post | null>(null);
+	const [post, setPost] = useState<Post | null>(null); 
 	const [fileInfoList, setFileInfoList] = useState<PostFileInfo[]>([]);
 	const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname(); 
   const basePath = pathname.split("/")[1]; 
+	const [totalCommentCount, setTotalCommentCount] = useState(0);
 
 	useEffect(() => { 
 		if (session && session.accessToken) {
@@ -133,6 +133,7 @@ const DisclosuresDetailPage = () => {
             fileInfoList={fileInfoList}
 						userId={session?.user.id.toString()} 
             writerId={post.writer.id.toString()} 
+						totalCommentCount={totalCommentCount}
 					/>
 					<Comment
 						initialComments={[]}
@@ -140,6 +141,7 @@ const DisclosuresDetailPage = () => {
 						postId={post.id}
 						pageType={"disclosures"}
 						categoryCode={categoryCode}
+						setTotalCommentCount={setTotalCommentCount}
 					/>
 				</>
 			)}

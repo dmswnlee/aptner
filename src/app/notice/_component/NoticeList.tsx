@@ -3,11 +3,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { MoonLoader } from "react-spinners";
 import { Pagination } from "antd";
-
 import { highlightText } from "@/utils/highlightText";
 import { ListProps } from "@/interfaces/board";
-
 import New from "@/assets/images/emoji/new.png";
+import { RiImageFill } from 'react-icons/ri';
 
 const headerStyle = "border-b border-b-[#2A3F6D] py-4 px-2 bg-[#F9F9F9] text-center";
 
@@ -23,6 +22,13 @@ const NoticeList = ({ data, loading, currentPage, total, onPageChange, searchQue
   const filteredPinnedData = pinnedData?.filter((post) =>
     post.title.includes(searchQuery) || post.writer.nickname.includes(searchQuery)
   );
+
+  const isNew = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const timeDifference = now.getTime() - date.getTime();
+    return timeDifference < 24 * 60 * 60 * 1000;
+  };
 
   const combinedData = currentPage === 1
     ? [...filteredPinnedData, ...data].slice(0, 15)
@@ -53,6 +59,12 @@ const NoticeList = ({ data, loading, currentPage, total, onPageChange, searchQue
                 className="border-b py-4 ml-[3px] flex px-[5px]"
               >
                 {highlightText(post.title, searchQuery)}
+                <div className='flex ml-1 items-center'>
+                  {isNew(post.createdAt) && (
+                    <Image src={New} alt="new" className="w-[17px] h-[17px] text-red-500 ml-1" />
+                  )}
+                  {post.isFileAttached && <RiImageFill className="ml-1 " />}
+                </div>
               </Link>
               <div className="border-b py-4 text-center">{post.writer.nickname}</div>
               <div className="border-b py-4 text-center">{post.viewCount}</div>

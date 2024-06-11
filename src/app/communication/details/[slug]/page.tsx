@@ -29,7 +29,6 @@ const DetailPage = () => {
   useEffect(() => {
     if (session && session.accessToken) {
       fetchPosts();
-      fetchCommentsCount();
     }
   }, [session, slug]);
 
@@ -54,23 +53,6 @@ const DetailPage = () => {
     } 
   };
 
-  const fetchCommentsCount = async () => {
-    if (!session || !session.accessToken) return;
-
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/posts/RO000/${slug}/comments/count`, // Assume this endpoint returns total comment count
-        {
-          headers: {
-            Authorization: `Bearer ${(session as SessionData).accessToken}`,
-          },
-        }
-      );
-      setTotalCommentCount(response.data.totalCount); // Update the total comment count
-    } catch (err) {
-      console.log("err", err);
-    } 
-  };
 
   const handleReaction = async (reactionType: string) => {
     if (!post || !session || !session.accessToken) return;
@@ -163,7 +145,7 @@ const DetailPage = () => {
             nickname={nickname}
             title={title}
             content={content}
-            createdAt={createdAt}
+            createdAt={createdAt} 
             onReaction={handleReaction}
             emojiCounts={emojiCounts}
             emojiReactions={emojiReactions}

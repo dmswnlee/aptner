@@ -25,6 +25,7 @@ interface Category {
 }
 
 export interface Notices {
+  isFileAttached?: boolean;
 	id: number;
 	title: string;
 	content: string;
