@@ -94,4 +94,6 @@ export interface PostsPostProps {
   };
   userId: string; 
   writerId: string; 
+  viewCount?: number
+  totalCommentCount?: number
 }

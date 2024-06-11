@@ -71,7 +71,7 @@ const Notice = () => {
           categoryCode: categoryCode === "all" ? null : categoryCode,
         },
       });
-
+      
       const normalPosts = response.data.result.result.noticeInfoList;
       const pinnedPosts = page === 1 ? response.data.result.result.pinnedNoticeList : [];
 
@@ -79,6 +79,7 @@ const Notice = () => {
       setNotices(normalPosts.slice(0, 15 - pinnedPosts.length));
       setTotalCount(response.data.result.totalCount + pinnedPosts.length);
       setLoading(false);
+      console.log(response.data)
     } catch (err) {
       console.log("Error fetching posts:", err);
       setLoading(false);

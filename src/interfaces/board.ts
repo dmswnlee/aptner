@@ -92,6 +92,7 @@ export interface Post {
 		};
 	};
 	apartArea?: ApartArea;
+	viewCount?: number
 }
 
 export interface PostFileInfo {

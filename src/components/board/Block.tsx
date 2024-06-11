@@ -6,6 +6,7 @@ interface TooltipProps {
   nickname: string;
   userId: number;
   onClose: () => void;
+  onSearchAuthorPosts: (author: string) => void;
 }
 
 interface SessionData {
@@ -16,7 +17,7 @@ interface SessionData {
   accessToken: string;
 }
 
-const Block: React.FC<TooltipProps> = ({ userId, onClose }) => {
+const Block: React.FC<TooltipProps> = ({ onSearchAuthorPosts, nickname, userId, onClose }) => {
   const { data: session } = useSession();
 
   const handleBlockUser = async () => {
@@ -49,9 +50,16 @@ const Block: React.FC<TooltipProps> = ({ userId, onClose }) => {
     onClose();
   };
 
+  const handleSearchAuthorPosts = () => {
+    onSearchAuthorPosts(nickname);
+    onClose();
+  };
+
   return (
     <div className="absolute bg-white border border-gray-300 shadow-lg rounded p-2 mt-2 z-50">
-      <button className="w-full text-center px-2 py-1 hover:bg-gray-100">
+      <button 
+        onClick={handleSearchAuthorPosts}
+        className="w-full text-center px-2 py-1 hover:bg-gray-100">
         작성글 검색
       </button>
       <button

@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -20,6 +20,7 @@ const DetailPage = () => {
   const { slug } = useParams();
   const [post, setPost] = useState<Post | null>(null);
   const [fileInfoList, setFileInfoList] = useState<PostFileInfo[]>([]);
+  const [totalCommentCount, setTotalCommentCount] = useState(0); // Manage total comment count
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
@@ -28,6 +29,7 @@ const DetailPage = () => {
   useEffect(() => {
     if (session && session.accessToken) {
       fetchPosts();
+      fetchCommentsCount();
     }
   }, [session, slug]);
 
@@ -47,6 +49,24 @@ const DetailPage = () => {
       const postData = response.data.result.post;
       setPost(postData);
       setFileInfoList(response.data.result.postFileInfoList || []);
+    } catch (err) {
+      console.log("err", err);
+    } 
+  };
+
+  const fetchCommentsCount = async () => {
+    if (!session || !session.accessToken) return;
+
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/posts/RO000/${slug}/comments/count`, // Assume this endpoint returns total comment count
+        {
+          headers: {
+            Authorization: `Bearer ${(session as SessionData).accessToken}`,
+          },
+        }
+      );
+      setTotalCommentCount(response.data.totalCount); // Update the total comment count
     } catch (err) {
       console.log("err", err);
     } 
@@ -152,6 +172,8 @@ const DetailPage = () => {
             apartArea={apartArea} 
             userId={session?.user.id.toString()} 
             writerId={post.writer.id.toString()} 
+            viewCount={post.viewCount}
+            totalCommentCount={totalCommentCount} // Pass the total comment count to PostsPost
           />
           <Comment
             initialComments={[]} 
@@ -159,6 +181,7 @@ const DetailPage = () => {
             postId={post.id} 
             pageType={'posts'} 
             categoryCode={categoryCode}
+            setTotalCommentCount={setTotalCommentCount} // Pass the setTotalCommentCount to Comment
           />
         </>
       )}
