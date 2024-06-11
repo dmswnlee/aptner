@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
+
 import ColorButton from "@/components/buttons/ColorButton";
 import TermsBox from "./TermsBox";
 import { RootState } from "@/stores/store";

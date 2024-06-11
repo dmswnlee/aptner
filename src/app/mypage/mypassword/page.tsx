@@ -1,11 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import UserEdit from "../_component/UserEdit";
+import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { LuAlertCircle } from "react-icons/lu";
 import axios from "axios";
-import { useSession } from "next-auth/react";
-import ConfirmModal from "../../../components/modal/ConfirmModal";
+
+import UserEdit from "../_component/UserEdit";
+import ConfirmModal from "@/components/modal/ConfirmModal";
 
 interface FormData {
   currentPassword: string;
@@ -40,7 +41,7 @@ export default function MyPassword() {
       };
       console.log(requestPayload);
       const response = await axios.patch(
-        "https://aptner.site/v1/api/members/my-pages/password",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/my-pages/password`,
         requestPayload,
         {
           headers: {

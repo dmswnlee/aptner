@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import UserEdit from "../_component/UserEdit";
-import VerificationModal from "../../../components/modal/VerificationModal";
 import { useSession } from "next-auth/react";
 import axios from "axios";
+
+import UserEdit from "../_component/UserEdit";
+import VerificationModal from "@/components/modal/VerificationModal";
 
 export default function MyAuth() {
   const { data: session, status } = useSession();
@@ -32,7 +33,7 @@ export default function MyAuth() {
   const handleProfile = async () => {
     try {
       const response = await axios.get(
-        "https://aptner.site/v1/api/members/RO000/my-pages/profile",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/my-pages/profile`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import Image from "next/image";
-import Image9 from "../../../assets/images/apartment/image9.png";
+import Image9 from "@/assets/images/apartment/image9.png";
 
 export default function ApartMapPage() {
   const mapContainer = useRef<HTMLDivElement>(null);

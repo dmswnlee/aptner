@@ -1,13 +1,12 @@
 "use client";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import React from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function TabBar() {
   const pathname = usePathname();
 
   const isActive = (hrefs: string[]) => {
-    // 정확한 경로 일치 검사
     return hrefs.includes(pathname)
       ? "border-b-4 border-black_100 text-black_100 mt-[3px]"
       : "";

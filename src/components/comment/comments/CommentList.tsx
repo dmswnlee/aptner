@@ -1,4 +1,5 @@
 import React from 'react';
+
 import CommentItem from './CommentItem';
 import { CommentType } from '@/interfaces/Comment';
 
@@ -43,7 +44,7 @@ const CommentList = ({ comments, author, userId, onEdit, onDelete, onReply, onUp
           key={comment.id}
           comment={comment}
           author={author}
-          userId={userId} // Pass the user ID
+          userId={userId}
           onEdit={onEdit}
           onDelete={onDelete}
           onReply={onReply}

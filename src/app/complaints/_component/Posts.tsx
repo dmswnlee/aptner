@@ -1,61 +1,23 @@
 "use client";
-import Link from "next/link";
-import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import axios from "axios";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
 import { RiImageFill } from "react-icons/ri";
 import { MdLockOutline } from "react-icons/md";
-import New from "../../../assets/images/emoji/new.png";
 import Image from "next/image";
 import { Pagination } from "antd";
-import Block from "../../../components/board/Block";
+
+import Block from "@/components/board/Block";
 import DropdownSearch from "@/components/DropdownSearch";
 import SearchBoard from "@/components/SearchBoard";
 import { Tab, Option } from "@/interfaces/Post";
-import { useRouter, useSearchParams } from "next/navigation";
 import Tabs from "@/components/noticeboard/Tabs";
-import { highlightText } from "@/utils/highlightText"; // Import the highlightText function
+import { highlightText } from "@/utils/highlightText"; 
 
-interface Writer {
-  id: number;
-  name: string;
-  nickname: string;
-}
-
-interface Category {
-  id: number;
-  type: string;
-  code: string;
-  name: string;
-}
-
-interface Qna {
-  id: number;
-  category: Category;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  isPrivate: boolean;
-  writer: Writer;
-  title: string;
-  viewCount: number;
-  status: string;
-}
-
-interface SessionData {
-  user: {
-    name: string;
-    email: string;
-  };
-  accessToken: string;
-}
-
-interface Tooltip {
-  nickname: string;
-  userId: number;
-  postId: number;
-}
+import New from "@/assets/images/emoji/new.png";
 
 const Posts = () => {
   const [category, setCategory] = useState<string | null>("all");
@@ -99,12 +61,10 @@ const Posts = () => {
     setCurrentPage(page);
   };
 
-  // 검색 옵션 선택 핸들러
   const handleSearchOptionSelect = (option: Option) => {
     setSelectedOption(option);
   };
 
-  // 검색 핸들러
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setCurrentPage(1);
@@ -114,7 +74,7 @@ const Posts = () => {
     if (!session) return;
     setLoading(true);
     try {
-      const response = await axios.get(`https://aptner.site/v1/api/qna/RO000`, {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/qna/RO000`, {
         headers: {
           Authorization: `Bearer ${(session as SessionData).accessToken}`,
         },
@@ -128,7 +88,7 @@ const Posts = () => {
         },
       });
       setQnas(response.data.result.result.qnas);
-      setTotalCount(response.data.result.totalCount); // 총 항목 수 설정
+      setTotalCount(response.data.result.totalCount); 
       setLoading(false);
     } catch (err) {
       console.log("err", err);
@@ -201,7 +161,7 @@ const Posts = () => {
 
   const handleCategorySelect = (categoryCode: string) => {
     setCategory(categoryCode);
-    setCurrentPage(1); // 카테고리가 변경되면 페이지를 1로 리셋
+    setCurrentPage(1);
   };
 
   const handleWriterClick = (e: React.MouseEvent, nickname: string, userId: number, postId: number) => {
@@ -223,7 +183,6 @@ const Posts = () => {
       <div className="w-full flex flex-col items-center mb-[100px]">
         <div className="max-h-[1021px] mb-[100px] border-t border-b border-t-[#2a3f6d] relative">
           <div className="grid grid-cols-[112px,546px,118px,68px,118px,118px]">
-            {/* Header */}
             <div className="border-b border-b-[#2a3f6d] py-4  bg-[#f9f9f9] text-center">분류</div>
             <div className="border-b border-b-[#2a3f6d] py-4 bg-[#f9f9f9] text-center">글 제목</div>
             <div className="border-b border-b-[#2a3f6d] py-4 bg-[#f9f9f9] text-center">글쓴이</div>
@@ -231,7 +190,6 @@ const Posts = () => {
             <div className="border-b border-b-[#2a3f6d] py-4 bg-[#f9f9f9] text-center">등록일</div>
             <div className="border-b border-b-[#2a3f6d] py-4 bg-[#f9f9f9] text-center">처리상태</div>
 
-            {/* Data */}
             {qnas.map(qna => (
               <div key={qna.id} className="contents">
                 <div className="border-b h-[60px] px-4 flex justify-center items-center">
@@ -281,8 +239,8 @@ const Posts = () => {
         </div>
         <Pagination
           current={currentPage}
-          total={totalCount} // 총 항목 수 전달
-          pageSize={15} // 페이지당 항목 수 설정
+          total={totalCount} 
+          pageSize={15} 
           onChange={handlePageChange}
         />
       </div>

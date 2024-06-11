@@ -1,12 +1,14 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import axios from 'axios';
 import { AiOutlineDownload } from "react-icons/ai";
+
 import ButtonGroup from '../CommentButtonGroup';
 import CommentForm from '../comments/CommentForm';
 import ReplyList from '../replies/ReplyList';
 import { CommentType } from '@/interfaces/Comment';
 import Modal from '@/components/modal/Modal';
-import { useSession } from 'next-auth/react';
-import axios from 'axios';
+
 import User from "@/assets/images/emoji/user.png";
 
 interface ReplyItemProps {
@@ -82,7 +84,7 @@ const ReplyItem = ({ reply, author, userId, onEdit, onDelete, onReply, onUpdate 
 
   const confirmDelete = async () => {
     await onDelete(reply.id);
-    reply.deletedAt = new Date().toISOString();  // Mark as deleted immediately
+    reply.deletedAt = new Date().toISOString();
     setIsModalOpen(false);
   };
 
@@ -115,7 +117,7 @@ const ReplyItem = ({ reply, author, userId, onEdit, onDelete, onReply, onUpdate 
   const handleProfile = async () => {
     try {
       const response = await axios.get(
-        "https://aptner.site/v1/api/members/RO000/my-pages/profile",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/my-pages/profile`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,

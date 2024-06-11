@@ -1,9 +1,13 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
+import { MoonLoader } from "react-spinners";
 import { Pagination } from "antd";
+
 import { highlightText } from "@/utils/highlightText";
 import { ListProps } from "@/interfaces/board";
-import { MoonLoader } from "react-spinners";
+
+import New from "@/assets/images/emoji/new.png";
 
 const headerStyle = "border-b border-b-[#2A3F6D] py-4 px-2 bg-[#F9F9F9] text-center";
 

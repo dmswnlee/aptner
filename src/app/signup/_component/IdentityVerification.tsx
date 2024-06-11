@@ -1,13 +1,14 @@
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { FaArrowRight } from "react-icons/fa6";
+
 import ColorButton from "@/components/buttons/ColorButton";
 import SmallBorderButton from "@/components/buttons/SmallBorderButton";
-import { FaArrowRight } from "react-icons/fa6";
-import { useDispatch, useSelector } from "react-redux";
-import { nextStep, setPersonalInfo } from "@/stores/slice/registrationSlice";
-import { Controller, useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
-import NoAuthSignUp from "./NoAuthSignUp";
 import { RootState } from "@/stores/store";
+import { nextStep, setPersonalInfo } from "@/stores/slice/registrationSlice";
 import { sendVerificationRequest, setVerificationExpired, verifyCodeRequest } from "@/stores/slice/verificationSlice";
+import NoAuthSignUp from "./NoAuthSignUp";
 import Modal from "@/components/modal/Modal";
 
 export const buttonStyle = "w-[82px] h-[48px] border border-solid border-gray_06 bg-gray_00 text-gray_06";

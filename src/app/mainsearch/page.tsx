@@ -1,33 +1,9 @@
 'use client';
-
-import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { IoIosArrowForward } from "react-icons/io";
-
-interface Section {
-  title: string;
-  id: string;
-  pinnedKey: string;
-  listKey: string;
-  countKey: string;
-}
-
-interface Result {
-  id: number;  // Add the id field
-  category: {
-    id: number;
-    code: string;
-    name: string;
-  };
-  title: string;
-  content: string;
-  date: string;
-  writer: {
-    nickname: string;
-  };
-}
 
 const sections: Section[] = [
   { title: '공지사항', id: 'notice', pinnedKey: 'pinnedNoticeList', listKey: 'noticeList', countKey: 'noticeCount' },
@@ -36,13 +12,11 @@ const sections: Section[] = [
   { title: '민원게시판', id: 'complaints', pinnedKey: 'pinnedQnaList', listKey: 'qnaList', countKey: 'qnaCount' },
 ];
 
-// Function to strip HTML tags and extract text
 const stripHtmlTags = (html: string) => {
   const doc = new DOMParser().parseFromString(html, 'text/html');
   return doc.body.textContent || "";
 };
 
-// Function to format date to YYYY-MM-DD
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   const year = date.getFullYear();
@@ -51,7 +25,6 @@ const formatDate = (dateString: string) => {
   return `${year}-${month}-${day}`;
 };
 
-// Function to highlight search query
 export function highlightText(text: string, query: string): React.ReactNode {
   if (!query) return text;
 
@@ -64,7 +37,7 @@ export function highlightText(text: string, query: string): React.ReactNode {
 }
 
 const fetchData = async (query: string, token: string): Promise<Record<string, any>> => {
-  const response = await axios.get(`https://aptner.site/v1/api/search/RO000?keyword=${query}`, {
+  const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/search/RO000?keyword=${query}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -78,7 +51,7 @@ const fetchData = async (query: string, token: string): Promise<Record<string, a
   const results = sections.reduce((acc, section) => {
     acc[section.id] = [
       ...data.result[section.pinnedKey].map((item: any) => ({
-        id: item.category.id,  // Include the post ID here
+        id: item.category.id,  
         category: { name: '중요글' },
         title: item.title,
         content: stripHtmlTags(item.content),
@@ -88,7 +61,7 @@ const fetchData = async (query: string, token: string): Promise<Record<string, a
         },
       })),
       ...data.result[section.listKey].map((item: any) => ({
-        id: item.id,  // Include the post ID here
+        id: item.id, 
         category: item.category,
         title: item.title,
         content: stripHtmlTags(item.content),
@@ -122,7 +95,6 @@ const MainSearchPage = () => {
     return null;
   }
 
-  // 총 검색 결과 개수 계산
   const totalResults = sections.reduce((acc, section) => acc + (results[`${section.id}Count`] || 0), 0);
 
   const handleMoreClick = (sectionId: string) => {
@@ -142,10 +114,10 @@ const MainSearchPage = () => {
             <button onClick={() => handleMoreClick(section.id)} className="flex text-sm w-[135px] p-2 justify-center items-center text-[#05A8FF]">더보기<IoIosArrowForward /></button>
           </div>
           {results[section.id]?.map((result: Result, index: number) => (
-            <div key={result.id} className="flex border-b border-gray-200"> {/* Use result.id as the key */}
+            <div key={result.id} className="flex border-b border-gray-200"> 
               <div className="w-[135px] p-3 text-red-500 flex items-center justify-center">{result.category.name}</div> 
               <div className="w-[810px] pl-4 p-3 border-l border-gray-200">
-                <a href={`/${section.id}/details/${result.id}`} className="font-semibold"> {/* Use result.id in the URL */}
+                <a href={`/${section.id}/details/${result.id}`} className="font-semibold"> 
                   {highlightText(result.title, query || '')}
                 </a>
                 <p className="text-gray-700 mt-1 overflow-hidden whitespace-pre-wrap text-ellipsis max-h-12">{highlightText(result.content, query || '')}</p>

@@ -1,8 +1,6 @@
 import { useState } from "react";
 
-interface InteriorTabProps {
-  onTabChange: (tabName: string, categoryCode: number | null) => void;
-}
+import { InteriorTabProps } from '@/interfaces/communication/InteriorTab';
 
 const InteriorTab = ({ onTabChange }: InteriorTabProps) => {
   const [activeTab, setActiveTab] = useState<string>("all");

@@ -27,7 +27,7 @@ const Block: React.FC<TooltipProps> = ({ userId, onClose }) => {
 
     try {
       const response = await axios.post(
-        "https://aptner.site/v1/api/members/RO000/block",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/block`,
         {
           blockedMemberId: userId,
         },

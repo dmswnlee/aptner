@@ -1,5 +1,6 @@
 import React, { useState, ChangeEvent } from 'react';
 import { AiOutlinePicture } from "react-icons/ai";
+
 import GrayButton from '@/components/buttons/GrayButton';
 import ImagePreviewModal from './ImagePreviewModal';
 
@@ -30,7 +31,6 @@ const CommentTextarea = ({ value, charCount, image, onTextareaChange, onFileChan
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     let inputValue = e.target.value;
 
-    // Ensure the prefix is only added once
     if (prefix && !inputValue.startsWith(prefix)) {
       inputValue = prefix + inputValue;
     }

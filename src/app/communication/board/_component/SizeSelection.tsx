@@ -1,22 +1,6 @@
 import React from 'react';
 
-interface SizeSelectionProps {
-  selectedSize: string;
-  setSelectedSize: (size: string) => void;
-  sizes: {
-    id: number;
-    area: number;
-    imagePath: string;
-  }[];
-}
-
-interface SizeDetails {
-  residentialArea: string;
-  residentialCommon: string;
-  supply: string;
-  otherCommon: string;
-  contract: string;
-}
+import { SizeDetails, SizeSelectionProps } from '@/interfaces/communication/SizeSelection';
 
 const sizeDetails: { [key: number]: SizeDetails } = {
   1: {

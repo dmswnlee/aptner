@@ -1,11 +1,13 @@
 "use client";
-import Tabs from "@/components/noticeboard/Tabs";
 import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+import axios from "axios";
+
+import Tabs from "@/components/noticeboard/Tabs";
 import { Notices, Option, SessionData, Tab } from "@/interfaces/board";
 import DropdownSearch from "@/components/DropdownSearch";
 import SearchBoard from "@/components/SearchBoard";
-import { useSession } from "next-auth/react";
-import axios from "axios";
 import DisclosureList from "./_component/DisclosureList";
 import { useRouter, useSearchParams } from "next/navigation";
 

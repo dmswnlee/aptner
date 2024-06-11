@@ -1,4 +1,5 @@
 import { IoClose } from "react-icons/io5";
+
 import ColorButton from "../buttons/ColorButton";
 
 interface modalProps {
@@ -8,21 +9,18 @@ interface modalProps {
 }
 
 const Modal = ({ text, onClose, onConfirm }: modalProps) => {
-  // '확인' 버튼 클릭 핸들러
   const handleConfirm = () => {
     if (onConfirm) {
-      onConfirm(); // 전달된 함수 실행
+      onConfirm(); 
     } else {
-      onClose(); // 전달된 함수가 없으면 모달 닫기
+      onClose(); 
     }
   };
 
-  // 모달 내부 클릭 시 이벤트 전파 방지
   const stopPropagation = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
 
-  // 모달 배경 클릭 시 모달 닫기
   const handleBackgroundClick = () => {
     onClose();
   };

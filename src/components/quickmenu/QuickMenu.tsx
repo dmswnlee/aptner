@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import Image from "next/image";
+
+import Modal from "../modal/Modal";
+
 import car from "@/assets/images/quickMenu/car.png";
 import bill from "@/assets/images/quickMenu/bill.png";
 import calendar from "@/assets/images/quickMenu/calendar.png";
 import community from "@/assets/images/quickMenu/community.png";
-import Modal from "../modal/Modal";
 
 const QuickMenu = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);

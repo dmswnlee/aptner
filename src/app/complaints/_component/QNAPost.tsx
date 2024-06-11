@@ -1,48 +1,18 @@
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { FaRegCommentDots } from "react-icons/fa6";
 import { GoFileDirectory } from "react-icons/go";
 import { LuDownload } from "react-icons/lu";
 import Image from "next/image";
-import emoji1 from "../../../assets/images/emoji/emoji1.png";
-import emoji2 from "../../../assets/images/emoji/emoji2.png";
-import emoji3 from "../../../assets/images/emoji/emoji3.png";
-import emoji4 from "../../../assets/images/emoji/emoji4.png";
-import emoji5 from "../../../assets/images/emoji/emoji5.png";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import Modal from "../../../components/modal/Modal";
-import User from "../../../assets/images/emoji/user.png";
 
-interface QNAPostProps {
-  id: number;
-  category: string;
-  nickname: string;
-  title: string;
-  content: string;
-  createdAt: string;
-  onReaction: (reactionType: string) => void;
-  emojiCounts: {
-    likeCount: number;
-    empathyCount: number;
-    funCount: number;
-    amazingCount: number;
-    sadCount: number;
-  };
-  emojiReactions: {
-    reactedLike: boolean;
-    reactedEmpathy: boolean;
-    reactedFun: boolean;
-    reactedAmazing: boolean;
-    reactedSad: boolean;
-  };
-  handleDelete: () => void;
-  fileInfoList?: {
-    id: number;
-    name: string;
-    path: string;
-    size: number;
-  }[];
-  isPrivate?: boolean;
-}
+import Modal from "@/components/modal/Modal";
+
+import emoji1 from "@/assets/images/emoji/emoji1.png";
+import emoji2 from "@/assets/images/emoji/emoji2.png";
+import emoji3 from "@/assets/images/emoji/emoji3.png";
+import emoji4 from "@/assets/images/emoji/emoji4.png";
+import emoji5 from "@/assets/images/emoji/emoji5.png";
+import User from "@/assets/images/emoji/user.png";
 
 const QNAPost: React.FC<QNAPostProps> = ({
   id,

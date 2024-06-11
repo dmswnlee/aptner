@@ -1,11 +1,12 @@
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+
 import ColorButton from "@/components/buttons/ColorButton";
 import Modal from "@/components/modal/Modal";
-import { useEffect, useState } from "react";
 import { inputStyle } from "@/app/signup/_component/IdentityVerification";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchIdRequest, resetIdState } from "@/stores/slice/idSlice";
 import IdFound from "./IdFound";
+import { fetchIdRequest, resetIdState } from "@/stores/slice/idSlice";
 import { RootState } from "@/stores/store";
 
 const phoneNumberRegex = /^\d{1,11}$/;

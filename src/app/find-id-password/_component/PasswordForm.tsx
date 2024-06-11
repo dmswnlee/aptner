@@ -1,13 +1,14 @@
-import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+
 import ColorButton from "@/components/buttons/ColorButton";
 import SmallBorderButton from "@/components/buttons/SmallBorderButton";
 import Modal from "@/components/modal/Modal";
 import { inputStyle } from "@/app/signup/_component/IdentityVerification";
-import { useDispatch, useSelector } from "react-redux";
+import PasswordUpdate from "./PasswordUpdate";
 import { RootState } from "@/stores/store";
 import { clearMessages, fetchPasswordRequest, fetchUserInfoRequest } from "@/stores/slice/passwordSlice";
-import PasswordUpdate from "./PasswordUpdate";
 import { sendVerificationRequest, setVerificationExpired, verifyCodeRequest } from "@/stores/slice/verificationSlice";
 
 const phoneNumberRegex = /^\d{1,11}$/;

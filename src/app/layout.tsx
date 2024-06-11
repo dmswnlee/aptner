@@ -1,14 +1,15 @@
 "use client"
-import { MSWComponent } from "./_component/MSWComponent";
-import "./globals.css";
+import { Suspense } from "react";
+import { usePathname } from 'next/navigation';
+import localFont from "next/font/local";
+
 import Header from "@/components/header/Header";
 import ReduxProvider from "@/stores/provider";
 import Footer from "@/components/Footer";
 import QuickMenu from "@/components/quickmenu/QuickMenu";
 import AuthSession from "./_component/AuthSession";
-import localFont from "next/font/local";
-import { Suspense } from "react";
-import { usePathname } from 'next/navigation';
+
+import "./globals.css";
 
 // export const metadata = {
 // 	title: "아파트너",
@@ -26,7 +27,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 	return (
 		<html lang="ko" className="h-full">
 			<body className={`flex flex-col min-h-screen ${pretendard.className}`}>
-				<MSWComponent />
 				<AuthSession>
 					<Suspense fallback={<div>Loading...</div>}>
 						<Header />
@@ -36,7 +36,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 						</ReduxProvider>
 						<Footer />
 					</Suspense>
-					{/* <QuickMenu /> */}
 				</AuthSession>
 			</body>
 		</html>

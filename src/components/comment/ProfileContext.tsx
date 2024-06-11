@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
 import { useSession } from 'next-auth/react';
+import axios from 'axios';
 
 interface Profile {
   profileImage: string;
@@ -28,7 +28,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const fetchProfile = async () => {
     try {
       const response = await axios.get(
-        'https://aptner.site/v1/api/members/RO000/my-pages/profile',
+        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/my-pages/profile`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,

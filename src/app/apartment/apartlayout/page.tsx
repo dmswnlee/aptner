@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Image10 from "../../../assets/images/apartment/image10.png";
-import Image11 from "../../../assets/images/apartment/image11.png";
+import Image10 from "@/assets/images/apartment/image10.png";
+import Image11 from "@/assets/images/apartment/image11.png";
 
 export default function ApartLayoutPage() {
   return (

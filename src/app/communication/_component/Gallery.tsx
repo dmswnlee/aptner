@@ -1,43 +1,22 @@
 import React from 'react';
 import Link from 'next/link';
-import defaultThumbnail from '@/assets/images/defaultThumbnail.png';
 import { PiPencilSimpleLineLight } from 'react-icons/pi';
+import { MoonLoader } from 'react-spinners';
+
 import { highlightText } from '@/utils/highlightText';
 
-interface Post {
-  id: number;
-  title: string;
-  content: string;
-  writer: {
-    nickname: string;
-  };
-  createdAt: string;
-  viewCount: number;
-  thumbnailPath: string; 
-}
 
-interface GalleryProps {
-  data: Post[];
-  pinnedData: Post[];
-  detailPath: string;
-  loading: boolean;
-  currentPage: number;
-  total: number;
-  pageSize: number;
-  onPageChange: (page: number) => void;
-  searchQuery: string; 
-  selectedOption: Option;
-}
-
-interface Option {
-  value: string;
-  label: string;
-}
+import defaultThumbnail from '@/assets/images/defaultThumbnail.png';
+import { GalleryProps } from '@/interfaces/communication/Gallery';
 
 const Gallery = ({ data, pinnedData, detailPath, loading, currentPage, total, pageSize, onPageChange, searchQuery, selectedOption }: GalleryProps) => {
   if (loading) {
-    return <div>Loading...</div>;
-  }
+		return (
+			<div className="flex justify-center">
+				<MoonLoader color="#05A8FF" size={30} />
+			</div>
+		);
+	}
 
   const filteredPinnedData = pinnedData.filter((post) =>
     post.title.includes(searchQuery) || post.writer.nickname.includes(searchQuery)

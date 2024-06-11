@@ -1,47 +1,17 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
-import Button from "../../../components/buttons/Button";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useForm } from "react-hook-form";
+import axios from "axios";
 import { GoFileDirectory } from "react-icons/go";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { HiOutlineFolderPlus } from "react-icons/hi2";
-import TinyEditor from "../../../components/board/TinyEditor";
-import { useForm } from "react-hook-form";
-import axios from "axios";
-import { useSession } from "next-auth/react";
 
-interface Option {
-  label: string;
-}
-
-interface BoardProps {
-  options: Option[];
-}
-
-interface FormData {
-  categoryCode: string;
-  title: string;
-  content: string;
-  isPrivate: boolean;
-}
-
-interface SessionData {
-  user: {
-    name: string;
-    email: string;
-  };
-  accessToken: string;
-}
-
-interface FileInfo {
-  id: number;
-  name: string;
-  path: string;
-  size: number;
-  file?: File;
-}
+import Button from "@/components/buttons/Button";
+import TinyEditor from "@/components/board/TinyEditor";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const MAX_FILE_COUNT = 20;
@@ -205,7 +175,7 @@ export default function Board({ options }: BoardProps) {
     try {
       if (isEdit && qnaId) {
         const response = await axios.patch(
-          `https://aptner.site/v1/api/qna/RO000/${qnaId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/qna/RO000/${qnaId}`,
           formData,
           {
             headers: {
@@ -218,7 +188,7 @@ export default function Board({ options }: BoardProps) {
         router.push(`/complaints/detail/${qnaId}`);
       } else {
         const response = await axios.post(
-          "https://aptner.site/v1/api/qna/RO000",
+          `${process.env.NEXT_PUBLIC_API_URL}/qna/RO000`,
           formData,
           {
             headers: {
@@ -239,7 +209,6 @@ export default function Board({ options }: BoardProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col relative border rounded-[5px] p-5 border-gray_05">
-        {/* Dropdown for category selection */}
         <div>
           <button
             className="pb-[15px] text-left flex items-center gap-[10px]"
@@ -320,7 +289,7 @@ export default function Board({ options }: BoardProps) {
             비밀글
           </label>
         </div>
-        {/* Displaying list of files with an option to remove */}
+        
         {files.length > 0 ? (
           <div className="border rounded-[5px] mt-4">
             <p className="bg-[#f7f7f7] h-10 flex text-[#666]">
@@ -353,7 +322,6 @@ export default function Board({ options }: BoardProps) {
           </div>
         )}
 
-        {/* Legal warning message */}
         <div className="border-t mt-4 text-center font-xl leading-[18px] text-[#222]">
           <div className="mt-4 mb-[18px] py-[10px] border bg-[#f7f7f7]">
             <p className="flex justify-center items-center gap-1">

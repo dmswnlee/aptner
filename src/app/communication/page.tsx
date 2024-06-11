@@ -1,12 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
+import { Pagination } from "antd";
+import { RiListUnordered, RiGalleryView2 } from "react-icons/ri";
+
 import PostList from "./_component/PostList";
 import Gallery from "./_component/Gallery";
 import GalleryTab from "./_component/GalleryTab";
 import InteriorTab from "./_component/InteriorTab";
-import { RiListUnordered, RiGalleryView2 } from "react-icons/ri";
 import Tabs from "@/components/noticeboard/Tabs";
 import DropdownSearch from "@/components/DropdownSearch";
 import SearchBoard from "@/components/SearchBoard";
@@ -18,7 +21,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
 
 export default function CommunicationPage() {
-  // 상태 관리 변수들
   const [activeTab, setActiveTab] = useState<string>("Posts");
   const [category, setCategory] = useState<string>("all");
   const [interiorCategory, setInteriorCategory] = useState<number | null>(null);
@@ -39,36 +41,32 @@ export default function CommunicationPage() {
   }, [initialQuery]);
 
   const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
+	const categoryTabs: Tab[] = [
+		{ name: "all", label: "전체", code: "" },
+		{ name: "freeboard", label: "자유게시판", code: "PT001" },
+		{ name: "market", label: "나눔장터", code: "PT002" },
+		{ name: "hobby", label: "취미게시판", code: "PT003" },
+		{ name: "recommendations", label: "주변 추천", code: "PT004" },
+		{ name: "lost-and-found", label: "분실물", code: "PT005" },
+		{ name: "interior", label: "인테리어", code: "PT006" },
+	];
 
-  // 카테고리 탭 정의
-  const categoryTabs: Tab[] = [
-    { name: "all", label: "전체", code: "" },
-    { name: "freeboard", label: "자유게시판", code: "PT001" },
-    { name: "market", label: "나눔장터", code: "PT002" },
-    { name: "hobby", label: "취미게시판", code: "PT003" },
-    { name: "recommendations", label: "주변 추천", code: "PT004" },
-    { name: "lost-and-found", label: "분실물", code: "PT005" },
-    { name: "interior", label: "인테리어", code: "PT006" },
-  ];
+	const tabs = [
+		{ name: "Posts", icon: <RiListUnordered /> },
+		{ name: "Gallery", icon: <RiGalleryView2 /> },
+	];
 
-  // 상단 탭 정의
-  const tabs = [
-    { name: "Posts", icon: <RiListUnordered /> },
-    { name: "Gallery", icon: <RiGalleryView2 /> },
-  ];
+	const handleTabChange = (tabName: string) => {
+		setActiveButton(tabName);
+		setCurrentPage(1);
+	};
 
-  // 탭 변경 핸들러
-  const handleTabChange = (tabName: string) => {
-    setActiveButton(tabName);
-    setCurrentPage(1);
-  };
 
-  // 카테고리 탭 변경 핸들러
   const handleCategoryTabChange = (tabName: string) => {
     const selectedCategory = categoryTabs.find(tab => tab.name === tabName);
     if (selectedCategory) {
       setCategory(selectedCategory.code);
-      setInteriorCategory(null); // 메인 카테고리를 변경할 때 인테리어 카테고리 초기화
+      setInteriorCategory(null); 
       router.push(`/communication?category=${tabName}`);
       // If the selected category is "interior", set default view to Gallery
       if (selectedCategory.code === "PT006") {
@@ -79,29 +77,25 @@ export default function CommunicationPage() {
     }
   };
 
-  // 페이지 변경 핸들러
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+	const handlePageChange = (page: number) => {
+		setCurrentPage(page);
+	};
 
-  // 인테리어 카테고리 탭 변경 핸들러
-  const handleInteriorTabChange = (tabName: string, categoryCode: number | null) => {
-    setInteriorCategory(categoryCode);
-    setCurrentPage(1);
-  };
+	const handleInteriorTabChange = (tabName: string, categoryCode: number | null) => {
+		setInteriorCategory(categoryCode);
+		setCurrentPage(1);
+	};
 
-  // 검색 옵션 선택 핸들러
-  const handleSearchOptionSelect = (option: Option) => {
-    setSelectedOption(option);
-  };
+	const handleSearchOptionSelect = (option: Option) => {
+		setSelectedOption(option);
+	};
 
-  // 검색 핸들러
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    setCurrentPage(1);
-  };
+	const handleSearch = (query: string) => {
+		setSearchQuery(query);
+		setCurrentPage(1);
+	};
 
-  // 게시물 데이터를 가져오는 함수
+
   const fetchCommunications = async (categoryCode: string | null, page: number) => {
     if (!session) return;
     setLoading(true);
@@ -152,12 +146,11 @@ export default function CommunicationPage() {
     }
   }, [searchParams]);
 
-  // 세션이나 페이지가 변경될 때마다 데이터 가져오기
-  useEffect(() => {
-    if (session && category !== null) {
-      fetchCommunications(category === "" ? "all" : category, currentPage);
-    }
-  }, [session, currentPage, activeButton, category, searchQuery, selectedOption, interiorCategory]);
+	useEffect(() => {
+		if (session && category !== null) {
+			fetchCommunications(category === "" ? "all" : category, currentPage);
+		} 
+	}, [session, currentPage, activeButton, category, searchQuery, selectedOption, interiorCategory]);
 
   return (
     <div className="mt-[70px] w-[1080px] mx-auto">

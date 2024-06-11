@@ -1,12 +1,13 @@
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+
 import { inputStyle } from "@/app/signup/_component/IdentityVerification";
 import ColorButton from "@/components/buttons/ColorButton";
 import Modal from "@/components/modal/Modal";
 import { clearMessages, updatePasswordRequest } from "@/stores/slice/passwordSlice";
 import { RootState } from "@/stores/store";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
 
 interface PasswordUpdateProps {
 	email: string;

@@ -1,6 +1,7 @@
 import React from 'react';
-import GrayButton from "@/components/buttons/GrayButton";
 import { BsArrowReturnRight } from "react-icons/bs";
+
+import GrayButton from "@/components/buttons/GrayButton";
 
 interface ButtonGroupProps {
   onEdit: () => void;

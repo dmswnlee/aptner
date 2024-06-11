@@ -1,70 +1,20 @@
 "use client";
-import QNAPost from "../../_component/QNAPost"; // QNAPost 컴포넌트 임포트
-import axios from "axios";
-import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useParams, useRouter, usePathname } from "next/navigation";
+import axios from "axios";
+
+import QNAPost from "../../_component/QNAPost";
 import Comment from "@/components/comment/Comment";
-import { useRouter, usePathname } from "next/navigation";
 
-// 인터페이스 정의
-interface Qna {
-  id: number;
-  category: {
-    id: number;
-    type: string;
-    code: string;
-    name: string;
-  };
-  content: string;
-  createdAt: string;
-  title: string;
-  writer: {
-    id: number;
-    name: string;
-    nickname: string;
-  };
-  emoji: {
-    emojiCount: {
-      likeCount: number;
-      empathyCount: number;
-      funCount: number;
-      amazingCount: number;
-      sadCount: number;
-    };
-    emojiReaction: {
-      reactedLike: boolean;
-      reactedEmpathy: boolean;
-      reactedFun: boolean;
-      reactedAmazing: boolean;
-      reactedSad: boolean;
-    };
-  };
-}
-
-interface QnaFileInfo {
-  id: number;
-  name: string;
-  path: string;
-  size: number;
-}
-
-interface SessionData {
-  user: {
-    name: string;
-    email: string;
-  };
-  accessToken: string;
-}
-
-export default function DailPage() {
+export default function DetailPage() {
   const { slug } = useParams();
   const [qna, setQna] = useState<Qna | null>(null);
   const [fileInfoList, setFileInfoList] = useState<QnaFileInfo[]>([]);
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  const basePath = pathname.split("/")[1]; // 첫 번째 경로를 추출
+  const basePath = pathname.split("/")[1]; 
 
   useEffect(() => {
     if (session && session.accessToken) {
@@ -77,7 +27,7 @@ export default function DailPage() {
 
     try {
       const response = await axios.get(
-        `https://aptner.site/v1/api/qna/RO000/${slug}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/qna/RO000/${slug}`,
         {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
@@ -99,7 +49,6 @@ export default function DailPage() {
     console.log(qna.id);
     console.log("Reaction type:", reactionType);
 
-    // reactionType을 기반으로 매핑 
     const reactedKey =
       `reacted${reactionType.charAt(0).toUpperCase()}${reactionType.slice(1).toLowerCase()}` as keyof typeof qna.emoji.emojiReaction;
     const countKey =
@@ -111,7 +60,7 @@ export default function DailPage() {
     try {
       const response = await axios({
         method,
-        url: `https://aptner.site/v1/api/qna/RO000/${qna.id}/emoji`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/qna/RO000/${qna.id}/emoji`,
         headers: {
           Authorization: `Bearer ${(session as SessionData).accessToken}`,
         },
@@ -121,7 +70,6 @@ export default function DailPage() {
       });
       console.log(response.data);
 
-      // Update emoji counts and reaction status based on the reaction
       const newQna = { ...qna }; 
       newQna.emoji.emojiCount[countKey] += reacted ? -1 : 1;
       newQna.emoji.emojiReaction[reactedKey] = !reacted;
@@ -135,7 +83,7 @@ export default function DailPage() {
     if (!qna || !session || !session.accessToken) return;
     try {
       const response = await axios.delete(
-        `https://aptner.site/v1/api/qna/RO000/${qna.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/qna/RO000/${qna.id}`,
         {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
@@ -188,7 +136,7 @@ export default function DailPage() {
             emojiReactions={emojiReactions}
             handleDelete={handleDelete} 
             fileInfoList={fileInfoList}
-            isPrivate={false} // 비밀글 여부
+            isPrivate={false}
           />
           <Comment 
             initialComments={[]}

@@ -1,14 +1,16 @@
 "use client";
-import Navbar from "@/components/header/Navbar";
-import Link from "next/link";
-import Image from "next/image";
-import logo from "@/assets/images/logo.png";
 import { Suspense, useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { PiBell } from "react-icons/pi";
-import User from "../../assets/images/emoji/user.png";
+import Link from "next/link";
+import Image from "next/image";
 import axios from "axios";
+import { PiBell } from "react-icons/pi";
+
+import Navbar from "@/components/header/Navbar";
+
+import logo from "@/assets/images/logo.png";
+import User from "../../assets/images/emoji/user.png";
 
 interface Profile {
   profileImage: string;
@@ -42,7 +44,7 @@ const Header = () => {
   const handleProfile = async () => {
     try {
       const response = await axios.get(
-        "https://aptner.site/v1/api/members/RO000/my-pages/profile",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/my-pages/profile`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,

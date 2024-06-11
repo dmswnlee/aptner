@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Image12 from "../../../assets/images/apartment/image12.png";
-import Image13 from "../../../assets/images/apartment/image13.png";
-import Image14 from "../../../assets/images/apartment/image14.png";
+import Image12 from "@/assets/images/apartment/image12.png";
+import Image13 from "@/assets/images/apartment/image13.png";
+import Image14 from "@/assets/images/apartment/image14.png";
 
 export default function ApartUnitPage() {
   return (

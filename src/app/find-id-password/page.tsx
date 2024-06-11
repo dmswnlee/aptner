@@ -1,6 +1,7 @@
 import { Suspense } from "react";
-import FindIdPassword from "./_component/FindIdPassword";
 import { MoonLoader } from "react-spinners";
+
+import FindIdPassword from "./_component/FindIdPassword";
 
 const page = () => {
 	return (

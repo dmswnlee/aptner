@@ -1,13 +1,4 @@
 "use client";
-import Image from "next/image";
-import Image1 from "../../assets/images/apartment/image1.png";
-import Image2 from "../../assets/images/apartment/image2.png";
-import Image3 from "../../assets/images/apartment/image3.png";
-import Image4 from "../../assets/images/apartment/image4.png";
-import Image5 from "../../assets/images/apartment/image5.png";
-import Image6 from "../../assets/images/apartment/image6.png";
-import Image7 from "../../assets/images/apartment/image7.png";
-import Image8 from "../../assets/images/apartment/image8.png";
 import {
   Autoplay,
   Pagination,
@@ -20,6 +11,17 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
+
+import Image from "next/image";
+import Image1 from "@/assets/images/apartment/image1.png";
+import Image2 from "@/assets/images/apartment/image2.png";
+import Image3 from "@/assets/images/apartment/image3.png";
+import Image4 from "@/assets/images/apartment/image4.png";
+import Image5 from "@/assets/images/apartment/image5.png";
+import Image6 from "@/assets/images/apartment/image6.png";
+import Image7 from "@/assets/images/apartment/image7.png";
+import Image8 from "@/assets/images/apartment/image8.png";
+
 export default function ApartDetailPage() {
   return (
     <>

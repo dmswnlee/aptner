@@ -1,11 +1,12 @@
 "use client";
+import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import axios from "axios";
+import { Pagination } from "antd";
 
 import Button from "@/components/buttons/Button";
-import axios from "axios";
-import { useSession } from "next-auth/react";
-import { Pagination } from "antd";
-import React, { useState, useEffect } from "react";
-import User from "../../../assets/images/emoji/user.png";
+
+import User from "@/assets/images/emoji/user.png";
 
 export default function MyBlockedPage() {
   const { data: session } = useSession();
@@ -16,7 +17,7 @@ export default function MyBlockedPage() {
   const fetchBlockedMembers = async (page: number) => {
     try {
       const response = await axios.get(
-        "https://aptner.site/v1/api/members/RO000/block",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/block`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,
@@ -49,7 +50,7 @@ export default function MyBlockedPage() {
   const handleUnblock = async (id: number) => {
     try {
       const response = await axios.post(
-        "https://aptner.site/v1/api/members/RO000/unblock",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/unblock`,
         { unBlockedMemberId: id },
         {
           headers: {
