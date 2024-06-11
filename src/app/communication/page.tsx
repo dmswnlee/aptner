@@ -3,9 +3,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
-import { Pagination } from "antd";
 import { RiListUnordered, RiGalleryView2 } from "react-icons/ri";
-
 import PostList from "./_component/PostList";
 import Gallery from "./_component/Gallery";
 import GalleryTab from "./_component/GalleryTab";
@@ -13,12 +11,10 @@ import InteriorTab from "./_component/InteriorTab";
 import Tabs from "@/components/noticeboard/Tabs";
 import DropdownSearch from "@/components/DropdownSearch";
 import SearchBoard from "@/components/SearchBoard";
-import { Pagination } from "antd";
 import Link from "next/link"; // 추가된 import
-
 import { Tab, Writer, Category, Communication, SessionData, Option } from "@/interfaces/Post";
-import { useRouter, useSearchParams } from "next/navigation";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
+import { Pagination } from "antd";
 
 export default function CommunicationPage() {
   const [activeTab, setActiveTab] = useState<string>("Posts");

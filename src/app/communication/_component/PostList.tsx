@@ -5,6 +5,7 @@ import { PiPencilSimpleLineLight } from 'react-icons/pi';
 import { highlightText } from '@/utils/highlightText';
 import Block from '@/components/board/Block';
 import { ListProps, Tooltip } from '@/interfaces/communication/PostList';
+import { MoonLoader } from 'react-spinners';
 
 const PostList = ({
   data,
