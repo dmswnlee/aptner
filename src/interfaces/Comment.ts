@@ -7,6 +7,8 @@ export interface CommentType {
     nickname: string;
     id?: string
   };
+  isBlocked: boolean;
+  deletedAt: string | null;
   createdAt: string;
   updatedAt: string;
   content: string;

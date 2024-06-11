@@ -1,4 +1,4 @@
-'use client';
+import React from 'react';
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { PiPencilSimpleLineLight } from 'react-icons/pi';
@@ -104,6 +104,18 @@ const PostList = ({
     return <div>Loading...</div>;
   }
 
+  const filteredPinnedData = pinnedData.filter((post) =>
+    post.title.includes(searchQuery) || post.writer.nickname.includes(searchQuery)
+  );
+
+  const filteredData = data.filter((post) =>
+    post.title.includes(searchQuery) || post.writer.nickname.includes(searchQuery)
+  );
+
+  if (filteredPinnedData.length === 0 && filteredData.length === 0) {
+    return <div className="text-center pt-2 pb-5 text-lg">검색결과가 없습니다.</div>;
+  }
+
   return (
     <div className="w-full flex flex-col items-center mb-[30px]">
       <div className="max-h-[1021px] mb-[100px] border-t border-b border-t-[#2A3F6D] relative w-[1080px]">
@@ -125,7 +137,7 @@ const PostList = ({
             등록일
           </div>
           {/* Pinned Posts */}
-          {currentPage === 1 && pinnedData.map((posts) => (
+          {currentPage === 1 && filteredPinnedData.map((posts) => (
             <div key={posts.id} className="contents bg-[#FFF7E6] relative">
               <div className="border-b flex justify-center items-center">
                 <div className="bg-[#FFF3F3] text-red border border-red w-[62px] px-[10px] py-[8px] h-[30px] rounded flex justify-center items-center">
@@ -175,7 +187,7 @@ const PostList = ({
             </div>
           ))}
           {/* Data */}
-          {data.map((posts) => (
+          {filteredData.map((posts) => (
             <div key={posts.id} className="contents">
               <div className="border-b py-4 text-center">
                 {posts.category.name}

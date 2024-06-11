@@ -39,11 +39,22 @@ const Gallery = ({ data, pinnedData, detailPath, loading, currentPage, total, pa
     return <div>Loading...</div>;
   }
 
+  const filteredPinnedData = pinnedData.filter((post) =>
+    post.title.includes(searchQuery) || post.writer.nickname.includes(searchQuery)
+  );
+
+  const filteredData = data.filter((post) =>
+    post.title.includes(searchQuery) || post.writer.nickname.includes(searchQuery)
+  );
+
+  if (filteredPinnedData.length === 0 && filteredData.length === 0) {
+    return <div className="text-center pt-2 pb-5 text-lg">검색결과가 없습니다.</div>;
+  }
+
   return (
     <div className="w-[1080px] mx-auto flex flex-col items-center mb-[100px] relative">
       <div className="grid grid-cols-4 gap-2">
-        {/* Pinned Posts */}
-        {currentPage === 1 && pinnedData.map(item => (
+        {currentPage === 1 && filteredPinnedData.map(item => (
           <Link href={`${detailPath}/${item.id}`} key={item.id}>
             <div className="p-2 cursor-pointer overflow-hidden">
               <div className="relative group w-[248px] h-[180px] overflow-hidden">
