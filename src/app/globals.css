@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 /* 에디터커스텀 */
 div .tox-tinymce {
     border:none;

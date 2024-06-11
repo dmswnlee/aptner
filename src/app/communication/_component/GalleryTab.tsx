@@ -1,15 +1,6 @@
-// GalleryTab.tsx
 import { useState } from "react";
 
-interface Tab {
-  name: string;
-  icon: JSX.Element;
-}
-
-interface TabsProps {
-  tabs: Tab[];
-  onTabChange: (tabName: string) => void;
-}
+import { TabsProps } from '@/interfaces/communication/GalleryTab';
 
 const GalleryTab = ({ tabs, onTabChange }: TabsProps) => {
   const [activeTab, setActiveTab] = useState<string>(tabs[0].name);

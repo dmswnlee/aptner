@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { FaAngleDown } from "react-icons/fa";
 import { useDispatch, useSelector } from 'react-redux';
+import { FaAngleDown } from "react-icons/fa";
+
 import { setOption } from "@/stores/slice/communicationsSlice";
 import { RootState } from "@/stores/store";
 

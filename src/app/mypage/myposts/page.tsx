@@ -1,25 +1,11 @@
 "use client";
-import axios from "axios";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
+import axios from "axios";
 import { Pagination } from "antd";
+
 import ConfirmModal from "@/components/modal/ConfirmModal";
-
-interface Category {
-  id: number;
-  type: string;
-  code: string;
-  name: string;
-}
-
-interface Post {
-  id: number;
-  category: Category;
-  title: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export default function MyPostsPage() {
   const { data: session, status } = useSession();
@@ -46,7 +32,7 @@ export default function MyPostsPage() {
     try {
       setPosts([]);
       const response = await axios.get(
-        "https://aptner.site/v1/api/members/RO000/posts",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/posts`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,
@@ -104,7 +90,7 @@ export default function MyPostsPage() {
 
     try {
       const response = await axios.delete(
-        "https://aptner.site/v1/api/members/RO000/posts",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/posts`,
         {
           data: {
             postIds,

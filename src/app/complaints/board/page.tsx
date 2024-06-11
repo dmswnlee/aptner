@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
+
 import QNABoard from "../_component/QNABoard";
+
 export default function BoardPage() {
 	const options = [
 		{ label: "하자/보수" },

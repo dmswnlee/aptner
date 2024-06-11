@@ -1,5 +1,6 @@
-import LargeBorderButton from "@/components/buttons/LargeBorderButton";
 import { useRouter } from 'next/navigation';
+
+import LargeBorderButton from "@/components/buttons/LargeBorderButton";
 
 const SignUpSuccess = () => {
 	const router = useRouter();

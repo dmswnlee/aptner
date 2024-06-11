@@ -1,23 +1,6 @@
 import React from 'react';
 
-interface SizeDetailsDisplayProps {
-  selectedSize: string;
-  setSelectedSize?: (size: string) => void; // Make optional
-  sizes: {
-    id: number;
-    area: number;
-    imagePath: string;
-  }[];
-  readOnly?: boolean; // New prop to control read-only mode
-}
-
-interface SizeDetails {
-  residentialArea: string;
-  residentialCommon: string;
-  supply: string;
-  otherCommon: string;
-  contract: string;
-}
+import { SizeDetails, SizeDetailsDisplayProps } from '@/interfaces/communication/SizeDetailsDisplay';
 
 const sizeDetails: { [key: number]: SizeDetails } = {
   1: {

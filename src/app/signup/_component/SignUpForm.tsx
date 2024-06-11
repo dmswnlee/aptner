@@ -1,9 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, FieldError, FieldErrorsImpl, Merge } from "react-hook-form";
+
 import { nextStep, setAccountInfo } from "@/stores/slice/registrationSlice";
 import { RootState } from "@/stores/store";
 import ColorButton from "@/components/buttons/ColorButton";
-import SmallBorderButton from "@/components/buttons/SmallBorderButton";
 import { inputErrorStyle, inputStyle } from "./IdentityVerification";
 
 const idRegex = /^[a-zA-Z0-9_]+$/;

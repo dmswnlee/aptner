@@ -1,5 +1,6 @@
 "use client";
 import { useSelector } from "react-redux";
+
 import Agreement from "./_component/Agreement";
 import ApartmentForm from "./_component/ApartmentForm";
 import IdentityVerification from "./_component/IdentityVerification";

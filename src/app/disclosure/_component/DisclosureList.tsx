@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
+import { MoonLoader } from 'react-spinners';
 import { Pagination } from "antd";
+
 import { highlightText } from "@/utils/highlightText";
 import { ListProps } from "@/interfaces/board";
-import { MoonLoader } from 'react-spinners';
 
 const headerStyle = "border-b border-b-[#2A3F6D] py-4 px-2 bg-[#F9F9F9] text-center";
 
@@ -47,8 +48,8 @@ const DisclosureList = ({ data, loading, currentPage, total, onPageChange, searc
 			</div>
 			<Pagination
 				current={currentPage}
-				total={total} // 총 항목 수 전달
-				pageSize={15} // 페이지당 항목 수 설정
+				total={total} 
+				pageSize={15} 
 				onChange={onPageChange}
 			/>
 		</div>

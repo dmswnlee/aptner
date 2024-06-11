@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
@@ -17,7 +16,7 @@ export default function MyMessagePage() {
   const fetchMessage = async () => {
     try {
       const response = await axios.get(
-        "https://aptner.site/v1/api/members/notification",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/notification`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,

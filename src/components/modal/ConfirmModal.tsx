@@ -1,4 +1,5 @@
 import { IoClose } from "react-icons/io5";
+
 import Button from "@/components/buttons/Button";
 
 interface ModalProps {
@@ -8,17 +9,14 @@ interface ModalProps {
 }
 
 const ConfirmModal: React.FC<ModalProps> = ({ text, onClose, onConfirm }) => {
-  // 'Confirm' 버튼 클릭 핸들러
   const handleConfirm = () => {
-    onConfirm(); // 전달된 함수 실행
+    onConfirm(); 
   };
 
-  // 모달 내부 클릭 시 이벤트 전파 방지
   const stopPropagation = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
 
-  // 모달 배경 클릭 시 모달 닫기
   const handleBackgroundClick = () => {
     onClose();
   };

@@ -1,8 +1,9 @@
-import LargeBorderButton from "@/components/buttons/LargeBorderButton";
-import { setAddressInfo, submitRegistration } from "@/stores/slice/registrationSlice";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+
+import LargeBorderButton from "@/components/buttons/LargeBorderButton";
+import { setAddressInfo, submitRegistration } from "@/stores/slice/registrationSlice";
 import { RootState } from "@/stores/store";
 import SignUpSuccess from "./SignUpSuccess";
 import { getErrorMerge } from "./SignUpForm";
@@ -46,8 +47,6 @@ const ApartmentForm = () => {
 
 		dispatch(submitRegistration());
 		setIsSubmitted(true);
-		console.log(data);
-		console.log(registrationData);
 	};
 
 	useEffect(() => {

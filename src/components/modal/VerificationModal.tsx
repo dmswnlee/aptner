@@ -1,3 +1,10 @@
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { useSession } from "next-auth/react";
+import { IoClose } from "react-icons/io5";
+import axios from "axios";
+
 import {
   buttonClickedStyle,
   buttonStyle,
@@ -16,14 +23,8 @@ import {
   verifyCodeRequest,
 } from "@/stores/slice/verificationSlice";
 import { RootState } from "@/stores/store";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
 import SmallBorderButton from "../buttons/SmallBorderButton";
 import ColorButton from "../buttons/ColorButton";
-import { IoClose } from "react-icons/io5";
-import axios from "axios";
-import { useSession } from "next-auth/react";
 
 interface modalProps {
   onClose: () => void;
@@ -60,7 +61,6 @@ const VerificationModal = ({ onClose, phone }: modalProps) => {
   const phoneNumberValue = watch("phoneNumber");
   const carrierValue = watch("carrier");
 
-  // 유효성검증
   useEffect(() => {
     if (phoneNumberValue) {
       if (!carrierValue) {
@@ -94,14 +94,12 @@ const VerificationModal = ({ onClose, phone }: modalProps) => {
     }
   }, [carrierValue, gender, setError, clearErrors]);
 
-  // 인증 후 인증번호 인풋 닫음
   useEffect(() => {
     if (isVerified) {
       setShowVerificationInput(false);
     }
   }, [isVerified]);
 
-  // 인증제한시간
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (timeLeft !== null) {
@@ -127,7 +125,6 @@ const VerificationModal = ({ onClose, phone }: modalProps) => {
     return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
   };
 
-  // 인증번호 요청했을 때
   const handleClickRequest = () => {
     const phoneNumber = watch("phoneNumber");
     if (phoneNumber) {
@@ -138,7 +135,6 @@ const VerificationModal = ({ onClose, phone }: modalProps) => {
     }
   };
 
-  // 인증번호 입력 후 확인 눌렀을 때
   const handleVerifyCode = (data: any) => {
     const response = dispatch(
       verifyCodeRequest({
@@ -161,7 +157,7 @@ const VerificationModal = ({ onClose, phone }: modalProps) => {
 
     try {
       const response = await axios.patch(
-        "https://aptner.site/v1/api/members/my-pages/phone",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/my-pages/phone`,
         {
           phone: phone,
           verificationCode,

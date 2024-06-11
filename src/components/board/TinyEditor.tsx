@@ -4,7 +4,7 @@ import { BeatLoader } from "react-spinners";
 
 interface TinyEditorProps {
 	initialValue?: string;
-	onChange: (content: string) => void; // 부모 컴포넌트에서 변경된 내용을 처리하기 위한 함수
+	onChange: (content: string) => void;
 }
 
 const TinyEditor: React.FC<TinyEditorProps> = ({ initialValue = "", onChange }) => {

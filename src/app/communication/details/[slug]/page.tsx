@@ -1,11 +1,12 @@
 "use client";
-import PostsPost from "../_component/PostsPost";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import Comment from "@/components/comment/Comment";
 import { useRouter, usePathname } from "next/navigation";
+import axios from "axios";
+
+import PostsPost from "../_component/PostsPost";
+import Comment from "@/components/comment/Comment";
 import { Post, SessionData } from "@/interfaces/board";
 
 interface PostFileInfo {
@@ -22,7 +23,7 @@ const DetailPage = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  const basePath = pathname.split("/")[1]; // 첫 번째 경로를 추출
+  const basePath = pathname.split("/")[1]; 
 
   useEffect(() => {
     if (session && session.accessToken) {
@@ -35,7 +36,7 @@ const DetailPage = () => {
 
     try {
       const response = await axios.get(
-        `https://aptner.site/v1/api/posts/RO000/${slug}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/posts/RO000/${slug}`,
         {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
@@ -68,7 +69,7 @@ const DetailPage = () => {
     try {
       const response = await axios({
         method,
-        url: `https://aptner.site/v1/api/posts/RO000/${post.id}/emoji`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/posts/RO000/${post.id}/emoji`,
         headers: {
           Authorization: `Bearer ${(session as SessionData).accessToken}`,
         },
@@ -92,7 +93,7 @@ const DetailPage = () => {
 
     try {
       const response = await axios.delete(
-        `https://aptner.site/v1/api/posts/RO000/${post.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/posts/RO000/${post.id}`,
         {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
@@ -149,8 +150,8 @@ const DetailPage = () => {
             handleDelete={handleDelete} 
             fileInfoList={fileInfoList}
             apartArea={apartArea} 
-            userId={session?.user.id.toString()} // Convert user ID to string
-            writerId={post.writer.id.toString()} // Convert writer ID to string
+            userId={session?.user.id.toString()} 
+            writerId={post.writer.id.toString()} 
           />
           <Comment
             initialComments={[]} 

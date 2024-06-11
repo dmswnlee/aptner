@@ -1,12 +1,11 @@
 "use client";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import React from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function TabBar() {
   const pathname = usePathname();
 
-  // 현재 경로가 주어진 경로와 일치하는지 확인하는 함수
   const isActive = (href: string) => {
     return pathname === href
       ? "border border-[#B0E4FF] bg-[#F5FBFF] rounded-[8px]"

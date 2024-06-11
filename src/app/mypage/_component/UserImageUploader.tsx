@@ -1,9 +1,10 @@
 "use client";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import User from "../../../assets/images/emoji/user.png";
+import axios from "axios";
+
+import User from "@/assets/images/emoji/user.png";
 
 interface Profile {
   profileImage: string;
@@ -23,7 +24,7 @@ const UserImageUploader: React.FC = () => {
   const handleProfile = async () => {
     try {
       const response = await axios.get(
-        "https://aptner.site/v1/api/members/RO000/my-pages/profile",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/my-pages/profile`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,

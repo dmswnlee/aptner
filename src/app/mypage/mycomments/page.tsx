@@ -1,32 +1,11 @@
 "use client";
-import axios from "axios";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import axios from "axios";
+import Link from "next/link";
 import { Pagination } from "antd";
+
 import ConfirmModal from "@/components/modal/ConfirmModal";
-
-interface Article {
-  id: number;
-  title: string;
-  createdAt: string;
-  category: Category;
-}
-
-interface Category {
-  id: number;
-  type: string;
-  code: string;
-  name: string;
-}
-
-interface Comment {
-  id: number;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  article: Article;
-}
 
 export default function MyCommentsPage() {
   const { data: session, status } = useSession();
@@ -51,7 +30,7 @@ export default function MyCommentsPage() {
     try {
       setComments([]);
       const response = await axios.get(
-        "https://aptner.site/v1/api/members/RO000/comments",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/comments`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,
@@ -117,7 +96,7 @@ export default function MyCommentsPage() {
 
     try {
       const response = await axios.delete(
-        "https://aptner.site/v1/api/members/RO000/comments",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/comments`,
         {
           data: {
             postCommentIds,

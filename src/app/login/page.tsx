@@ -1,14 +1,15 @@
 "use client";
-import { useForm } from "react-hook-form";
-import ColorButton from "@/components/buttons/ColorButton";
-import LargeBorderButton from "@/components/buttons/LargeBorderButton";
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { AiTwotoneNotification } from "react-icons/ai";
-import Modal from "@/components/modal/Modal";
+import { useForm } from "react-hook-form";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { AiTwotoneNotification } from "react-icons/ai";
 import { Checkbox, Tooltip } from "antd";
+
+import ColorButton from "@/components/buttons/ColorButton";
+import LargeBorderButton from "@/components/buttons/LargeBorderButton";
+import Modal from "@/components/modal/Modal";
 
 const text = (
 	<div className="flex gap-[5px] w-[292px] p-[10px] bg-white shadow-lg rounded-[5px] mt-4">
