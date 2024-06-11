@@ -1,23 +1,11 @@
 import React, { useRef, useState } from "react";
+
 import { GoFileDirectory } from "react-icons/go";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { HiOutlineFolderPlus } from "react-icons/hi2";
+import { FileUploadProps } from '@/interfaces/communication/FileUploader';
 
-interface FileInfo {
-  id: number;
-  name: string;
-  path: string;
-  size: number;
-  file?: File;
-}
-
-interface FileUploadProps {
-  files: FileInfo[];
-  setFiles: React.Dispatch<React.SetStateAction<FileInfo[]>>;
-  handleRemoveFile: (fileName: string) => void;
-}
- 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const MAX_FILE_COUNT = 20;
 const allowedExtensions = [

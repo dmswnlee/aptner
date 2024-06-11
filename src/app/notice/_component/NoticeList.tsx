@@ -1,9 +1,13 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
+import { MoonLoader } from "react-spinners";
 import { Pagination } from "antd";
+
 import { highlightText } from "@/utils/highlightText";
 import { ListProps } from "@/interfaces/board";
-import { MoonLoader } from "react-spinners";
+
+import New from "@/assets/images/emoji/new.png";
 
 const headerStyle = "border-b border-b-[#2A3F6D] py-4 px-2 bg-[#F9F9F9] text-center";
 
@@ -15,6 +19,16 @@ const NoticeList = ({ data, loading, currentPage, total, onPageChange, searchQue
 			</div>
 		);
 	}
+
+	const isToday = (dateString: string) => {
+		const date = new Date(dateString);
+		const today = new Date();
+		return (
+			date.getDate() === today.getDate() &&
+			date.getMonth() === today.getMonth() &&
+			date.getFullYear() === today.getFullYear()
+		);
+	};
 
 	return (
 		<div className="w-full flex flex-col items-center mb-[30px]">
@@ -31,6 +45,13 @@ const NoticeList = ({ data, loading, currentPage, total, onPageChange, searchQue
 								<div className="border-b py-4 text-center">{notices.category.name}</div>
 								<Link href={`/notice/details/${notices.id}`} className="border-b py-4 ml-[3px] flex px-[5px]">
 									{highlightText(notices.title, searchQuery)}
+									{/* <Link
+										href={`/notice/details/${notices.id}`}
+										className="border-b py-4 pl-3 gap-[3px] flex items-center">
+										{isToday(notices.createdAt) && (
+											<Image src={New} alt="new" width={14} height={14} className="text-red-500 ml-1" />
+										)}
+									</Link> */}
 								</Link>
 								<div className="border-b py-4 text-center">{notices.writer.nickname}</div>
 								<div className="border-b py-4 text-center">{notices.viewCount}</div>
@@ -47,8 +68,8 @@ const NoticeList = ({ data, loading, currentPage, total, onPageChange, searchQue
 			</div>
 			<Pagination
 				current={currentPage}
-				total={total} // 총 항목 수 전달
-				pageSize={15} // 페이지당 항목 수 설정
+				total={total} 
+				pageSize={15} 
 				onChange={onPageChange}
 			/>
 		</div>

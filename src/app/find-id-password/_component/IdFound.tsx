@@ -1,5 +1,6 @@
-import ColorButton from "@/components/buttons/ColorButton";
 import { useRouter } from "next/navigation";
+
+import ColorButton from "@/components/buttons/ColorButton";
 
 interface IdFoundProps {
 	email: string;

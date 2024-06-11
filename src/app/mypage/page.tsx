@@ -3,11 +3,13 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useSession } from "next-auth/react";
 import axios from "axios";
+import { IoClose } from "react-icons/io5";
+
 import Button from "@/components/buttons/Button";
 import UserEdit from "./_component/UserEdit";
 import ImgModal from "./_component/ImgModal";
 import ConfirmModal from "../../components/modal/ConfirmModal";
-import { IoClose } from "react-icons/io5";
+
 import User from "../../assets/images/emoji/user.png";
 
 interface FormData {
@@ -85,7 +87,7 @@ export default function MyPage() {
 
     try {
       const response = await axios.patch(
-        "https://aptner.site/v1/api/members/my-pages/profile",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/my-pages/profile`,
         formData,
         {
           headers: {
@@ -102,8 +104,6 @@ export default function MyPage() {
     }
   };
 
-  // 프로필 GET
-
   interface Profile {
     profileImage: string;
     nickname: string;
@@ -119,7 +119,7 @@ export default function MyPage() {
   const handleProfile = async () => {
     try {
       const response = await axios.get(
-        "https://aptner.site/v1/api/members/RO000/my-pages/profile",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/my-pages/profile`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,

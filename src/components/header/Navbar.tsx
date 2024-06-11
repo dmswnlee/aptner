@@ -1,9 +1,10 @@
 "use client";
-import Link from "next/link"; 
-import Search from "@/components/Search";
-import { FaBars, FaTimes } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link"; 
+import { FaBars, FaTimes } from "react-icons/fa";
+
+import Search from "@/components/Search";
 import Modal from "../modal/Modal";
 
 const flexStyle = "flex flex-col items-center gap-6";

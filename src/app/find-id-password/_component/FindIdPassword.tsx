@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+
 import Tab from "./Tab";
 import IdForm from "./IdForm";
 import PasswordForm from "./PasswordForm";
-import { useRouter, useSearchParams } from "next/navigation";
 
 const FindIdPassword = () => {
 	const [activeTab, setActiveTab] = useState<"id" | "password">("id");

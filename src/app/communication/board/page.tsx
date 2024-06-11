@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import PostBoard from "./_component/PostBoard";
+
 export default function BoardPage() {
 	const options = [
 		{ label: "자유게시판" },

@@ -1,23 +1,17 @@
 'use client'
 import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { useSession } from 'next-auth/react';
+
 import TinyEditor from '@/components/board/TinyEditor';
 import Button from '@/components/buttons/Button';
 import FileUpload from './FileUploader';
 import Dropdown from './Dropdown';
 import SizeSelection from './SizeSelection';
 import { IoMdInformationCircleOutline } from 'react-icons/io';
-
-interface Option {
-  label: string;
-}
-
-interface BoardProps { 
-  options: Option[];
-}
+import { BoardProps, FileInfo, SessionData, Size } from '@/interfaces/communication/PostBoard';
 
 interface FormData {
   categoryCode: string;
@@ -25,31 +19,9 @@ interface FormData {
   content: string;
 }
 
-interface SessionData {
-  user: {
-    name: string;
-    email: string;
-  };
-  accessToken: string;
-}
-
-interface FileInfo {
-  id: number;
-  name: string;
-  path: string;
-  size: number;
-  file?: File;
-}
-
-interface Size {
-  id: number;
-  area: number;
-  imagePath: string;
-}
-
 export default function PostBoard({ options }: BoardProps) {
   const [selectedOption, setSelectedOption] = useState(options[0].label);
-  const [selectedSize, setSelectedSize] = useState<string>('1'); // Default to id 1
+  const [selectedSize, setSelectedSize] = useState<string>('1'); 
   const [files, setFiles] = useState<FileInfo[]>([]);
   const [editorContent, setEditorContent] = useState<string>('');
   const [sizes, setSizes] = useState<Size[]>([]);

@@ -1,11 +1,12 @@
 "use client";
+import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import axios from "axios";
+
 import PostsPost from "@/app/communication/details/_component/PostsPost";
 import Comment from "@/components/comment/Comment";
 import { Post, SessionData, PostFileInfo } from "@/interfaces/board";
-import axios from "axios";
-import { useSession } from "next-auth/react";
-import { useParams, usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
 
 const DisclosuresDetailPage = () => {
 	const { slug } = useParams();
@@ -14,7 +15,7 @@ const DisclosuresDetailPage = () => {
 	const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname(); 
-  const basePath = pathname.split("/")[1]; // 첫 번째 경로를 추출
+  const basePath = pathname.split("/")[1]; 
 
 	useEffect(() => { 
 		if (session && session.accessToken) {
@@ -56,7 +57,7 @@ const DisclosuresDetailPage = () => {
 		try {
       const response = await axios({
         method,
-        url: `https://aptner.site/v1/api/disclosures/RO000/${post.id}/emoji`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/disclosures/RO000/${post.id}/emoji`,
         headers: {
           Authorization: `Bearer ${(session as SessionData).accessToken}`,
         },
@@ -130,8 +131,8 @@ const DisclosuresDetailPage = () => {
 						emojiReactions={emojiReactions}
             handleDelete={handleDelete} 
             fileInfoList={fileInfoList}
-						userId={session?.user.id.toString()} // Convert user ID to string
-            writerId={post.writer.id.toString()} // Convert writer ID to string
+						userId={session?.user.id.toString()} 
+            writerId={post.writer.id.toString()} 
 					/>
 					<Comment
 						initialComments={[]}

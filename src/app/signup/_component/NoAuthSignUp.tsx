@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+
 import ColorButton from "@/components/buttons/ColorButton";
 import SmallBorderButton from "@/components/buttons/SmallBorderButton";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
 import {
 	getErrorMessage,
 	inputErrorStyle,
@@ -10,7 +12,6 @@ import {
 	phoneNumberRegex,
 	verificationCodeRegex,
 } from "./IdentityVerification";
-import { useDispatch, useSelector } from "react-redux";
 import { nextStep, setPersonalInfo } from "@/stores/slice/registrationSlice";
 import { RootState } from "@/stores/store";
 import { sendVerificationRequest, setVerificationExpired, verifyCodeRequest } from "@/stores/slice/verificationSlice";

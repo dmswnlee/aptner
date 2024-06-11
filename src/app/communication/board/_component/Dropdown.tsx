@@ -1,24 +1,7 @@
-// Dropdown.tsx
 import React, { useState } from "react";
+
 import { IoIosArrowDown } from "react-icons/io";
-import { UseFormSetValue } from "react-hook-form";
-
-interface Option {
-  label: string;
-}
-
-interface DropdownProps {
-  options: Option[];
-  selectedOption: string;
-  setSelectedOption: React.Dispatch<React.SetStateAction<string>>;
-  setValue: UseFormSetValue<FormData>;
-}
-
-interface FormData {
-  categoryCode: string;
-  title: string;
-  content: string;
-}
+import { DropdownProps } from '@/interfaces/communication/Dropdown';
 
 const Dropdown: React.FC<DropdownProps> = ({ options, selectedOption, setSelectedOption, setValue }) => {
   const [isOpen, setIsOpen] = useState(false);

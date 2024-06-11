@@ -2,14 +2,12 @@ const Posts = () => {
   return (
     <div className="w-full max-h-[960px] border border-solid border-t-[#778AA5]">
       <div className="grid grid-cols-[112px,629px,96px,120px,123px] border border-solid">
-        {/* Header */}
         <div className="border border-solid p-[16px] text-center">분류</div>
         <div className="border border-solid p-[16px]">글 제목</div>
         <div className="border border-solid p-[16px] text-center">글쓴이</div>
         <div className="border border-solid p-[16px] text-center">조회수</div>
         <div className="border border-solid p-[16px] text-center">등록일</div>
 
-        {/* Data */}
         <div className="border border-solid p-[16px] text-center">중요글</div>
         <div className="border border-solid p-[16px]">Post Title 1</div>
         <div className="border border-solid p-[16px] text-center">김민재</div>

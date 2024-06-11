@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import CommentTextarea from './CommentTextarea';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
+
+import CommentTextarea from './CommentTextarea';
+
 import User from "@/assets/images/emoji/user.png";
 
 interface CommentFormProps {
@@ -49,7 +51,7 @@ const CommentForm = (props: CommentFormProps) => {
   const handleProfile = async () => {
     try {
       const response = await axios.get(
-        "https://aptner.site/v1/api/members/RO000/my-pages/profile",
+        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/my-pages/profile`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,

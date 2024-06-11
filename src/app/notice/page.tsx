@@ -1,13 +1,14 @@
 "use client";
-import Tabs from "@/components/noticeboard/Tabs";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import axios from "axios";
+
+import Tabs from "@/components/noticeboard/Tabs";
 import { Notices, Option, SessionData, Tab } from "@/interfaces/board";
 import DropdownSearch from "@/components/DropdownSearch";
 import SearchBoard from "@/components/SearchBoard";
-import { useSession } from "next-auth/react";
-import axios from "axios";
 import NoticeList from "./_component/NoticeList";
-import { useRouter, useSearchParams } from "next/navigation";
 
 const Notice = () => {
 	const [category, setCategory] = useState<string | null>("all");
@@ -16,6 +17,7 @@ const Notice = () => {
 	const [loading, setLoading] = useState(true);
 	const { data: session } = useSession();
 	const [notices, setNotices] = useState<Notices[]>([]);
+	const [pinnedNotices, setPinnedNotices] = useState<Notices[]>([]);
 	const [totalCount, setTotalCount] = useState(0);
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -71,6 +73,11 @@ const Notice = () => {
 			});
 			console.log(response.data.result);
 			setNotices(response.data.result.result.noticeInfoList);
+			if (page === 1) {
+				setPinnedNotices(response.data.result.result.pinnedNoticeList); 
+			} else {
+				setPinnedNotices([]);
+			}
 			setTotalCount(response.data.result.totalCount);
 		} catch (err) {
 			console.log("err", err);

@@ -1,61 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useState, useEffect, useRef } from 'react';
 import { PiPencilSimpleLineLight } from 'react-icons/pi';
+
 import { highlightText } from '@/utils/highlightText';
-import Block from '../../../components/board/Block';
-
-interface Writer {
-  id: number;
-  name: string;
-  nickname: string;
-}
-interface Category {
-  id: number;
-  type: string;
-  code: string;
-  name: string;
-}
-interface Communication {
-  id: number;
-  category: Category;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  writer: Writer;
-  title: string;
-  viewCount: number;
-  status: string;
-}
-interface SessionData {
-  user: {
-    name: string;
-    email: string;
-  };
-  accessToken: string;
-}
-
-interface ListProps {
-  data: Communication[];
-  pinnedData: Communication[];
-  loading: boolean;
-  currentPage: number;
-  total: number;
-  onPageChange: (page: number) => void;
-  searchQuery: string;
-  selectedOption: Option;
-}
-
-interface Option {
-  value: string;
-  label: string;
-}
-
-interface Tooltip {
-  nickname: string;
-  userId: number;
-  postId: number;
-}
+import Block from '@/components/board/Block';
+import { ListProps, Tooltip } from '@/interfaces/communication/PostList';
 
 const PostList = ({
   data,

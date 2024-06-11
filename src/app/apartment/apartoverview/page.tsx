@@ -1,11 +1,11 @@
 import Image from "next/image";
-import Image9 from "../../../assets/images/apartment/image9.png";
-import Image18 from "../../../assets/images/apartment/image18.png";
-import Image19 from "../../../assets/images/apartment/image19.png";
-import Image20 from "../../../assets/images/apartment/image20.png";
-import Image21 from "../../../assets/images/apartment/image21.png";
-import Image22 from "../../../assets/images/apartment/image22.png";
-import Image23 from "../../../assets/images/apartment/image23.png";
+import Image9 from "@/assets/images/apartment/image9.png";
+import Image18 from "@/assets/images/apartment/image18.png";
+import Image19 from "@/assets/images/apartment/image19.png";
+import Image20 from "@/assets/images/apartment/image20.png";
+import Image21 from "@/assets/images/apartment/image21.png";
+import Image22 from "@/assets/images/apartment/image22.png";
+import Image23 from "@/assets/images/apartment/image23.png";
 
 export default function ApartOverViewPage() {
   return (

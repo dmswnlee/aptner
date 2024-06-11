@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { FaSearch } from "react-icons/fa";
-import { useDispatch } from 'react-redux';
-import { setQuery } from "@/stores/slice/communicationsSlice";
 import { ToastContainer, toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { FaSearch } from "react-icons/fa";
+
+import { setQuery } from "@/stores/slice/communicationsSlice";
+
 import 'react-toastify/dist/ReactToastify.css';
 
 interface Option {

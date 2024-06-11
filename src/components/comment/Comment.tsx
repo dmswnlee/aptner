@@ -1,64 +1,59 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
+import { useSession } from 'next-auth/react';
+import axios from 'axios';
+import { Pagination } from 'antd';
 import { FaRegCommentDots } from "react-icons/fa6";
+
 import CommentList from './comments/CommentList';
 import CommentForm from './comments/CommentForm';
 import Modal from '../modal/Modal';
-import { useSession } from 'next-auth/react';
-import axios from 'axios';
 import { CommentType, CommentProps, SessionData } from '@/interfaces/Comment';
-import { Pagination } from 'antd';
 
 const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentProps) => {
-  const [comments, setComments] = useState<CommentType[]>(initialComments || []); // 댓글 목록 상태
-  const [newComment, setNewComment] = useState<string>(''); // 새로운 댓글 내용 상태
-  const [charCount, setCharCount] = useState<number>(0); // 댓글 글자 수 상태
+  const [comments, setComments] = useState<CommentType[]>(initialComments || []); 
+  const [newComment, setNewComment] = useState<string>(''); 
+  const [charCount, setCharCount] = useState<number>(0); 
   const [totalCount, setTotalCount] = useState(0);
-  const [image, setImage] = useState<File | null>(null); // 첨부 이미지 상태
-  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
-  const [editingCommentId, setEditingCommentId] = useState<number | null>(null); // 편집 중인 댓글 ID 상태
-  const [editingContent, setEditingContent] = useState<string>(''); // 편집 중인 댓글 내용 상태
-  const [editingParentId, setEditingParentId] = useState<number | null>(null); // 편집 중인 댓글 부모 ID 상태
-  const [showModal, setShowModal] = useState<boolean>(false); // 모달 표시 상태
-  const [commentToDelete, setCommentToDelete] = useState<number | null>(null); // 삭제할 댓글 ID 상태
-  const { data: session } = useSession(); // 세션 데이터
+  const [image, setImage] = useState<File | null>(null); 
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null); 
+  const [editingContent, setEditingContent] = useState<string>(''); 
+  const [editingParentId, setEditingParentId] = useState<number | null>(null); 
+  const [showModal, setShowModal] = useState<boolean>(false); 
+  const [commentToDelete, setCommentToDelete] = useState<number | null>(null); 
+  const { data: session } = useSession(); 
   const apartCode = "RO000";
-  const author = session?.user.nickname || 'Anonymous'; // Use the nickname from the session
+  const author = session?.user.nickname || 'Anonymous'; 
 
-  // 세션이나 현재 페이지가 변경될 때마다 댓글을 가져옴
   useEffect(() => {
     if (session && session.accessToken) {
       fetchComments(currentPage);
     }
   }, [session, currentPage]);
 
-  // 현재 날짜와 시간을 가져오는 함수
   const getCurrentDateTime = () => new Date().toISOString();
 
-  // 텍스트 영역 변경 핸들러
   const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setNewComment(e.target.value);
     setCharCount(e.target.value.length);
   };
 
-  // 파일 변경 핸들러 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImage(e.target.files[0]);
     }
   };
 
-  // 이미지 제거 핸들러
   const handleRemoveImage = () => {
     setImage(null);
   };
 
-  // 댓글을 가져오는 함수
   const fetchComments = async (page: number) => {
     if (!session) return;
     
     try {
       const response = await axios.get(
-        `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments`, {
+        `${process.env.NEXT_PUBLIC_API_URL}/${pageType}/${apartCode}/${postId}/comments`, {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
           },
@@ -105,7 +100,7 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
 
     try {
       const response = await axios.post(
-        `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments`,
+        `${process.env.NEXT_PUBLIC_API_URL}/${pageType}/${apartCode}/${postId}/comments`,
         formData,
         {
           headers: {
@@ -118,7 +113,7 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
       if (response.data.success) {
         const newCommentObj: CommentType = {
           id: response.data.result.postCommentId,
-          writer: { nickname: author, id: session.user.id }, // Include the id property here
+          writer: { nickname: author, id: session.user.id }, 
           createdAt: getCurrentDateTime(),
           content: content,
           image: image ? URL.createObjectURL(image) : undefined,
@@ -156,18 +151,16 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
     }
   };
 
-  // 댓글 편집 핸들러
   const handleEditComment = (id: number, parentId: number | null) => {
     const comment = comments.find(comment => comment.id === id);
     if (comment) {
       setEditingCommentId(id);
       setEditingContent(comment.content);
       setEditingParentId(parentId);
-      setImage(null); // Reset image state
+      setImage(null); 
     }
   };
 
-  // 댓글 업데이트 함수
   const handleUpdateComment = async (id: number, content: string, parentId: number | null, image?: File | null) => {
     if (!session || !session.accessToken) return;
 
@@ -180,7 +173,7 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
 
     try {
       const response = await axios.patch(
-        `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/${pageType}/${apartCode}/${postId}/comments/${id}`,
         formData,
         {
           headers: {
@@ -219,12 +212,11 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
     }
   };
 
-  // 댓글 삭제 함수
   const handleDeleteComment = async (id: number) => {
     if (!session || !session.accessToken) return;
     try {
       const response = await axios.delete(
-        `https://aptner.site/v1/api/${pageType}/${apartCode}/${postId}/comments/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/${pageType}/${apartCode}/${postId}/comments/${id}`,
         {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
@@ -248,7 +240,6 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
     }
   };
 
-  // 댓글 삭제 확인 핸들러
   const confirmDeleteComment = () => {
     if (commentToDelete !== null) {
       handleDeleteComment(commentToDelete);
@@ -276,7 +267,7 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
         <CommentList
           comments={comments}
           author={author}
-          userId={session?.user.id} // Pass the user ID
+          userId={session?.user.id} 
           onEdit={handleEditComment}
           onDelete={handleDeleteComment}
           onReply={handleAddComment}
@@ -286,8 +277,8 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
         <div className="flex justify-center mt-4">
           <Pagination
             current={currentPage}
-            total={totalCount} // 총 항목 수 전달
-            pageSize={10} // 페이지당 항목 수 설정
+            total={totalCount} 
+            pageSize={10} 
             onChange={handlePageChange}
           />
         </div>
