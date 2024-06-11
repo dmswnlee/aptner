@@ -9,7 +9,6 @@ import { Notices, Option, SessionData, Tab } from "@/interfaces/board";
 import DropdownSearch from "@/components/DropdownSearch";
 import SearchBoard from "@/components/SearchBoard";
 import DisclosureList from "./_component/DisclosureList";
-import { useRouter, useSearchParams } from "next/navigation";
 
 const Disclosure = () => {
   const [category, setCategory] = useState<string | null>("all");
