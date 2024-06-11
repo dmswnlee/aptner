@@ -9,13 +9,11 @@ interface Tab {
 interface TabsProps {
   tabs: Tab[];
   onTabChange: (tabName: string) => void;
+  activeTab: string;
 }
 
-const GalleryTab = ({ tabs, onTabChange }: TabsProps) => {
-  const [activeTab, setActiveTab] = useState<string>(tabs[0].name);
-
+const GalleryTab = ({ tabs, onTabChange, activeTab }: TabsProps) => {
   const handleTabClick = (tabName: string) => {
-    setActiveTab(tabName);
     onTabChange(tabName);
   };
 

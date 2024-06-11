@@ -22,7 +22,7 @@ const CommentList = ({ comments, author, userId, onEdit, onDelete, onReply, onUp
       commentMap.set(comment.id, comment);
     });
 
-    comments.forEach(comment => {
+    comments.forEach(comment => { 
       if (comment.parentId) {
         const parent = commentMap.get(comment.parentId);
         parent?.replies.push(comment);

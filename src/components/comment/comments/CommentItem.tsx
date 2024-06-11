@@ -117,7 +117,6 @@ const CommentItem = ({ comment, author, userId, onEdit, onDelete, onReply, onUpd
           },
         }
       );
-      console.log(response.data);
       setProfile(response.data.result);
     } catch (err) {
       console.log(err);
@@ -199,7 +198,7 @@ const CommentItem = ({ comment, author, userId, onEdit, onDelete, onReply, onUpd
                 />
               </div>
             </>
-          )}
+          )} 
         </div>
       )}
       <div className='ml-[50px]'>

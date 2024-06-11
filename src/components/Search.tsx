@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, ChangeEvent, KeyboardEvent } from 'react';
+import { useState, ChangeEvent, KeyboardEvent, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 
 // 검색 컴포넌트 정의
@@ -18,6 +18,7 @@ const Search = () => {
   const handleSearch = () => {
     if (search.trim() !== '') {
       router.push(`/mainsearch?keyword=${search}`); // 검색 결과 페이지로 이동
+      setSearch(''); // 검색어 상태 초기화
     }
   };
 
@@ -27,6 +28,10 @@ const Search = () => {
       handleSearch(); // 검색 버튼 클릭과 동일한 동작 수행
     }
   };
+
+  useEffect(() => {
+    setSearch(''); // 페이지 로드 시 검색어 상태 초기화
+  }, []);
 
   return (
     <div className="relative">

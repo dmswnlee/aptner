@@ -126,13 +126,6 @@ const Gallery = ({ data, pinnedData, detailPath, loading, currentPage, total, pa
           </Link>
         ))}
       </div>
-      <Link
-        href="/communication/board"
-        className="absolute bottom-[-60px] right-0 flex justify-center items-center gap-[2px] bg-[#3ABEFF] rounded-[5px] text-white w-[78px] h-[36px] text-[14px]"
-      >
-        <PiPencilSimpleLineLight className="text-2xl" />
-        <p>글작성</p>
-      </Link>
     </div>
   );
 };

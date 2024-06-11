@@ -70,7 +70,7 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
         }
       );
       const fetchedComments = response.data.result.result.comments;
-      console.log("comments:", fetchedComments)
+      console.log("comments:", response.data.result)
       setComments(fetchedComments || []);
       setTotalCount(response.data.result.totalCount)
     } catch (err) {
@@ -144,6 +144,10 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
         setNewComment('');
         setCharCount(0);
         setImage(null);
+
+        // 페이지 수가 총 댓글 수에 따라 변경되기 때문에 totalCount 업데이트 후 페이지를 설정
+        const totalPages = Math.ceil((totalCount + 1) / 10);
+        setCurrentPage(totalPages);
       } else {
         console.error('Failed to add comment:', response.data.message);
       }
@@ -233,9 +237,7 @@ const Comment = ({ initialComments, postId, pageType, categoryCode }: CommentPro
       );
 
       if (response.data.success) {
-        setComments(comments.map(comment =>
-          comment.id === id ? { ...comment, deletedAt: new Date().toISOString() } : comment
-        ));
+        setComments(comments.filter(comment => comment.id !== id));
       } else {
         console.error('Failed to delete comment:', response.data.message);
       }

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { PiPencilSimpleLineLight } from 'react-icons/pi';
 import { highlightText } from '@/utils/highlightText';
 import Block from '../../../components/board/Block';
+import { MoonLoader } from 'react-spinners';
 
 interface Writer {
   id: number;
@@ -41,14 +42,14 @@ interface ListProps {
   loading: boolean;
   currentPage: number;
   total: number;
-  onPageChange: (page: number) => void;
-  searchQuery: string;
+  onPageChange: (page: number) => void; 
+  searchQuery: string; 
   selectedOption: Option;
 }
 
 interface Option {
   value: string;
-  label: string;
+  label: string; 
 }
 
 interface Tooltip {
@@ -70,6 +71,8 @@ const PostList = ({
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
 
+
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -93,7 +96,7 @@ const PostList = ({
     postId: number
   ) => {
     e.preventDefault();
-    setTooltip({
+    setTooltip({ 
       nickname,
       userId,
       postId,
@@ -101,8 +104,12 @@ const PostList = ({
   };
 
   if (loading) {
-    return <div>Loading...</div>;
-  }
+		return (
+			<div className="flex justify-center">
+				<MoonLoader color="#05A8FF" size={30} />
+			</div>
+		);
+	}
 
   const filteredPinnedData = pinnedData.filter((post) =>
     post.title.includes(searchQuery) || post.writer.nickname.includes(searchQuery)
@@ -115,6 +122,8 @@ const PostList = ({
   if (filteredPinnedData.length === 0 && filteredData.length === 0) {
     return <div className="text-center pt-2 pb-5 text-lg">검색결과가 없습니다.</div>;
   }
+
+  const combinedData = currentPage === 1 ? [...filteredPinnedData, ...filteredData] : filteredData;
 
   return (
     <div className="w-full flex flex-col items-center mb-[30px]">
@@ -239,13 +248,6 @@ const PostList = ({
             </div>
           ))}
         </div>
-        <Link
-          href="/communication/board"
-          className="absolute flex justify-center items-center gap-[2px] right-0 mt-[30px] bg-[#3ABEFF] rounded-[5px] text-white w-[78px] h-[36px] text-[14px]"
-        >
-          <PiPencilSimpleLineLight className="text-2xl" />
-          <p>글작성</p>
-        </Link>
       </div>
     </div>
   );
