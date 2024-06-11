@@ -26,3 +26,4 @@
   "types": ["quill-better-table"],
   "exclude": ["node_modules",".next"]
 }
+
