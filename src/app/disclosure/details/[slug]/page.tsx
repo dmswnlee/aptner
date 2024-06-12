@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import PostsPost from "@/app/communication/details/_component/PostsPost";
 import Comment from "@/components/comment/Comment";
@@ -9,8 +9,9 @@ import { Post, SessionData, PostFileInfo } from "@/interfaces/board";
 
 const DisclosuresDetailPage = () => {
 	const { slug } = useParams();
+	const searchParams = useSearchParams();
 	const [post, setPost] = useState<Post | null>(null); 
-	const [fileInfoList, setFileInfoList] = useState<PostFileInfo[]>([]);
+	const [fileInfoList, setFileInfoList] = useState<PostFileInfo[]>([]); 
 	const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname(); 
@@ -26,15 +27,21 @@ const DisclosuresDetailPage = () => {
 	const fetchPosts = async () => {
 		if (!session || !session.accessToken) return;
 
+		const isPinned = searchParams.get('isPinned') === 'true';
+    const url = isPinned
+      ? `${process.env.NEXT_PUBLIC_API_URL}/pinned-post/RO000/DC000/${slug}`
+      : `${process.env.NEXT_PUBLIC_API_URL}/disclosures/RO000/${slug}`;
+
 		try {
-			const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/disclosures/RO000/${slug}`, {
+			const response = await axios.get(url, {
 				headers: {
 					Authorization: `Bearer ${(session as SessionData).accessToken}`,
 				},
 			});
-			const postData = response.data.result.disclosureDetailInfo;
+			console.log(response.data)
+			const postData = response.data.result.disclosureDetailInfo || response.data.result.pinnedPost;
 			setPost(postData);
-      setFileInfoList(response.data.result.postFileInfoList || []);
+      setFileInfoList(response.data.result.postFileInfoList || response.data.result.pinnedPostFileInfoList || []);
 		} catch (err) {
 			console.log("err", err);
 		}
@@ -112,7 +119,7 @@ const DisclosuresDetailPage = () => {
     reactedFun: false,
     reactedLike: false,
     reactedSad: false,
-  };
+  }; 
 
 	return (
 		<div className="mt-[70px] w-[1080px] mx-auto">
@@ -124,7 +131,7 @@ const DisclosuresDetailPage = () => {
 						category={category}
 						nickname={nickname}
 						title={title}
-						content={content}
+						content={content} 
 						createdAt={createdAt}
 						onReaction={handleReaction}
 						emojiCounts={emojiCounts}
@@ -133,6 +140,7 @@ const DisclosuresDetailPage = () => {
             fileInfoList={fileInfoList}
 						userId={session?.user.id.toString()} 
             writerId={post.writer.id.toString()} 
+						viewCount= {post.viewCount}
 						totalCommentCount={totalCommentCount}
 					/>
 					<Comment

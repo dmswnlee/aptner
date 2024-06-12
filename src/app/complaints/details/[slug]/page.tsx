@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useParams, useRouter, usePathname } from "next/navigation";
+import { useParams, useRouter, usePathname, useSearchParams } from "next/navigation";
 import axios from "axios";
 
 import QNAPost from "../../_component/QNAPost";
@@ -9,6 +9,7 @@ import Comment from "@/components/comment/Comment";
 
 export default function DetailPage() {
   const { slug } = useParams();
+  const searchParams = useSearchParams();
   const [qna, setQna] = useState<Qna | null>(null);
   const [fileInfoList, setFileInfoList] = useState<QnaFileInfo[]>([]);
   const { data: session } = useSession();
@@ -26,9 +27,14 @@ export default function DetailPage() {
   const fetchComplaint = async () => {
     if (!session || !session.accessToken) return;
 
+    const isPinned = searchParams.get('isPinned') === 'true';
+    const url = isPinned
+      ? `${process.env.NEXT_PUBLIC_API_URL}/pinned-post/RO000/QA000/${slug}`
+      : `${process.env.NEXT_PUBLIC_API_URL}/qna/RO000/${slug}`;
+
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/qna/RO000/${slug}`,
+        url,
         {
           headers: {
             Authorization: `Bearer ${(session as SessionData).accessToken}`,
@@ -36,9 +42,9 @@ export default function DetailPage() {
         }
       );
       console.log(response.data.result);
-      const qnaData = response.data.result.qna;
+      const qnaData = response.data.result.qna || response.data.result.pinnedPost;
       setQna(qnaData);
-      setFileInfoList(response.data.result.qnaFileInfoList || []);
+      setFileInfoList(response.data.result.qnaFileInfoList || response.data.result.pinnedPostFileInfoList || []);
     } catch (err) {
       console.log("err", err);
     }
@@ -131,7 +137,7 @@ export default function DetailPage() {
             nickname={nickname}
             title={title}
             content={content}
-            createdAt={createdAt}
+            createdAt={createdAt} 
             onReaction={handleReaction} 
             emojiCounts={emojiCounts}
             emojiReactions={emojiReactions}
@@ -139,6 +145,7 @@ export default function DetailPage() {
             fileInfoList={fileInfoList} 
             isPrivate={false}
             totalCommentCount={totalCommentCount}
+            viewCount= {qna.viewCount}
           />
           <Comment 
             initialComments={[]}
