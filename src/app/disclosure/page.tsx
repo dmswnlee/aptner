@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-
 import Tabs from "@/components/noticeboard/Tabs";
 import { Notices, Option, SessionData, Tab } from "@/interfaces/board";
 import DropdownSearch from "@/components/DropdownSearch";
@@ -20,7 +19,7 @@ const Disclosure = () => {
   const [pinnedPosts, setPinnedPosts] = useState<Notices[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const searchParams = useSearchParams();
-  const initialQuery = searchParams.get('search') || ""; // 추가
+  const initialQuery = searchParams.get('search') || ""; 
   const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
   const router = useRouter();
 

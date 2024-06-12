@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -20,6 +20,7 @@ const DetailPage = () => {
   const { slug } = useParams();
   const [post, setPost] = useState<Post | null>(null);
   const [fileInfoList, setFileInfoList] = useState<PostFileInfo[]>([]);
+  const [totalCommentCount, setTotalCommentCount] = useState(0); // Manage total comment count
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
@@ -51,6 +52,7 @@ const DetailPage = () => {
       console.log("err", err);
     } 
   };
+
 
   const handleReaction = async (reactionType: string) => {
     if (!post || !session || !session.accessToken) return;
@@ -143,7 +145,7 @@ const DetailPage = () => {
             nickname={nickname}
             title={title}
             content={content}
-            createdAt={createdAt}
+            createdAt={createdAt} 
             onReaction={handleReaction}
             emojiCounts={emojiCounts}
             emojiReactions={emojiReactions}
@@ -152,6 +154,8 @@ const DetailPage = () => {
             apartArea={apartArea} 
             userId={session?.user.id.toString()} 
             writerId={post.writer.id.toString()} 
+            viewCount={post.viewCount}
+            totalCommentCount={totalCommentCount} // Pass the total comment count to PostsPost
           />
           <Comment
             initialComments={[]} 
@@ -159,6 +163,7 @@ const DetailPage = () => {
             postId={post.id} 
             pageType={'posts'} 
             categoryCode={categoryCode}
+            setTotalCommentCount={setTotalCommentCount} // Pass the setTotalCommentCount to Comment
           />
         </>
       )}

@@ -12,6 +12,7 @@ interface Category {
 }
 
 interface Communication {
+  isFileAttached: boolean;
   id: number;
   category: Category;
   content: string;
@@ -40,6 +41,7 @@ export interface ListProps {
   onPageChange: (page: number) => void;
   searchQuery: string;
   selectedOption: Option;
+  onSearchAuthorPosts: (author: string) => void;
 }
 
 interface Option {
