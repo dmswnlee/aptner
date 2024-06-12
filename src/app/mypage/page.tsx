@@ -3,13 +3,11 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import { IoClose } from "react-icons/io5";
-
 import Button from "@/components/buttons/Button";
 import UserEdit from "./_component/UserEdit";
 import ImgModal from "./_component/ImgModal";
 import ConfirmModal from "../../components/modal/ConfirmModal";
-
+import { IoClose } from "react-icons/io5";
 import User from "../../assets/images/emoji/user.png";
 
 interface FormData {
@@ -60,7 +58,7 @@ export default function MyPage() {
   const handleImageSelect = (file: File) => {
     setSelectedFile(file);
     console.log("Selected file in MyPage:", file); // 콘솔에 파일 출력
-    closeImgModal(); // 이미지 선택 후 모달 닫기
+    // 모달 닫기 로직을 제거합니다.
   };
 
   const openConfirmModal = () => setIsConfirmModalOpen(true);
@@ -87,7 +85,7 @@ export default function MyPage() {
 
     try {
       const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL}/members/my-pages/profile`,
+        "https://aptner.site/v1/api/members/my-pages/profile",
         formData,
         {
           headers: {
@@ -104,6 +102,8 @@ export default function MyPage() {
     }
   };
 
+  // 프로필 GET
+
   interface Profile {
     profileImage: string;
     nickname: string;
@@ -119,7 +119,7 @@ export default function MyPage() {
   const handleProfile = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/members/RO000/my-pages/profile`,
+        "https://aptner.site/v1/api/members/RO000/my-pages/profile",
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,
