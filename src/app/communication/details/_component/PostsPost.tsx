@@ -12,7 +12,7 @@ import { PostsPostProps } from "@/interfaces/Post";
 import SizeDetailsDisplay from "../../board/_component/SizeDetailsDisplay";
 
 import User from "@/assets/images/emoji/user.png";
-import emoji1 from "@/assets/images/emoji/emoji1.png";
+import emoji1 from "@/assets/images/emoji/emoji1.png"; 
 import emoji2 from "@/assets/images/emoji/emoji2.png";
 import emoji3 from "@/assets/images/emoji/emoji3.png";
 import emoji4 from "@/assets/images/emoji/emoji4.png";

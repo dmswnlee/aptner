@@ -19,8 +19,8 @@ const NoticeList = ({ data, loading, currentPage, total, onPageChange, searchQue
     );
   }
 
-  const filteredPinnedData = pinnedData?.filter((post) =>
-    post.title.includes(searchQuery) || post.writer.nickname.includes(searchQuery)
+  const filteredPinnedData = pinnedData.filter(
+    (post) => post.title.includes(searchQuery) || post.writer.nickname.includes(searchQuery)
   );
 
   const isNew = (dateString: string) => {
@@ -44,18 +44,21 @@ const NoticeList = ({ data, loading, currentPage, total, onPageChange, searchQue
           <div className={`${headerStyle}`}>조회수</div>
           <div className={`${headerStyle}`}>등록일</div>
           {combinedData.map((post, index) => (
-            <div key={post.id} className="contents">
+            <div key={post.id} className="contents"> 
               <div className="border-b py-4 text-center">
                 {index < filteredPinnedData.length && currentPage === 1 ? (
                   <div className="bg-[#FFF3F3] text-red border border-red w-[62px] px-[10px] py-[8px] h-[30px] rounded flex justify-center items-center mx-auto">
                     <span className="text-[14px]">중요글</span>
                   </div>
-                ) : (
+                ) : ( 
                   post.category?.name || "공지"
                 )}
-              </div>
+              </div> 
               <Link
-                href={`/notice/details/${post.id}`}
+                href={{
+                  pathname: `/notice/details/${post.id}`,
+                  query: { isPinned: index < filteredPinnedData.length && currentPage === 1 ? 'true' : 'false' }
+                }}
                 className="border-b py-4 ml-[3px] flex px-[5px]"
               >
                 {highlightText(post.title, searchQuery)}

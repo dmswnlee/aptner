@@ -2,11 +2,11 @@
 import Link from "next/link";
 import { MoonLoader } from 'react-spinners';
 import { Pagination } from "antd";
-import { highlightText } from "@/utils/highlightText";
+import { highlightText } from "@/utils/highlightText"; 
 import { ListProps } from "@/interfaces/board";
 import Image from "next/image";
 import New from "@/assets/images/emoji/new.png";
-import { RiImageFill } from 'react-icons/ri';
+import { RiImageFill } from 'react-icons/ri'; 
 
 const headerStyle = "border-b border-b-[#2A3F6D] py-4 px-2 bg-[#F9F9F9] text-center";
 
@@ -25,6 +25,10 @@ const DisclosureList = ({ data, loading, currentPage, total, onPageChange, searc
     const timeDifference = now.getTime() - date.getTime();
     return timeDifference < 24 * 60 * 60 * 1000;
   };
+
+  const filteredPinnedData = pinnedData.filter(
+    (post) => post.title.includes(searchQuery) || post.writer.nickname.includes(searchQuery)
+  );
 
   const combinedData = currentPage === 1
     ? [...pinnedData, ...data].slice(0, 15)
@@ -51,7 +55,10 @@ const DisclosureList = ({ data, loading, currentPage, total, onPageChange, searc
                 )}
               </div>
               <Link
-                href={`/communication/details/${post.id}`}
+                href={{
+                  pathname: `/disclosure/details/${post.id}`,
+                  query: { isPinned: index < filteredPinnedData.length && currentPage === 1 ? 'true' : 'false' }
+                }}
                 className="border-b py-4 ml-[3px] flex px-[5px]"
               >
                 {highlightText(post.title, searchQuery)}

@@ -9,6 +9,7 @@ import DropdownSearch from "@/components/DropdownSearch";
 import SearchBoard from "@/components/SearchBoard";
 import DisclosureList from "./_component/DisclosureList";
 
+
 const Disclosure = () => {
   const [category, setCategory] = useState<string | null>("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -70,7 +71,7 @@ const Disclosure = () => {
           categoryCode: categoryCode === "all" ? null : categoryCode,
         },
       });
-
+      console.log(response.data)
       const normalPosts = response.data.result.result.disclosureInfoList;
       const pinnedPosts = page === 1 ? response.data.result.result.pinnedDisclosureList : [];
 

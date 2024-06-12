@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import axios from "axios"; 
 
 import PostsPost from "@/app/communication/details/_component/PostsPost";
@@ -10,6 +10,7 @@ import { Post, SessionData, PostFileInfo } from "@/interfaces/board";
 
 const NoticeDetailPage = () => {
 	const { slug } = useParams();
+	const searchParams = useSearchParams();
 	const [post, setPost] = useState<Post | null>(null);
 	const [fileInfoList, setFileInfoList] = useState<PostFileInfo[]>([]);
 	const { data: session } = useSession();
@@ -20,22 +21,27 @@ const NoticeDetailPage = () => {
 
 	useEffect(() => {
 		if (session && session.accessToken) {
-			fetchPosts();
+			fetchPosts(); 
 		}
 	}, [session, slug]);
 
 	const fetchPosts = async () => {
 		if (!session || !session.accessToken) return;
 
+		const isPinned = searchParams.get('isPinned') === 'true';
+    const url = isPinned
+      ? `${process.env.NEXT_PUBLIC_API_URL}/pinned-post/RO000/NT000/${slug}`
+      : `${process.env.NEXT_PUBLIC_API_URL}/notices/RO000/${slug}`;
+
 		try {
-			const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/notices/RO000/${slug}`, {
+			const response = await axios.get(url, {
 				headers: {
 					Authorization: `Bearer ${(session as SessionData).accessToken}`,
 				},
 			});
-			const postData = response.data.result.noticeDetailInfo;
+			const postData = response.data.result.noticeDetailInfo || response.data.result.pinnedPost;
 			setPost(postData);
-      setFileInfoList(response.data.result.postFileInfoList || []);
+      setFileInfoList(response.data.result.postFileInfoList || response.data.result.pinnedPostFileInfoList || []);
 		} catch (err) {
 			console.log("err", err);
 		}
@@ -130,12 +136,13 @@ const NoticeDetailPage = () => {
 						createdAt={createdAt}
 						onReaction={handleReaction}
 						emojiCounts={emojiCounts}
-						emojiReactions={emojiReactions}
+						emojiReactions={emojiReactions} 
             handleDelete={handleDelete} 
-            fileInfoList={fileInfoList}
+            fileInfoList={fileInfoList} 
 						userId={session?.user.id.toString()} 
             writerId={post.writer.id.toString()}
 						totalCommentCount={totalCommentCount}
+						viewCount= {post.viewCount}
 					/>
 					<Comment
 						initialComments={[]}

@@ -97,7 +97,7 @@ export default function CommunicationPage() {
   };
 
   const fetchCommunications = async (categoryCode: string | null, page: number) => {
-    if (!session) return;
+    if (!session) return; 
     setLoading(true);
     try {
       const response = await axios.get(`https://aptner.site/v1/api/posts/RO000`, {
@@ -120,7 +120,7 @@ export default function CommunicationPage() {
 
       setPinnedPosts(pinnedPosts);
       setCommunications(normalPosts.slice(0, (activeButton === "Gallery" ? 16 : 15) - pinnedPosts.length));
-      setTotalCount(response.data.result.totalCount);
+      setTotalCount(response.data.result.totalCount + pinnedPosts.length);
       setLoading(false);
     } catch (err) {
       console.log("err", err);

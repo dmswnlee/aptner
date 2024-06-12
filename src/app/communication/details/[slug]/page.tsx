@@ -1,8 +1,7 @@
 'use client'
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
-import { useRouter, usePathname } from "next/navigation";
+import { useParams, useRouter, usePathname, useSearchParams } from "next/navigation";
 import axios from "axios";
 
 import PostsPost from "../_component/PostsPost";
@@ -18,6 +17,7 @@ interface PostFileInfo {
 
 const DetailPage = () => {
   const { slug } = useParams();
+  const searchParams = useSearchParams();
   const [post, setPost] = useState<Post | null>(null);
   const [fileInfoList, setFileInfoList] = useState<PostFileInfo[]>([]);
   const [totalCommentCount, setTotalCommentCount] = useState(0); // Manage total comment count
@@ -31,23 +31,25 @@ const DetailPage = () => {
       fetchPosts();
     }
   }, [session, slug]);
-
+ 
   const fetchPosts = async () => {
     if (!session || !session.accessToken) return;
 
+    const isPinned = searchParams.get('isPinned') === 'true';
+    const url = isPinned
+      ? `${process.env.NEXT_PUBLIC_API_URL}/pinned-post/RO000/PT000/${slug}`
+      : `${process.env.NEXT_PUBLIC_API_URL}/posts/RO000/${slug}`;
+
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/posts/RO000/${slug}`,
-        {
-          headers: {
-            Authorization: `Bearer ${(session as SessionData).accessToken}`,
-          },
-        }
-      );
-      console.log(response.data.result.post);
-      const postData = response.data.result.post;
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${(session as SessionData).accessToken}`,
+        },
+      });
+      console.log(response.data.result.post || response.data.result.pinnedPost);
+      const postData = response.data.result.post || response.data.result.pinnedPost;
       setPost(postData);
-      setFileInfoList(response.data.result.postFileInfoList || []);
+      setFileInfoList(response.data.result.postFileInfoList || response.data.result.pinnedPostFileInfoList || []);
     } catch (err) {
       console.log("err", err);
     } 
