@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
@@ -16,7 +17,7 @@ export default function MyMessagePage() {
   const fetchMessage = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/members/notification`,
+        "https://aptner.site/v1/api/members/notification",
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,
@@ -38,17 +39,23 @@ export default function MyMessagePage() {
 
   return (
     <div className="w-[680px] mx-auto">
-      {messages.map((message) => (
-        <div key={message.id}>
-          <div className="h-12 bg-[#FBFBFB] flex items-center pl-4">
-            {message.createdAt}
-          </div>
-          <div className="h-10 flex items-center pl-4 gap-4 border-b-2">
-            {message.createdAt}
-            <span>{message.title}</span>
-          </div>
+      {messages.length === 0 ? (
+        <div className="h-12 bg-[#FBFBFB] flex items-center justify-center">
+          알림이 없습니다
         </div>
-      ))}
+      ) : (
+        messages.map((message) => (
+          <div key={message.id}>
+            <div className="h-12 bg-[#FBFBFB] flex items-center pl-4">
+              {message.createdAt}
+            </div>
+            <div className="h-10 flex items-center pl-4 gap-4 border-b-2">
+              {message.createdAt}
+              <span>{message.title}</span>
+            </div>
+          </div>
+        ))
+      )}
     </div>
   );
 }

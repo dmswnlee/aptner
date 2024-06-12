@@ -1,8 +1,6 @@
 import React, { useRef, useState } from "react";
-
 import Button from "@/components/buttons/Button";
-
-import User from "@/assets/images/emoji/user.png";
+import User from "../../../assets/images/emoji/user.png";
 
 interface ImgModalProps {
   onClose: () => void;
@@ -26,10 +24,11 @@ const ImgModal: React.FC<ImgModalProps> = ({
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    event.preventDefault();
     if (file) {
-      setSelectedImage(URL.createObjectURL(file)); 
-      console.log("Selected file in ImgModal:", file); 
-      onImageSelect(file);
+      setSelectedImage(URL.createObjectURL(file)); // 선택된 이미지의 미리보기 URL 생성
+      console.log("Selected file in ImgModal:", file); // 콘솔에 파일 출력
+      onImageSelect(file); // 파일을 부모 컴포넌트로 전달
     }
   };
 
@@ -39,13 +38,14 @@ const ImgModal: React.FC<ImgModalProps> = ({
       fileInputRef.current.value = "";
     }
 
+    // 기본 이미지 파일을 Blob으로 생성하여 전달
     fetch(User.src)
       .then((res) => res.blob())
       .then((blob) => {
         const defaultFile = new File([blob], "default_profile.png", {
           type: "image/png",
         });
-        onImageSelect(defaultFile); 
+        onImageSelect(defaultFile); // 기본 이미지 파일을 부모 컴포넌트로 전달
       });
   };
 
@@ -61,7 +61,7 @@ const ImgModal: React.FC<ImgModalProps> = ({
           id="userImage"
           type="file"
           accept="image/*"
-          onChange={handleFileChange} 
+          onChange={handleFileChange} // 파일 선택 시 핸들러 호출
         />
         <div className="mx-auto flex flex-col items-center">
           <p className="font-semibold text-[20px] mt-[64px] mb-[72px]">
@@ -106,7 +106,10 @@ const ImgModal: React.FC<ImgModalProps> = ({
         <Button
           text="사진 적용하기"
           className="w-[100px] mx-auto h-[32px] text-[16px] leading-[18px] py-[6px] bg-[#EEE] text-black_100 hover:text-[#00A8FF] hover:bg-[#EBF7FF]"
-          onClick={onClose}
+          onClick={(e) => {
+            e.preventDefault();
+            onClose();
+          }}
         />
       </div>
     </div>
