@@ -28,6 +28,7 @@ const QNAPost: React.FC<QNAPostProps> = ({
   fileInfoList = [],
   isPrivate,
   totalCommentCount,
+  viewCount
 }) => {
   const router = useRouter();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -105,7 +106,7 @@ const QNAPost: React.FC<QNAPostProps> = ({
               <div className="flex gap-2">
                 <p>{createdAt}</p>
                 <div className="w-[1px] bg-[#A3A3A3]"></div>
-                <p>조회 48</p>
+                <p>조회 {viewCount}</p>
                 <div className="w/[1px] bg-[#A3A3A3]"></div>
                 <div className="flex items-center gap-1">
                   <FaRegCommentDots />

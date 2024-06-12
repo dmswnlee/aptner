@@ -71,7 +71,7 @@ const Disclosure = () => {
           categoryCode: categoryCode === "all" ? null : categoryCode,
         },
       });
-
+      console.log(response.data)
       const normalPosts = response.data.result.result.disclosureInfoList;
       const pinnedPosts = page === 1 ? response.data.result.result.pinnedDisclosureList : [];
 

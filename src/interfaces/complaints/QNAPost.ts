@@ -29,4 +29,5 @@ interface QNAPostProps {
   }[];
   isPrivate?: boolean;
   totalCommentCount?: number
+  viewCount?: number
 }

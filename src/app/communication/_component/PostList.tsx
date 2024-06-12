@@ -65,7 +65,7 @@ const PostList = ({
         <MoonLoader color="#05A8FF" size={30} />
       </div>
     );
-  }
+  }  
 
   const filteredPinnedData = pinnedData.filter(
     (post) => post.title.includes(searchQuery) || post.writer.nickname.includes(searchQuery)
@@ -98,12 +98,16 @@ const PostList = ({
                 {index < filteredPinnedData.length && currentPage === 1 ? (
                   <div className="bg-[#FFF3F3] text-red border border-red w-[62px] px-[10px] py-[8px] h-[30px] rounded flex justify-center items-center">
                     <span className="text-[14px]">중요글</span>
-                  </div>
+                  </div> 
                 ) : (
                   <span className="text-center">{posts.category?.name || "공지"}</span>
                 )}
               </div>
-              <Link href={`/communication/details/${posts.id}`} className="border-b py-4 ml-[3px] flex px-[5px]">
+              <Link href={{
+                pathname: `/communication/details/${posts.id}`,
+                query: { isPinned: index < filteredPinnedData.length && currentPage === 1 ? 'true' : 'false' }
+              }} className="border-b py-4 ml-[3px] flex px-[5px]"
+              >
                 {highlightText(posts.title, searchQuery)}
                 <div className='flex ml-1 items-center'>
                   {isNew(posts.createdAt) && (

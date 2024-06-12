@@ -1,4 +1,5 @@
 interface Qna {
+  isPinned: boolean;
   id: number;
   category: {
     id: number;
