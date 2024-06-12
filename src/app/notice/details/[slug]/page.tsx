@@ -16,6 +16,7 @@ const NoticeDetailPage = () => {
   const router = useRouter();
   const pathname = usePathname(); 
   const basePath = pathname.split("/")[1]; 
+	const [totalCommentCount, setTotalCommentCount] = useState(0); 
 
 	useEffect(() => {
 		if (session && session.accessToken) {
@@ -114,6 +115,7 @@ const NoticeDetailPage = () => {
     reactedSad: false,
   };
 
+
 	return (
 		<div className="mt-[70px] w-[1080px] mx-auto">
 			{post && (
@@ -133,6 +135,7 @@ const NoticeDetailPage = () => {
             fileInfoList={fileInfoList}
 						userId={session?.user.id.toString()} 
             writerId={post.writer.id.toString()}
+						totalCommentCount={totalCommentCount}
 					/>
 					<Comment
 						initialComments={[]}
@@ -140,6 +143,7 @@ const NoticeDetailPage = () => {
 						postId={post.id}
 						pageType={"notices"}
 						categoryCode={categoryCode}
+						setTotalCommentCount={setTotalCommentCount}
 					/>
 				</>
 			)}

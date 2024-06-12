@@ -33,7 +33,9 @@ const PostsPost = (props: PostsPostProps) => {
     fileInfoList = [],
     apartArea,
     userId, 
-    writerId, 
+    writerId,
+    viewCount, 
+    totalCommentCount,
   } = props;
 
   const router = useRouter();
@@ -143,11 +145,11 @@ const PostsPost = (props: PostsPostProps) => {
               <div className="flex gap-2">
                 <p>{createdAt}</p>
                 <div className="w-[1px] bg-[#A3A3A3]"></div>
-                <p>조회 48</p>
+                <p>조회 {viewCount}</p>
                 <div className="w-[1px] bg-[#A3A3A3]"></div>
                 <div className="flex items-center gap-1">
                   <FaRegCommentDots />
-                  <p>댓글 3</p>
+                  <p>댓글 {totalCommentCount}</p> {/* Display total comment count */}
                 </div>
               </div>
             </div>

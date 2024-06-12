@@ -15,6 +15,7 @@ export default function DetailPage() {
   const router = useRouter();
   const pathname = usePathname();
   const basePath = pathname.split("/")[1]; 
+  const [totalCommentCount, setTotalCommentCount] = useState(0);
 
   useEffect(() => {
     if (session && session.accessToken) {
@@ -131,12 +132,13 @@ export default function DetailPage() {
             title={title}
             content={content}
             createdAt={createdAt}
-            onReaction={handleReaction}
+            onReaction={handleReaction} 
             emojiCounts={emojiCounts}
             emojiReactions={emojiReactions}
             handleDelete={handleDelete} 
-            fileInfoList={fileInfoList}
+            fileInfoList={fileInfoList} 
             isPrivate={false}
+            totalCommentCount={totalCommentCount}
           />
           <Comment 
             initialComments={[]}
@@ -144,6 +146,7 @@ export default function DetailPage() {
             postId={qna.id}
             pageType={"qna"}
             categoryCode={qna.category.code}
+            setTotalCommentCount={setTotalCommentCount}
           />
         </>
       )}

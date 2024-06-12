@@ -27,6 +27,7 @@ const QNAPost: React.FC<QNAPostProps> = ({
   handleDelete,
   fileInfoList = [],
   isPrivate,
+  totalCommentCount,
 }) => {
   const router = useRouter();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -108,7 +109,7 @@ const QNAPost: React.FC<QNAPostProps> = ({
                 <div className="w/[1px] bg-[#A3A3A3]"></div>
                 <div className="flex items-center gap-1">
                   <FaRegCommentDots />
-                  <p>댓글 3</p>
+                  <p>댓글 {totalCommentCount}</p>
                 </div>
               </div>
             </div>

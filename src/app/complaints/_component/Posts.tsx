@@ -70,6 +70,12 @@ const Posts = () => {
     setCurrentPage(1);
   };
 
+  const handleSearchAuthorPosts = (author: string) => {
+    setSelectedOption({ value: "WRITER", label: "작성자" });
+    setSearchQuery(author);
+    setCurrentPage(1);
+  };
+
   const fetchComplaint = async (categoryCode: string | null, page: number) => {
     if (!session) return;
     setLoading(true);
@@ -204,7 +210,7 @@ const Posts = () => {
                   {isToday(qna.createdAt) && (
                     <Image src={New} alt="new" width={14} height={14} className="text-red-500 ml-1" />
                   )}
-                </Link>
+                </Link> 
 
                 <div className="border-b py-4 flex justify-center relative">
                   <span
@@ -218,6 +224,7 @@ const Posts = () => {
                         nickname={tooltip.nickname}
                         userId={tooltip.userId}
                         onClose={() => setTooltip(null)}
+                        onSearchAuthorPosts={handleSearchAuthorPosts}
                       />
                     </div>
                   )}
