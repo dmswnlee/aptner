@@ -26,21 +26,22 @@ const Posts = () => {
   const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
   const [qnas, setQnas] = useState<Qna[]>([]);
+  const [pinnedQnas, setPinnedQnas] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const router = useRouter();
   const searchParams = useSearchParams();
-	const initialQuery = searchParams.get('search') || "";
+  const initialQuery = searchParams.get('search') || "";
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
 
-	useEffect(() => {
-		if (initialQuery) {
-			setSearchQuery(initialQuery);
-			setCurrentPage(1);
-		}
-	}, [initialQuery]);
+  useEffect(() => {
+    if (initialQuery) {
+      setSearchQuery(initialQuery);
+      setCurrentPage(1);
+    }
+  }, [initialQuery]);
 
-	const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
+  const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
 
   const tabs: Tab[] = [
     { name: "all", label: "전체", code: "" },
@@ -93,7 +94,10 @@ const Posts = () => {
           categoryCode: categoryCode === "all" ? null : categoryCode,
         },
       });
-      setQnas(response.data.result.result.qnas);
+      const normalQnas = response.data.result.result.qnas;
+      const pinnedQnas = page === 1 ? response.data.result.result.pinnedQnas : [];
+      setPinnedQnas(pinnedQnas);
+      setQnas(normalQnas.slice(0, 15 - pinnedQnas.length));
       setTotalCount(response.data.result.totalCount); 
       setLoading(false);
     } catch (err) {
@@ -183,6 +187,10 @@ const Posts = () => {
     return null;
   }
 
+  const combinedQnas = currentPage === 1
+    ? [...pinnedQnas, ...qnas]
+    : qnas;
+
   return (
     <>
       <Tabs tabs={tabs} activeTab={category ?? "all"} onTabChange={handleCategoryTabChange} />
@@ -196,10 +204,16 @@ const Posts = () => {
             <div className="border-b border-b-[#2a3f6d] py-4 bg-[#f9f9f9] text-center">등록일</div>
             <div className="border-b border-b-[#2a3f6d] py-4 bg-[#f9f9f9] text-center">처리상태</div>
 
-            {qnas.map(qna => (
+            {combinedQnas.map((qna, index) => (
               <div key={qna.id} className="contents">
                 <div className="border-b h-[60px] px-4 flex justify-center items-center">
-                  {qna.category.name}
+                  {index < pinnedQnas.length && currentPage === 1 ? (
+                    <div className="bg-[#FFF3F3] text-red border border-red w-[62px] px-[10px] py-[8px] h-[30px] rounded flex justify-center items-center mx-auto">
+                      <span className="text-[14px]">중요글</span>
+                    </div>
+                  ) : (
+                    qna.category.name
+                  )}
                 </div>
                 <Link
                   href={`/complaints/details/${qna.id}`}
@@ -210,7 +224,7 @@ const Posts = () => {
                   {isToday(qna.createdAt) && (
                     <Image src={New} alt="new" width={14} height={14} className="text-red-500 ml-1" />
                   )}
-                </Link> 
+                </Link>
 
                 <div className="border-b py-4 flex justify-center relative">
                   <span
@@ -246,8 +260,8 @@ const Posts = () => {
         </div>
         <Pagination
           current={currentPage}
-          total={totalCount} 
-          pageSize={15} 
+          total={totalCount}
+          pageSize={15}
           onChange={handlePageChange}
         />
       </div>
